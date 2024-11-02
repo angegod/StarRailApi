@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useState} from 'react';
 import {Button} from 'react-bootstrap';
+
+import score from './data/score';
+import standard from './data/standard';
+import weight from './data/weight';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/main.css';
 import loading from '../src/gif/loading.gif';
+
 import RankS from '../src/images/RankS.jpg';
 import RankA from '../src/images/RankA.jpg';
 import RankB from '../src/images/RankB.jpg';
@@ -14,13 +20,15 @@ function App() {
     const [mainCharacters,setMainCharacters]=useState(undefined);//所有腳色資訊
     //const [characters,setCharacters]=useState([]);//只會有一個腳色
     const [userName,setUserName]=useState("");
-    const [userID,setUserId]=useState([]);
+    const userID=useRef('');
     const [resultLabel,setResultLabel]=useState('No data Found!');
     const [Index,setIndex]=useState(0);//檢視腳色索引 預設為0 
     const [vaildSubaffix,setVaildSubaffix]=useState(['CriticalChanceBase','CriticalDamageBase']);//有效詞條預設為雙爆
     const [checked,setChecked]=useState([0,0,0,0,0,0,1,1,0,0,0,0]);
 
-    function getRecord(){
+
+    
+    async function getRecord(){
         setIndex(0);
         setResultLabel('Data searching...');
         setVaildSubaffix(['CriticalChanceBase','CriticalDamageBase']);
@@ -29,8 +37,12 @@ function App() {
         document.getElementById('loading').classList.remove('hidden');
         console.log('remove');
 
+        //載入評分標準
+        console.log(score);
+        
+        let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/get/${userID.current}`:`https://expressapi-o9du.onrender.com/get/${userID.current}`;
 
-        fetch(`https://expressapi-o9du.onrender.com/get/${userID}`,
+        await fetch(apiLink,
            )
             .then((response) => response.json())
             .then((responseJson) => {
@@ -46,8 +58,6 @@ function App() {
             document.getElementById('loading').classList.add('hidden');
             setResultLabel('Server is not work!');
         });
-        console.log('add');
-        
     }
 
     //顯示腳色的列表
@@ -65,7 +75,7 @@ function App() {
                 <div className='userName'>
                     <span style={{color:'white',fontSize:'25px'}} key={'username'}>{userName}的角色面板</span>
                 </div>
-                <div className='charmenu'>
+                <div className='charmenu scrollable-container'>
                     {list}
                 </div>
             </>)
@@ -91,7 +101,7 @@ function App() {
 
     //勾選有效詞條
     function VaildSubaffixSections(){
-        const array=[['生命力','HpDelta'],['生命力%數','HpAddedRatio'],['攻擊力','AttackDelta'],['攻擊力%數','AttackAddedRatio'],
+        const array=[['生命力','HPDelta'],['生命力%數','HPAddedRatio'],['攻擊力','AttackDelta'],['攻擊力%數','AttackAddedRatio'],
                     ['防禦力','DefenceDelta'],['防禦力%數','DefenceAddedRatio'],['暴擊率','CriticalChanceBase'],['暴擊傷害','CriticalDamageBase'],
                     ['擊破特攻','BreakDamageAddedRatioBase'],['速度','SpeedDelta'],
                     ['效果命中','StatusProbabilityBase'],['效果抗性','StatusResistanceBase']
@@ -162,11 +172,63 @@ function App() {
     }
 
     //計算分數
-    function calScore(relic){//
-        var crit_rate_score=returnFloatSubaffix(relic,'CriticalChanceBase');
-        var crit_dmg_score=returnFloatSubaffix(relic,'CriticalDamageBase');
+    function calScore(relic,char){
+       
+        //console.log(char.name);
+        //先抓腳色標準 在開始計算
+        if(char.id!==undefined) {
+            let weight = 0
 
-        return (crit_rate_score*2+crit_dmg_score).toFixed(1);
+            var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(char.id))[char.id];
+            var mainAffixStandard=standard.find((td)=>td.type==='main').data.find((td)=>td.name===relic.main_affix.type).data;
+            var mainAffix=parseInt(relic.main_affix.display.split('%')[0]);
+            var mainCal=parseFloat(mainAffix/mainAffixStandard).toFixed(2);
+            
+            var mutl=charStandard[relic.main_affix.field]*mainCal*3;
+
+            //如果是手跟頭則不套用主詞條加分
+            if(relic.type!==1&&relic.type!==2){
+                weight+=mutl;
+                //console.log('MainAffix:'+relic.main_affix.field+' weight:'+mutl);
+            }
+                
+            
+            //主詞條計算
+            
+            relic.sub_affix.forEach(a => {
+                //去除%數
+                var affix=parseFloat(a.display.split('%')[0]).toFixed(2);//實際數值
+
+                //計算有效詞條數
+                var affixStandard=standard.find((t)=>t.type==='sub').data.find((d)=>d.name===a.type).data;
+               
+                var cal=parseFloat(affix/affixStandard).toFixed(2);
+                
+                //獲得有效詞條
+                var affixmutl=parseFloat(charStandard[a.field]*cal);
+                weight+=affixmutl;
+                //console.log('SubAffix:'+a.type+" weight:"+affixmutl)
+                
+            });
+            let relicscore=0
+            
+            //接下來根據部位調整分數
+            relicscore=parseFloat(55/calPartWeights(charStandard,relic.type))*weight;
+            //console.log('TotalWeight:'+weight);
+            //console.log('relicScore:'+relicscore);
+            return parseFloat(relicscore).toFixed(1);
+        }
+        return 0;
+        
+    }
+
+    function calRelicMaxScore(relic){
+        let count=0;
+        relic.sub_affix.forEach((s)=>{
+            count+=(s.count-1);
+        });
+        console.log(11*count);
+        return 11*count;
     }
 
     function calRank(score){
@@ -183,6 +245,42 @@ function App() {
         if(Rank==='B') return RankB;
         if(Rank==='C') return RankC;
         if(Rank==='D') return RankD;
+
+    }
+
+    //計算裝備權重
+    function calPartWeights(charstandard,partIndex){
+        let partWeight = 5;//起始分數為5
+        let mainkey='';
+       
+        //先將標準倒序
+        charstandard=Object.entries(charstandard)
+        .sort((a, b) => b[1] - a[1]);
+        //console.log(charstandard);
+        
+
+        //主詞條 抓最大*3 剩下依序遞補 最多四個
+
+        //頭跟手會跳過
+        if(partIndex!==1&&partIndex!==2){
+            charstandard.forEach(([key,value])=>{
+                if(weight[partIndex].main.includes(key)&&mainkey==''){
+                    mainkey=key;
+                    partWeight=partWeight+value*3;
+                }
+            });
+        }
+        
+        //計算副詞條最大權重 最多計入四個
+        let calcount=0
+        charstandard.forEach(([key,value])=>{
+            if(key!==mainkey && calcount<4 && weight[partIndex].sub.includes(key)){
+                partWeight=partWeight+value;
+                calcount+=1;
+            }
+        });
+        //console.log("PartIndex:"+partIndex+" Weight:"+partWeight)
+        return partWeight;
 
     }
 
@@ -252,10 +350,10 @@ function ShowCharacterList(){/*腳色列表 */
                 <span><StatsIcon char={c} fieldName='IconBreakUp'/>擊破特攻:{returnFloatAttr(c,'break_dmg')}%</span>
             </div>
             {lightcone}
-            <div className='relics'>
+            <div className='relics max-[650px]:flex-col'>
                 {c.relics.map((item,i)=><>
-                    <div key={'relics'+i} className='relic_stat'>
-                        <div className='relic'>
+                    <div key={'relics'+i} className='relic_stat max-[650px]:w-[100%] max-[650px]:flex-row max-[400px]:justify-center max-[400px]:flex-col max-[400px]:max-h-[700px]'>
+                        <div className='relic w-1/2 max-[400px]:w-[100%]'>
                             <div className='relic_name'>
                                 <span>{item.name}</span>
                             </div>
@@ -264,44 +362,45 @@ function ShowCharacterList(){/*腳色列表 */
                                 <div className='relic_level'>
                                     <span>+{item.level}</span>
                                 </div>
+                            </div>
+                            <div className='subaffix '>
+                                <span className='main'>{item.main_affix.name+":"+item.main_affix.display}</span>
+                                {item.sub_affix.map((items,j)=>{
+                                    var enchanceCount=items.count-1;
+                                    let color='';
+                                    //根據強化次數做出對應顏色
+                                    if(enchanceCount===5)
+                                        color='text-orange-800';
+                                    else if(enchanceCount===4)
+                                        color='text-yellow-500';
+                                    else if(enchanceCount===3)
+                                        color='text-purple-500';
+                                    else if(enchanceCount===2)
+                                        color='text-blue-500';
+                                    else if(enchanceCount===1)
+                                        color='text-green-500';
+                                    else if(enchanceCount===0)
+                                        color='text-white';
+
+                                    return(<>
+                                        <span className={`${(vaildSubaffix.includes(items.type))?`${color} font-bold `:''}flex justify-center items-center`}>
+                                            {items.name+":"+items.display}
+                                            <label className={`text-white bg-gray-600 rounded-lg w-[20px] h-[20px] leading-[20px] ${(vaildSubaffix.includes(items.type))?'':'hidden'}`}>
+                                                {enchanceCount}
+                                            </label>
+                                        </span>
+                                        
+                                    </>)
+                                })} 
                             </div>                        
                         </div>
-                        <div className='subaffix'>
-                            <span className='main'>{item.main_affix.name+":"+item.main_affix.display}</span>
-                            {item.sub_affix.map((items,j)=>{
-                                var enchanceCount=items.count-1;
-                                let color='';
-                                //根據強化次數做出對應顏色
-                                if(enchanceCount===5)
-                                    color='text-orange-800';
-                                else if(enchanceCount===4)
-                                    color='text-yellow-500';
-                                else if(enchanceCount===3)
-                                    color='text-purple-500';
-                                else if(enchanceCount===2)
-                                    color='text-blue-500';
-                                else if(enchanceCount===1)
-                                    color='text-green-500';
-                                else if(enchanceCount===0)
-                                    color='text-white';
-
-                                return(<>
-                                    <span className={`${(vaildSubaffix.includes(items.type))?`${color} font-bold `:''}flex justify-center items-center`}>
-                                        {items.name+":"+items.display}
-                                        <label className={`text-white bg-gray-600 rounded-lg w-[20px] h-[20px] leading-[20px] ${(vaildSubaffix.includes(items.type))?'':'hidden'}`}>
-                                            {enchanceCount}
-                                        </label>
-                                    </span>
-                                    
-                                </>)
-                            })} 
-                        </div>
+                        
                                 
-                        <div className='relic_score mt-2.5 mb-2.5 flex flex-col' style={{display:'none'}}>
-                            <span style={{color:`${c.element.color}`}}>Score:{calScore(item)}</span>
-                            <span>Rank:{calRank(calScore(item))}</span>
-                            <div className='text-center'>
-                                <img src={ReturnRankImg(calRank(calScore(item)))} width={100} height={100} alt='5555'/>
+                        <div className='relic_score mt-2.5 mb-2.5 flex flex-col w-1/2 max-[400px]:w-[100%]' >
+                            <span style={{color:`${c.element.color}`}}>Score:{calScore(item,c)}</span>
+                            <span>Rank:{calRank(calScore(item,c))}</span>
+                            <div className='flex justify-center'>
+                                <img src={ReturnRankImg(calRank(calScore(item,c)))} width={100} height={100} alt='5555'/>
                             </div>
                         </div>
                         
@@ -327,7 +426,7 @@ function ShowCharacterList(){/*腳色列表 */
   return (<>
         <div className='app'>
             <div className='input flex flex-row'>
-                <input type='text' name='userId' placeholder='username' onChange={(e)=>setUserId(e.target.value)} className='h-8 rounded text-center'/>
+                <input type='text' name='userId' placeholder='HSR player UID' onChange={(e)=>userID.current=e.target.value} className='h-8 rounded text-center'/>
                 <button onClick={getRecord} className='bg-blue-500 w-20 h-8 rounded text-white ml-5'>查詢</button>
                 <img src={loading} width={50} height={50} alt='5555' className='ml-10 h-8 hidden'  id='loading'/>
             </div>

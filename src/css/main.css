@@ -170,10 +170,6 @@ img.Statsicon{
 }
 
 /*遺器*/
-.relic{
-    height: 130px;
-    max-height: 130px;
-}
 
 .relics{
     margin-top:10px;
@@ -197,7 +193,7 @@ img.Statsicon{
     min-width: 120px;
     margin-top: 20px;
     margin-bottom: 20px;
-    max-height: 250px;
+    max-height: 300px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -261,6 +257,4 @@ img.Statsicon{
 
 .relic_score{
     min-width: 100px;
-    flex-basis: 100%;
-    width: 10%;
 }
