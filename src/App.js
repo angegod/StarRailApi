@@ -35,15 +35,20 @@ function App() {
         setChecked([0,0,0,0,0,0,1,1,0,0,0,0]);
         //顯示loading gif
         document.getElementById('loading').classList.remove('hidden');
-        console.log('remove');
+
+        //如果UID本身就不合理 則直接返回錯誤訊息
+        if (!/^\d+$/.test(userID.current)) { // 僅允許數字
+            document.getElementById('loading').classList.add('hidden');
+            setResultLabel('The UID is not vaild');
+            return ;
+        }
 
         //載入評分標準
         console.log(score);
         
         let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/get/${userID.current}`:`https://expressapi-o9du.onrender.com/get/${userID.current}`;
 
-        await fetch(apiLink,
-           )
+        await fetch(apiLink)
             .then((response) => response.json())
             .then((responseJson) => {
                 console.log(responseJson);
