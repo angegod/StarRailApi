@@ -5,6 +5,8 @@ import {Button} from 'react-bootstrap';
 import score from './data/score';
 import standard from './data/standard';
 import weight from './data/weight';
+import Stats from './data/Stats';
+import AffixName from './data/AffixName';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/main.css';
@@ -43,8 +45,6 @@ function App() {
             return ;
         }
 
-        //載入評分標準
-        console.log(score);
         
         let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/get/${userID.current}`:`https://expressapi-o9du.onrender.com/get/${userID.current}`;
 
@@ -134,11 +134,16 @@ function App() {
         
     }
      
-    function returnAttr(char,fieldName){
-        if(char.additions.find((item)=>item.field===fieldName)!==undefined)
-            return parseInt(char.additions.find((item)=>item.field===fieldName).display)+parseInt(char.attributes.find((item)=>item.field===fieldName).display)
-        else
-            return parseInt(char.attributes.find((item)=>item.field===fieldName).display)
+    function returnAttr(char, fieldName) {
+        // 獲取 attribute 和 addition 的值，轉為浮點數，預設為 0
+        const attribute = parseFloat(char.attributes.find(item => item.field === fieldName)?.display ?? 0);
+        const addition = parseFloat(char.additions.find(item => item.field === fieldName)?.display ?? 0);
+    
+        // 相加
+        const result = attribute + addition;
+    
+        // 如果是整數，直接返回整數；否則保留一位小數
+        return Number.isInteger(result) ? result : result.toFixed(1);
     }
     
     function returnFloatAttr(char,fieldName){
@@ -176,6 +181,25 @@ function App() {
         return(<><img src={BaseLink+Imglink} alt={fieldName} width={30} height={30} className='Statsicon'/></>)
     }
 
+    function StatsList({char}){
+        var list=[];
+        console.log(Stats);
+        Stats.map((s,index)=>(
+            list.push(<>
+                <div className='flex flex-row min-w-[200px]' key={'StatList'+index}>
+                    <div className='text-right min-w-[50px]'>
+                        <StatsIcon char={char} fieldName={s.fieldName}/>
+                    </div>
+                    <div className='text-left min-w-[150px]'>
+                        <span>{s.name}:{returnAttr(char,s.type)}{(s.percent)?'%':''}</span>
+                    </div>
+                </div>
+            </>)
+        ))
+
+        return(<>{list}</>)
+    }
+
     //計算分數
     function calScore(relic,char){
        
@@ -194,9 +218,7 @@ function App() {
             //如果是手跟頭則不套用主詞條加分
             if(relic.type!==1&&relic.type!==2){
                 weight+=mutl;
-                //console.log('MainAffix:'+relic.main_affix.field+' weight:'+mutl);
             }
-                
             
             //主詞條計算
             
@@ -212,29 +234,18 @@ function App() {
                 //獲得有效詞條
                 var affixmutl=parseFloat(charStandard[a.field]*cal);
                 weight+=affixmutl;
-                //console.log('SubAffix:'+a.type+" weight:"+affixmutl)
                 
             });
             let relicscore=0
             
             //接下來根據部位調整分數
             relicscore=parseFloat(55/calPartWeights(charStandard,relic.type))*weight;
-            //console.log('TotalWeight:'+weight);
-            //console.log('relicScore:'+relicscore);
             return parseFloat(relicscore).toFixed(1);
         }
         return 0;
         
     }
 
-    function calRelicMaxScore(relic){
-        let count=0;
-        relic.sub_affix.forEach((s)=>{
-            count+=(s.count-1);
-        });
-        console.log(11*count);
-        return 11*count;
-    }
 
     function calRank(score){
         if(score<=10) return 'D';
@@ -261,8 +272,6 @@ function App() {
         //先將標準倒序
         charstandard=Object.entries(charstandard)
         .sort((a, b) => b[1] - a[1]);
-        //console.log(charstandard);
-        
 
         //主詞條 抓最大*3 剩下依序遞補 最多四個
 
@@ -297,8 +306,7 @@ function ShowCharacterList(){/*腳色列表 */
 
         const c=mainCharacters[Index];
         
-        
-        
+        //光椎資訊
         let lightcone=<></>;
         if(c!==undefined){
             if(c.light_cone!==null){
@@ -311,6 +319,28 @@ function ShowCharacterList(){/*腳色列表 */
                     <span className='level '>{c.light_cone.level}等</span>
                 </div></>;
             }
+        }
+
+        //顯示詞條系數
+        let affixList=[];
+
+        if(c!==undefined){
+            let charId=parseInt(c.id);
+            var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charId))[charId];
+            charStandard=Object.entries(charStandard);
+            //console.log(charStandard);
+            charStandard.forEach(([key,value])=>{
+                if(value!==0){
+                    let Name=AffixName.find((a)=>a.type==key).name;
+                    affixList.push(<>
+                        <div>
+                            <span>{Name}:{value}</span>
+                        </div>
+                    </>);
+                   
+                }
+            });
+
         }
         
         return(<>
@@ -345,16 +375,14 @@ function ShowCharacterList(){/*腳色列表 */
                 </div>
             </div>
             
-            <div className='charStats flex-col flex'>
-                <span><StatsIcon char={c} fieldName='IconMaxHP'/>生命力:{returnAttr(c,'hp')}</span>
-                <span><StatsIcon char={c} fieldName='IconAttack'/>攻擊力:{returnAttr(c,'atk')}</span>
-                <span><StatsIcon char={c} fieldName='IconDefence'/>防禦力:{returnAttr(c,'def')}</span>
-                <span><StatsIcon char={c} fieldName='IconCriticalChance'/>暴擊率:{returnFloatAttr(c,'crit_rate')}%</span>
-                <span><StatsIcon char={c} fieldName='IconCriticalDamage'/>暴擊傷害:{returnFloatAttr(c,'crit_dmg')}%</span>
-                <span><StatsIcon char={c} fieldName='IconSpeed'/>速度:{returnAttr(c,'spd')}</span>
-                <span><StatsIcon char={c} fieldName='IconBreakUp'/>擊破特攻:{returnFloatAttr(c,'break_dmg')}%</span>
+            <div className='charStats flex-col flex mr-2'>
+                <StatsList char={c} />
             </div>
             {lightcone}
+            <div className='flex flex-col mx-2 mt-2'>
+                <span className='text-lg text-gray-600 font-bold'>遺器評分係數</span>
+                {affixList}
+            </div>
             <div className='relics max-[650px]:flex-col'>
                 {c.relics.map((item,i)=><>
                     <div key={'relics'+i} className='relic_stat max-[650px]:w-[100%] max-[650px]:flex-row max-[400px]:justify-center max-[400px]:flex-col max-[400px]:max-h-[700px]'>
@@ -402,8 +430,8 @@ function ShowCharacterList(){/*腳色列表 */
                         
                                 
                         <div className='relic_score mt-2.5 mb-2.5 flex flex-col w-1/2 max-[400px]:w-[100%]' >
-                            <span style={{color:`${c.element.color}`}}>Score:{calScore(item,c)}</span>
-                            <span>Rank:{calRank(calScore(item,c))}</span>
+                            <span className='font-bold' style={{color:`${c.element.color}`}}>Score:{calScore(item,c)}</span>
+                            <span className='font-bold'>Rank:{calRank(calScore(item,c))}</span>
                             <div className='flex justify-center'>
                                 <img src={ReturnRankImg(calRank(calScore(item,c)))} width={100} height={100} alt='5555'/>
                             </div>

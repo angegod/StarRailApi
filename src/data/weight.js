@@ -1,4 +1,5 @@
-let weight={1: {
+let weight={
+1: {
     main: ["hp"],
     sub: ["hp", "atk", "def", "spd", "crit_rate", "crit_dmg", "effect_res", "effect_hit", "break_dmg"]
 },
@@ -11,7 +12,7 @@ let weight={1: {
     sub: ["hp", "atk", "def", "spd", "crit_rate", "crit_dmg", "effect_res", "effect_hit", "break_dmg"]
 },
 4: {
-    main: ["atk", "hp", "def", "spd", "break_dmg"],
+    main: ["atk", "hp", "def", "spd"],
     sub: ["hp", "atk", "def", "spd", "crit_rate", "crit_dmg", "effect_res", "effect_hit", "break_dmg"]
 },
 5: {

@@ -85,7 +85,7 @@ let standard=[{
         percent:false  
     },{
         name:'HPAddedRatio',
-        data:42.3,
+        data:4.32,
         percent:true
     },{
         name:'AttackDelta',

@@ -2,14 +2,29 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App.js';
-import Edit  from './component/Edit.js';
+import Simulator from './component/relic_simulator.js';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App/>
-  </React.StrictMode>
+  <>
+  
+  <BrowserRouter basename="/StarRailApi/">
+      <div className='flex flex-row w-4/5 mx-auto my-3'>
+          <div className='mr-2'>
+            <Link to='/'><span className='text-white font-bold text-xl'>遺器查詢器</span></Link>
+          </div>
+          <div className='mr-2'><Link to='/simulate'><span className='text-white font-bold text-xl'>遺器強化模擬器</span></Link></div>
+      </div>
+      <Routes>
+        <Route index path="/" element={<App />} />
+        <Route path="/simulate" element={<Simulator />} />
+      </Routes>
+  </BrowserRouter>
+  
+  </>
 );
 
 // If you want to start measuring performance in your app, pass a function
