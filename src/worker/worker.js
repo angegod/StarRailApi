@@ -50,6 +50,8 @@ onmessage = function (event) {
                     res=3*MainData;
                 
                 let total=0;
+                let caltype=[];//已經計算過的詞條種類
+
                 s.forEach((el,i) => {//對每個屬性詞條開始進行模擬計算
                     total=0;//詞條模擬出來的總和
 
@@ -62,10 +64,25 @@ onmessage = function (event) {
                     let cal=parseFloat(total/affixStandard).toFixed(2);
 
                     //獲得加權有效詞條數 並加上去
-                    var affixmutl=parseFloat(charStandard[sub.type]*cal);
+                    let affixmutl=parseFloat(charStandard[sub.type]*cal);
                     
-                    res+=affixmutl;
+                    let smallAffix=caltype.find((ct)=>ct.type===sub.type);//碰到同一種類的詞條需要擇優處理
+                    
+                    //如果沒有計算過此種類詞條
+                    if(smallAffix===undefined){
+                        caltype.push({
+                            type:sub.type,
+                            affixmutl:affixmutl
+                        });
+                    }else if(smallAffix.affixmutl<affixmutl){//如果目前計算詞條數大於現有詞條數 則覆蓋處理
+                        caltype.find((ct)=>ct.type===sub.type).affixmutl=affixmutl;
+                    }   
                 });
+
+                caltype.forEach((ms)=>{
+                    res+=ms.affixmutl;
+                });
+            
                 //理想分數
                 let IdealyScore=Number((parseFloat(55/calPartWeights(charStandard,partsIndex))*res).toFixed(1));
                 result.push(IdealyScore);
@@ -120,12 +137,12 @@ function relicScore(partsIndex,charID,SubData,MainData){
     let weight = 0
     var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
     var mutl=3*MainData;//直接默認強化至滿等
+    let caltype=[];
 
     //如果是手跟頭則不套用主詞條加分
     if(partsIndex!==1&&partsIndex!==2){
         weight+=mutl;
     }
-    
     SubData.forEach(a => {
         //去除%數
         var affix=parseFloat(a.data).toFixed(2);//實際數值
@@ -136,13 +153,28 @@ function relicScore(partsIndex,charID,SubData,MainData){
         var cal=parseFloat(affix/affixStandard).toFixed(2);
         
         //獲得有效詞條
-        var affixmutl=parseFloat(charStandard[SubAffixType.type]*cal);
-        weight+=affixmutl;
-        
+        let affixmutl=parseFloat(charStandard[SubAffixType.type]*cal);
+        let smallAffix=caltype.find((ct)=>ct.type===SubAffixType.type);
+
+
+        if(smallAffix===undefined){
+            caltype.push({
+                type:SubAffixType.type,
+                affixmutl:affixmutl,
+            })
+        }else if(smallAffix.affixmutl<affixmutl){
+            smallAffix.affixmutl=affixmutl;
+        }
     });
+    console.log(caltype);
+    console.log(calPartWeights(charStandard,partsIndex));
+    //計算分數
+    caltype.forEach((ms)=>{
+        weight+=ms.affixmutl;
+    });
+
     let relicscore=0;
 
-    
     //接下來根據部位調整分數
     relicscore=parseFloat(55/calPartWeights(charStandard,partsIndex))*weight;
     return parseFloat(relicscore).toFixed(1);
@@ -161,12 +193,24 @@ function calPartWeights(charstandard,partIndex){
     //主詞條 抓最大*3 剩下依序遞補 最多四個
     //頭跟手會跳過
     if(partIndex!==1&&partIndex!==2){
+
         charstandard.forEach(([key,value])=>{
-            if(weight[partIndex].main.includes(key)&&mainkey==''){
+            let unique=!weight[partIndex].sub.includes(key);
+            //要優先計算只出現在主詞條的
+            if(weight[partIndex].main.includes(key)&&mainkey===''&&unique&&value!==0){
                 mainkey=key;
                 partWeight=partWeight+value*3;
             }
         });
+
+        if(mainkey===''){
+            charstandard.forEach(([key,value])=>{
+                if(weight[partIndex].main.includes(key)&&mainkey===''){
+                    mainkey=key;
+                    partWeight=partWeight+value*3;
+                }
+            });
+        }
     }
     
     //計算副詞條最大權重 最多計入四個
@@ -177,7 +221,6 @@ function calPartWeights(charstandard,partIndex){
             calcount+=1;
         }
     });
-    
     return partWeight;
 
 }
