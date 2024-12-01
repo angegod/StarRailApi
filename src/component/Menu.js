@@ -25,7 +25,6 @@ function Menu(){
             <div className='flex flex-row w-4/5 mx-auto'>
                 {menuList}
             </div>
-            
         </div>
     </>)
 }
