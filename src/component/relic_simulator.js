@@ -20,6 +20,7 @@ function Simulator(){
     const [ExpRate,setExpRate]=useState(undefined);
     const [Rscore,setRscore]=useState(undefined);
     const [statusMsg,setStatusMsg]=useState(undefined);
+    const [processBtn,setProcessBtn]=useState(true);
 
     const SubData=useRef([]);
     const [charID,setCharID]=useState(undefined);
@@ -218,6 +219,8 @@ function Simulator(){
         };
         console.log(postData);
 
+        //將按鈕disable
+        setProcessBtn(false);
         setStatusMsg('數據計算處理中!!');
         setPieNums(undefined);
         worker.postMessage(postData);
@@ -229,12 +232,14 @@ function Simulator(){
             setRscore(event.data.relicscore)
             setStatusMsg('計算完畢!!');
             setPieNums(event.data.returnData);
+            //恢復點擊
+            setProcessBtn(true);
         };
     }
 
     
     return(<>
-        <div className='w-4/5 mx-auto'>
+        <div className='w-4/5 mx-auto '>
             <h1 className='text-red-500 font-bold text-2xl'>遺器強化模擬器</h1>
             <div className='flex flex-row flex-wrap'>
                 <div className='flex flex-col mt-2 min-w-[600px] w-1/2'>
@@ -257,11 +262,12 @@ function Simulator(){
                             <SubAffixSelect index={1}/>
                             <SubAffixSelect index={2}/>
                             <SubAffixSelect index={3}/>
-
                         </div>
                     </div>
                     <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 text-center`}>
-                        <button className='text-white border-white border-2 rounded-md px-2' onClick={calScore}>計算儀器分數</button>
+                        <button className='processBtn' 
+                            onClick={calScore} 
+                            disabled={!processBtn}>計算儀器分數</button>
                     </div>
                 </div>
                 <div className='w-1/2 max-w-[400px] flex flex-col'>
@@ -273,6 +279,7 @@ function Simulator(){
                         </li>
                         <li>翻盤機率是指說該遺器透過重洗詞條道具後導致遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星遺器</li>
+                        <li>此工具目前處於BETA階段，相關數據仍有更改的可能</li>
                     </ul>
                 </div>
             </div>

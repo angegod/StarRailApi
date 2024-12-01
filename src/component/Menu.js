@@ -21,7 +21,7 @@ function Menu(){
 
 
     return(<>
-        <div className='my-3 bg-yellow-500'>
+        <div className='my-3 bg-yellow-500 sticky top-0 w-[100%] z-[100]'>
             <div className='flex flex-row w-4/5 mx-auto'>
                 {menuList}
             </div>
