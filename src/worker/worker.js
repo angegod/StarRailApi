@@ -105,6 +105,7 @@ onmessage = function (event) {
         let overScoreList=result.filter((num)=>num>=Number(origin));
         let expRate=parseFloat((overScoreList.length)/(result.length)).toFixed(2);
         let copy=[...result];
+        let relicrank=undefined;
         let returnData=[]
         
         //根據標準去分類
@@ -120,14 +121,19 @@ onmessage = function (event) {
                 color:stand.color
             });
 
+            //接著去找尋這個分數所屬的區間
+            if(stand.stand<=origin&&relicrank==undefined)
+                relicrank=stand;
+
         });
 
         returnData=returnData.filter((r)=>r.value>0);
 
         this.postMessage({
-            expRate:expRate,
-            relicscore:score,
-            returnData:returnData        
+            expRate:expRate,//期望值
+            relicscore:score,//遺器分數
+            relicrank:relicrank,
+            returnData:returnData//區間機率        
         })
         
     });

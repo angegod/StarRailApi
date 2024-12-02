@@ -19,6 +19,7 @@ function Simulator(){
     
     const [ExpRate,setExpRate]=useState(undefined);
     const [Rscore,setRscore]=useState(undefined);
+    const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [statusMsg,setStatusMsg]=useState(undefined);
     const [processBtn,setProcessBtn]=useState(true);
 
@@ -88,7 +89,7 @@ function Simulator(){
                     options.push(<><option value={s} key={'Mainaffix'+i}>{s}</option></>)
                 });
 
-                return(<select value={MainSelectOptions} 
+                return(<select defaultValue={MainSelectOptions} 
                     onChange={(event)=>setMainSelectOptions(event.target.value)}>{options}</select>)
             }
         }else{
@@ -114,10 +115,10 @@ function Simulator(){
                 </select>
                 <input type='number' defaultValue={SubData.current[index].data}
                         onChange={(event)=>updateSubData(event.target.value,index)}
-                        className='ml-2' min={0}/>
+                        className='ml-2 max-w-[50px] pl-2' min={0} title='詞條數值'/>
                 <input type='number' defaultValue={SubData.current[index].count}
                         onChange={(event)=>updateSubCount(event.target.value,index)}
-                        className='ml-2 text-center' min={0} max={5}/>
+                        className='ml-2 text-center' min={0} max={5} title='強化次數'/>
                 </div></>)
         }else{
             return(<></>)
@@ -217,7 +218,6 @@ function Simulator(){
             SubData:SubData.current,
             partsIndex:partsIndex
         };
-        console.log(postData);
 
         //將按鈕disable
         setProcessBtn(false);
@@ -232,6 +232,7 @@ function Simulator(){
             setRscore(event.data.relicscore)
             setStatusMsg('計算完畢!!');
             setPieNums(event.data.returnData);
+            setRank(event.data.relicrank);
             //恢復點擊
             setProcessBtn(true);
         };
@@ -242,21 +243,21 @@ function Simulator(){
         <div className='w-4/5 mx-auto '>
             <h1 className='text-red-500 font-bold text-2xl'>遺器強化模擬器</h1>
             <div className='flex flex-row flex-wrap'>
-                <div className='flex flex-col mt-2 min-w-[600px] w-1/2'>
+                <div className='flex flex-col mt-2 min-w-[600px] w-1/2 max-[600px]:w-[100%] max-w-[600px]:min-w-[300px]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3'>
-                        <div className='text-right w-[200px]'><span className='text-white'>Characters 腳色:</span></div>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Characters 腳色:</span></div>
                         <CharSelect />
                     </div>
                     <div className={`${(Number.isInteger(charID)&&charID!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row`}>
-                        <div className='text-right w-[200px]'><span className='text-white'>Parts 部位:</span></div>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Parts 部位:</span></div>
                         <PartSelect />   
                     </div>
                     <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row`}>
-                        <div className='text-right w-[200px]'><span className='text-white'>MainAffix 主屬性:</span></div>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>MainAffix 主屬性:</span></div>
                         <MainAffixSelect />
                     </div>
                     <div className={`${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined')?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row`}>
-                        <div className='text-right w-[200px]'><span className='text-white'>SubAffix 副屬性:</span></div>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>SubAffix 副屬性:</span></div>
                         <div className='flex flex-col'>
                             <SubAffixSelect index={0}/>
                             <SubAffixSelect index={1}/>
@@ -264,13 +265,13 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
-                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 text-center`}>
+                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 text-center max-[600px]:text-left`}>
                         <button className='processBtn' 
                             onClick={calScore} 
                             disabled={!processBtn}>計算儀器分數</button>
                     </div>
                 </div>
-                <div className='w-1/2 max-w-[400px] flex flex-col'>
+                <div className='w-1/2 max-w-[400px] flex flex-col max-[600px]:w-[100%] max-[600px]:mt-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具主要目的是給予一些想要重洗詞條的人參考</li>
@@ -283,19 +284,23 @@ function Simulator(){
                     </ul>
                 </div>
             </div>
-            <div>
-                <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
-                    <span className='text-white'>{statusMsg}</span>
+            <div className='w-[100%] mb-5 border-t-4 border-yellow-600 my-2 pt-2 '>
+                <div className='flex flex-col'>
+                    <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
+                        <span className='text-white'>{statusMsg}</span>
+                    </div>
+                    <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
+                        <span className='text-white'>遺器評級:
+                            <span style={{color:Rrank.color}} className='pl-2'>{Rrank.rank} &nbsp; {Rscore} </span>
+                        </span>
+                    </div>
+                    <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
+                        <span className='text-white'>重洗詞條翻盤機率:{`${(ExpRate*100).toFixed(1)}%`}</span>
+                    </div>
                 </div>
-                <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
-                    <span className='text-white'>遺器分數:{Rscore}</span>
+                <div className='max-w-[450px] flex flex-row'>
+                    <Pie />
                 </div>
-                <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
-                    <span className='text-white'>重洗詞條翻盤機率:{`${(ExpRate*100).toFixed(1)}%`}</span>
-                </div>
-            </div>
-            <div className='max-w-[450px] flex flex-row mb-5'>
-                <Pie />
             </div>
             
         </div>
