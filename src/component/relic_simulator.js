@@ -115,7 +115,7 @@ function Simulator(){
                 </select>
                 <input type='number' defaultValue={SubData.current[index].data}
                         onChange={(event)=>updateSubData(event.target.value,index)}
-                        className='ml-2 max-w-[50px] pl-2' min={0} title='詞條數值'/>
+                        className='ml-2 max-w-[70px] pl-2' min={0} title='詞條數值'/>
                 <input type='number' defaultValue={SubData.current[index].count}
                         onChange={(event)=>updateSubCount(event.target.value,index)}
                         className='ml-2 text-center' min={0} max={5} title='強化次數'/>
@@ -149,7 +149,6 @@ function Simulator(){
                 margin: { left: 2 },
                 slotProps: { legend: { hidden: true } },
             };
-
 
             return(<>
                 <PieChart series={[
@@ -284,7 +283,7 @@ function Simulator(){
                     </ul>
                 </div>
             </div>
-            <div className='w-[100%] mb-5 border-t-4 border-yellow-600 my-2 pt-2 '>
+            <div className={`w-[100%] mb-5 border-t-4 border-yellow-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
                 <div className='flex flex-col'>
                     <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
                         <span className='text-white'>{statusMsg}</span>
