@@ -2,11 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-.app{
-    width: 85%;
-    margin-left: auto;
-    margin-right: auto;
-}
+
 span{
     text-align: center;
     color: rgb(176, 172, 172);

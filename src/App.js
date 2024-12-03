@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useState} from 'react';
 import {Button} from 'react-bootstrap';
+import { Helmet } from 'react-helmet';
 
 import score from './data/score';
 import standard from './data/standard';
@@ -17,6 +18,8 @@ import RankA from '../src/images/RankA.jpg';
 import RankB from '../src/images/RankB.jpg';
 import RankC from '../src/images/RankC.jpg';
 import RankD from '../src/images/RankD.jpg';
+
+
 
 function App() {
     const [mainCharacters,setMainCharacters]=useState(undefined);//所有腳色資訊
@@ -457,7 +460,13 @@ function ShowCharacterList(){/*腳色列表 */
   }
 
   return (<>
-        <div className='app'>
+        <div className='w-4/5 mx-auto'>
+            <Helmet>
+                <title>星鐵--遺器搜尋器</title>
+                <meta name="description" content="星鐵--遺器強化模擬器" />
+                <meta name="keywords" content="遺器查詢、遺器分數、relic search" />
+            </Helmet>
+            <h1 className='text-red-500 font-bold text-2xl'>遺器查詢工具</h1>
             <div className='input flex flex-row'>
                 <input type='text' name='userId' placeholder='HSR player UID' onChange={(e)=>userID.current=e.target.value} className='h-8 rounded text-center'/>
                 <button onClick={getRecord} className='bg-blue-500 w-20 h-8 rounded text-white ml-5'>查詢</button>

@@ -7,7 +7,7 @@ import Select from 'react-select'
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Col } from 'react-bootstrap';
 import { colors } from '@mui/material';
-
+import { Helmet } from 'react-helmet';
 import '../css/simulator.css';
 
 //遺器強化模擬器
@@ -240,9 +240,14 @@ function Simulator(){
     
     return(<>
         <div className='w-4/5 mx-auto '>
+            <Helmet>
+                <title>星鐵--遺器強化模擬器</title>
+                <meta name="description" content="星鐵--遺器強化模擬器。" />
+                <meta name="keywords" content="遺器強化、強化模擬" />
+            </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器強化模擬器</h1>
             <div className='flex flex-row flex-wrap'>
-                <div className='flex flex-col mt-2 min-w-[600px] w-1/2 max-[600px]:w-[100%] max-w-[600px]:min-w-[300px]'>
+                <div className='flex flex-col mt-2 min-w-[600px] w-1/2 max-[600px]:w-[100%] max-[600px]:min-w-[275px]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3'>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Characters 腳色:</span></div>
                         <CharSelect />
@@ -255,8 +260,11 @@ function Simulator(){
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>MainAffix 主屬性:</span></div>
                         <MainAffixSelect />
                     </div>
-                    <div className={`${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined')?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row`}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>SubAffix 副屬性:</span></div>
+                    <div className={`${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined')?'':'hidden'} 
+                            mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center`}>
+                        <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center'>
+                            <span className='text-white'>SubAffix 副屬性:</span>
+                        </div>
                         <div className='flex flex-col'>
                             <SubAffixSelect index={0}/>
                             <SubAffixSelect index={1}/>
