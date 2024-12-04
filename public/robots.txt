@@ -2,4 +2,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://angegod.github.io/StarRailApi/sitemap.xml
+Sitemap: https://angegod.github.io/StarRailApi/sitemap.xml?v=20241204
