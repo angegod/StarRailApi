@@ -1,5 +1,1 @@
-# https://www.robotstxt.org/robotstxt.html
-User-agent: *
-Disallow:
-
-Sitemap: https://angegod.github.io/StarRailApi/sitemap.xml?v=20241204
+Sitemap: https://angegod.github.io/StarRailApi/sitemap-v2.xml
