@@ -1,1 +1,1 @@
-Sitemap: https://angegod.github.io/StarRailApi/sitemap-v2.xml
+Sitemap: https://angegod.github.io/StarRailApi/sitemap.xml
