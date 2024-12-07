@@ -6,35 +6,19 @@ import Menu from './component/Menu.js';
 import NotFound from './component/NotFound.js';
 import Simulator from './component/relic_simulator.js';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter } from 'react-router-dom';
-import { BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom'
+import {BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-
-function NotAllowed() {
-  throw new Error('Route not allowed');
-}
-
-function Sitemap() {
-  React.useEffect(() => {
-      window.location.href = '/StarRailApi/sitemap.xml'; // 重定向到靜態 sitemap.xml 文件
-  }, []);
-
-  return null;
-}
-
 root.render(
   <>
-  <BrowserRouter basename="/StarRailApi/">
+  <Router basename="/StarRailApi">
       <Menu />
       <Routes>
-        <Route index path="/" element={<App />} />
+        <Route path="/" element={<App />} />
         <Route path="/simulate" element={<Simulator />} />
-        <Route path="/sitemap.xml" element={<Sitemap />} />
-        <Route path="*" element={<NotAllowed />} />
       </Routes>
-  </BrowserRouter>
+  </Router>
   </>
 );
 

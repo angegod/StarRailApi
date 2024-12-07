@@ -1,1 +1,2 @@
-Sitemap: https://angegod.github.io/StarRailApi/sitemap.xml
+User-agent: *
+Disallow:
