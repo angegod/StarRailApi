@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom'
+import {Routes, Route,Link } from 'react-router-dom'
 import App from '../App.js';
 import NotFound from '../component/NotFound.js';
 import Simulator from '../component/relic_simulator.js';
