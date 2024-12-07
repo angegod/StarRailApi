@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom'
+import App from '../App.js';
+import NotFound from '../component/NotFound.js';
+import Simulator from '../component/relic_simulator.js';
 
 function Menu(){
     let list=[{
@@ -17,7 +20,7 @@ function Menu(){
             <Link to={m.link}><span className='text-black font-bold text-lg'>{m.name}</span></Link>
             <span className='text-md text-black'>{m.engname}</span>
         </div>
-    </>)
+    </>);
 
 
     return(<>
@@ -26,6 +29,10 @@ function Menu(){
                 {menuList}
             </div>
         </div>
+        <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/simulate" element={<Simulator />} />
+        </Routes>
     </>)
 }
 

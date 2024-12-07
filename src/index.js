@@ -11,15 +11,9 @@ import {BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <>
   <Router basename="/StarRailApi">
       <Menu />
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/simulate" element={<Simulator />} />
-      </Routes>
   </Router>
-  </>
 );
 
 // If you want to start measuring performance in your app, pass a function
