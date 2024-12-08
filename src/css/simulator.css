@@ -18,3 +18,14 @@
     color: theme('colors.yellow.500');
     border-color: theme('colors.yellow.500');
 }
+.deleteBtn{
+    color: theme('colors.red.600');
+    border-color: theme('colors.red.600');
+    border-radius: theme('borderRadius.md');
+}
+
+.deleteBtn:hover{
+    color: theme('colors.red.500');
+    border-color: theme('colors.red.500');
+    border-radius: theme('borderRadius.md');
+}

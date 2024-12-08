@@ -186,7 +186,6 @@ function App() {
 
     function StatsList({char}){
         var list=[];
-        console.log(Stats);
         Stats.map((s,index)=>(
             list.push(<>
                 <div className='flex flex-row min-w-[200px]' key={'StatList'+index}>

@@ -26,6 +26,12 @@ function Simulator(){
     const SubData=useRef([]);
     const [charID,setCharID]=useState(undefined);
     const [PieNums,setPieNums]=useState(undefined);
+
+    //歷史紀錄
+    const [historyData,setHistoryData]=useState([]);
+
+    const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
+
     init();
 
     function init(){
@@ -55,12 +61,55 @@ function Simulator(){
         SubData.current.find((s,i)=>i===parseInt(index)).count=Number(val);
     }
 
+    //刪除過往紀錄
+    function updateHistory(index){
+        //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
+        setHistoryData((old)=>old.filter((item,i)=>i!==index));
+        setStatusMsg('成功刪除該紀錄!!');
+    }
+
+    //儲存紀錄
+    function saveRecord(){
+        let partName=partArr[partsIndex-1];
+        let selectChar=characters.find((c)=>c.charID===charID);
+
+        //如果原本紀錄超過6個 要先刪除原有紀錄
+        if(historyData.length>=6)
+            setHistoryData((old)=>old.filter((item,i)=>i!==0));
+
+        //儲存紀錄
+        let data={
+            char:selectChar,
+            part:partName,
+            mainaffix:MainSelectOptions,
+            expRate:ExpRate,
+            score:Rscore,
+            rank:Rrank,
+            pieData:PieNums
+        };
+        setHistoryData((old)=>[...old,data]);
+        console.log(historyData);
+        setStatusMsg('已儲存');
+        
+    }
+
+    //檢視過往紀錄
+    function checkDetails(index){
+        let data=historyData[index];
+
+        setRank(data.rank);
+        setExpRate(data.expRate);
+        setRscore(data.score)
+        setStatusMsg('資料替換完畢!!');
+        setPieNums(data.pieData);
+    }
+
     //部位選擇器
     const PartSelect=()=>{
-        let arr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球']
+        
         let options=[<option value={'undefined'} key={'Parts'+'undefined'}>請選擇</option>];
 
-        arr.map((a,i)=>{
+        partArr.map((a,i)=>{
             options.push(<>
                 <option value={i+1} key={'Parts'+i} >{a}</option>       
             </>)
@@ -166,6 +215,9 @@ function Simulator(){
                             <div style={{color:p.color}} className='w-[50px] ml-2'>{`${p.value}%`}</div>
                         </div>
                     </>)}
+                    <div className='text-center'>
+                        <button className='processBtn' onClick={saveRecord}>儲存紀錄</button>
+                    </div>
                 </div>
             </>);
     
@@ -174,7 +226,42 @@ function Simulator(){
         }
     }
 
-    
+
+    //簡易瀏覽
+    const PastPreview=({index})=>{
+        let data=historyData[index];
+        let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
+
+        return(<>
+            <div className='flex flex-row flex-wrap w-[300px] min-h-[120px] bg-slate-700 rounded-md p-2 mx-2'>
+                <div className='flex flex-col mr-3'>
+                    <div>
+                        <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px]'/>
+                    </div>
+                    <div className='text-center'>
+                        <span style={{color:data.rank.color}} className='font-bold text-xl'>{data.score}</span>
+                    </div>
+                </div>
+                <div className='flex flex-col'>
+                    <div>
+                        <span className='text-white'>部位:{data.part}</span>
+                    </div>
+                    <div>
+                        <span className='text-white'>主詞條:{data.mainaffix}</span>
+                    </div>
+                    <div>
+                        <span className='text-white'>期望機率:{(data.expRate*100).toFixed(1)}%</span>
+                    </div>
+                    <div>
+                        <button className='processBtn mr-2' onClick={()=>checkDetails(index)}>檢視</button>
+                        <button className='deleteBtn' onClick={()=>updateHistory(index)}>刪除</button>
+                    </div>
+                </div>
+            </div>
+        
+        </>)
+    };
+        
 
     function calScore(){
         //先驗證選擇是否有誤
@@ -305,8 +392,19 @@ function Simulator(){
                         <span className='text-white'>重洗詞條翻盤機率:{`${(ExpRate*100).toFixed(1)}%`}</span>
                     </div>
                 </div>
-                <div className='max-w-[450px] flex flex-row'>
+                <div className='max-w-[500px] flex flex-row'>
                     <Pie />
+                    
+                </div>
+            </div>
+            <div className='border-t-2 border-yellow-600 min-h-[200px] p-2'>
+                <div>
+                    <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
+                </div>
+                <div className='flex flex-row flex-wrap'>
+                    {historyData.map((item,i)=>
+                        <PastPreview index={i} />
+                    )}
                 </div>
             </div>
             
