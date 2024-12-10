@@ -126,8 +126,9 @@ onmessage = function (event) {
                 relicrank=stand;
 
         });
-
-        returnData=returnData.filter((r)=>r.value>0);
+        /*
+        //如果區間數量為0 則不予顯示
+        returnData=returnData.filter((r)=>r.value>0);*/
 
         this.postMessage({
             expRate:expRate,//期望值

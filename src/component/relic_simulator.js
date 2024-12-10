@@ -1,6 +1,6 @@
 import AffixList from '../data/AffixList';
 import characters from '../data/characters';
-import React, { useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { useState} from 'react';
 import {Button} from 'react-bootstrap';
 import Select from 'react-select'
@@ -29,7 +29,6 @@ function Simulator(){
 
     //歷史紀錄
     const [historyData,setHistoryData]=useState([]);
-
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
 
     init();
@@ -88,15 +87,17 @@ function Simulator(){
             pieData:PieNums
         };
         setHistoryData((old)=>[...old,data]);
-        console.log(historyData);
+      
         setStatusMsg('已儲存');
+        const targetElement = document.getElementById('historyData');
+        targetElement.scrollIntoView({ behavior: 'smooth' });
         
     }
 
     //檢視過往紀錄
     function checkDetails(index){
         let data=historyData[index];
-
+        console.log(data);
         setRank(data.rank);
         setExpRate(data.expRate);
         setRscore(data.score)
@@ -190,42 +191,7 @@ function Simulator(){
                     value={selectedOption} />)
     }
 
-    //圓餅圖
-    const Pie=()=>{
-        if(PieNums!==undefined){
-            const pieParams = {
-                height: 200,
-                margin: { left: 2 },
-                slotProps: { legend: { hidden: true } },
-            };
-
-            return(<>
-                <PieChart series={[
-                {
-                    innerRadius: 20,
-                    arcLabelMinAngle: 35,
-                    arcLabel: (item) => `${item.value}%`,
-                    data: PieNums,
-                }
-              ]}  {...pieParams}/>
-                <div className='flex flex-col w-2/5'>
-                    {PieNums.map((p)=><>
-                        <div className='my-1 flex flex-row'>
-                            <div style={{color:p.color}} className='w-[50px] text-right'>{`${p.label}`}</div>
-                            <div style={{color:p.color}} className='w-[50px] ml-2'>{`${p.value}%`}</div>
-                        </div>
-                    </>)}
-                    <div className='text-center'>
-                        <button className='processBtn' onClick={saveRecord}>儲存紀錄</button>
-                    </div>
-                </div>
-            </>);
     
-        }else{
-            return(<></>)
-        }
-    }
-
 
     //簡易瀏覽
     const PastPreview=({index})=>{
@@ -262,7 +228,6 @@ function Simulator(){
         </>)
     };
         
-
     function calScore(){
         //先驗證選擇是否有誤
         //副詞條是否有空值?
@@ -359,10 +324,13 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
-                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 text-center max-[600px]:text-left`}>
-                        <button className='processBtn' 
-                            onClick={calScore} 
-                            disabled={!processBtn}>計算儀器分數</button>
+                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 text-center max-[600px]:text-left`}>
+                        <div className='text-center'>
+                            <button className='processBtn' 
+                                onClick={calScore} 
+                                disabled={!processBtn}>計算儀器分數</button>
+                            <button className='processBtn ml-2' onClick={saveRecord}>儲存紀錄</button>
+                        </div>
                     </div>
                 </div>
                 <div className='w-1/2 max-w-[400px] flex flex-col max-[600px]:w-[100%] max-[600px]:mt-3'>
@@ -378,26 +346,9 @@ function Simulator(){
                     </ul>
                 </div>
             </div>
-            <div className={`w-[100%] mb-5 border-t-4 border-yellow-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
-                <div className='flex flex-col'>
-                    <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
-                        <span className='text-white'>{statusMsg}</span>
-                    </div>
-                    <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
-                        <span className='text-white'>遺器評級:
-                            <span style={{color:Rrank.color}} className='pl-2'>{Rrank.rank} &nbsp; {Rscore} </span>
-                        </span>
-                    </div>
-                    <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
-                        <span className='text-white'>重洗詞條翻盤機率:{`${(ExpRate*100).toFixed(1)}%`}</span>
-                    </div>
-                </div>
-                <div className='max-w-[500px] flex flex-row'>
-                    <Pie />
-                    
-                </div>
-            </div>
-            <div className='border-t-2 border-yellow-600 min-h-[200px] p-2'>
+            <Result ExpRate={ExpRate} Rscore={Rscore} statusMsg={statusMsg} Rrank={Rrank} PieNums={PieNums} />
+            <div className={`${(historyData.length==0)?'hidden':''} border-t-2 border-yellow-600 min-h-[200px] p-2`}
+                id="historyData">
                 <div>
                     <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                 </div>
@@ -408,12 +359,73 @@ function Simulator(){
                 </div>
             </div>
             
+            
         </div>
     
     </>)
 
 
 }
+
+
+const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
+
+    return(<>
+        <div className={`w-[100%] mb-5 border-t-4 border-yellow-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
+            <div className='flex flex-col'>
+                <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
+                    <span className='text-white'>{statusMsg}</span>
+                </div>
+                <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
+                    <span className='text-white'>遺器評級:
+                        <span style={{color:Rrank.color}} className='pl-2'>{Rrank.rank} &nbsp; {Rscore} </span>
+                    </span>
+                </div>
+                <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
+                    <span className='text-white'>重洗詞條翻盤機率:{`${(ExpRate*100).toFixed(1)}%`}</span>
+                </div>
+            </div>
+            <div className='max-w-[500px] flex flex-row'>
+                <Pie PieNums={PieNums}/>
+            </div>
+        </div>
+    </>)
+});
+
+
+//圓餅圖
+const Pie=React.memo(({PieNums})=>{
+    if(PieNums!==undefined){
+        const pieParams = {
+            height: 200,
+            margin: { left: 2 },
+            slotProps: { legend: { hidden: true } },
+        };
+
+        return(<>
+            <PieChart series={[
+            {
+                innerRadius: 20,
+                arcLabelMinAngle: 35,
+                arcLabel: (item) => `${item.value}%`,
+                data: PieNums,
+            }
+          ]}  {...pieParams}/>
+            <div className='flex flex-col w-2/5'>
+                {PieNums.map((p)=><>
+                    <div className='my-1 flex flex-row'>
+                        <div style={{color:p.color}} className='w-[50px] text-right'>{`${p.label}`}</div>
+                        <div style={{color:p.color}} className='w-[50px] ml-2'>{`${p.value}%`}</div>
+                    </div>
+                </>)}
+            </div>
+        </>);
+
+    }else{
+        return(<></>)
+    }
+});
+
 
 export default Simulator;
 
