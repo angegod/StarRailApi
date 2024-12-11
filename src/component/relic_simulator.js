@@ -199,7 +199,7 @@ function Simulator(){
         let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
         return(<>
-            <div className='flex flex-row flex-wrap w-[300px] min-h-[120px] bg-slate-700 rounded-md p-2 mx-2'>
+            <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2'>
                 <div className='flex flex-col mr-3'>
                     <div>
                         <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px]'/>
@@ -346,16 +346,18 @@ function Simulator(){
                     </ul>
                 </div>
             </div>
-            <Result ExpRate={ExpRate} Rscore={Rscore} statusMsg={statusMsg} Rrank={Rrank} PieNums={PieNums} />
-            <div className={`${(historyData.length==0)?'hidden':''} border-t-2 border-yellow-600 min-h-[200px] p-2`}
-                id="historyData">
-                <div>
-                    <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
-                </div>
-                <div className='flex flex-row flex-wrap'>
-                    {historyData.map((item,i)=>
-                        <PastPreview index={i} />
-                    )}
+            <div className='flex flex-row mb-3'>
+                <Result ExpRate={ExpRate} Rscore={Rscore} statusMsg={statusMsg} Rrank={Rrank} PieNums={PieNums} />
+                <div className={`${(historyData.length==0)?'hidden':''} w-[45%] border-t-4 border-yellow-600 p-2 my-2`}
+                    id="historyData">
+                    <div>
+                        <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
+                    </div>
+                    <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll'>
+                        {historyData.map((item,i)=>
+                            <PastPreview index={i} />
+                        )}
+                    </div>
                 </div>
             </div>
             
@@ -371,7 +373,7 @@ function Simulator(){
 const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
 
     return(<>
-        <div className={`w-[100%] mb-5 border-t-4 border-yellow-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
+        <div className={`w-1/2 min-w-[400px] mb-5 border-t-4 border-yellow-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
             <div className='flex flex-col'>
                 <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
                     <span className='text-white'>{statusMsg}</span>
@@ -412,12 +414,17 @@ const Pie=React.memo(({PieNums})=>{
             }
           ]}  {...pieParams}/>
             <div className='flex flex-col w-2/5'>
-                {PieNums.map((p)=><>
-                    <div className='my-1 flex flex-row'>
-                        <div style={{color:p.color}} className='w-[50px] text-right'>{`${p.label}`}</div>
-                        <div style={{color:p.color}} className='w-[50px] ml-2'>{`${p.value}%`}</div>
-                    </div>
-                </>)}
+                {PieNums.map((p)=>{
+                    if(p.value!=0)
+                        return(<>
+                            <>
+                                <div className='my-1 flex flex-row'>
+                                    <div style={{color:p.color}} className='w-[50px] text-right'>{`${p.label}`}</div>
+                                    <div style={{color:p.color}} className='w-[50px] ml-2'>{`${p.value}%`}</div>
+                                </div>
+                            </>
+                        </>)
+                })}
             </div>
         </>);
 
