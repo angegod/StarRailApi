@@ -78,43 +78,43 @@ let AffixName=[{
 },{
     fieldName:'StatusResistanceBase',
     type:'effect_res',
-    name:'效果抵抗',
+    name:'效果抗性',
     percent:true,
     range:[3.45,3.89,4.32]
 },{
     fieldName:'PhysicalAddedRatio',
     type:'physical_dmg',
-    name:'物理屬性傷害加成',
+    name:'物理屬性傷害提高',
     percent:true
 },{
     fieldName:'FireAddedRatio',
     type:'fire_dmg',
-    name:'火屬性傷害加成',
+    name:'火屬性傷害提高',
     percent:true
 },{
     fieldName:'IceAddedRatio',
     type:'ice_dmg',
-    name:'冰屬性傷害加成',
+    name:'冰屬性傷害提高',
     percent:true
 },{
     fieldName:'ThunderAddedRatio',
     type:'lightning_dmg',
-    name:'雷屬性傷害加成',
+    name:'雷屬性傷害提高',
     percent:true
 },{
     fieldName:'WindAddedRatio',
     type:'wind_dmg',
-    name:'風屬性傷害加成',
+    name:'風屬性傷害提高',
     percent:true
 },{
     fieldName:'QuantumAddedRatio',
     type:'quantum_dmg',
-    name:'量子屬性傷害加成',
+    name:'量子屬性傷害提高',
     percent:true
 },{
     fieldName:'ImaginaryAddedRatio',
     type:'imaginary_dmg',
-    name:'虛數屬性傷害加成',
+    name:'虛數屬性傷害提高',
     percent:true
 }];
 

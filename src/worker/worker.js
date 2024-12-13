@@ -13,6 +13,7 @@ onmessage = function (event) {
     let partsIndex=parseInt(event.data.partsIndex);
     let charID=event.data.charID;
     let MainAffix=AffixName.find((a)=>a.name==event.data.MainData);
+    console.log(partsIndex);
 
     //計算可用強化次數
     var enchanceCount=0;
@@ -27,6 +28,7 @@ onmessage = function (event) {
     let coeEfficent=[];//當前遺器係數arr
     SubData.forEach((sub)=>{
         let SubAffixType=AffixName.find((s)=>s.name===sub.subaffix);
+        console.log(SubAffixType);
         coeEfficent.push({
             type:SubAffixType.type,
             fieldName:SubAffixType.fieldName,
