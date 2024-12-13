@@ -36,7 +36,7 @@ function Import(){
         else if(Number(partsIndex)===6)
             realPart=5;
         
-        let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/relic/get`:`https://expressapi-o9du.onrender.com/relic/get`;
+        let apiLink=(false)?`http://localhost:5000/relic/get`:`https://expressapi-o9du.onrender.com/relic/get`;
         
         let sendData={
             uid:userID.current,
@@ -47,7 +47,10 @@ function Import(){
         setStatusMsg('正在尋找匹配資料!!');
         clearData();
 
-        await axios.post(apiLink,sendData).then((response)=>{
+        await axios.post(apiLink,sendData,{
+            headers: { 'Content-Type': 'application/json','Origin': 'https://angegod.github.io' },
+            withCredentials: true, // 如果需要 cookie 支持
+          }).then((response)=>{
             console.log(response.data);
             //setRelic(response.data);
 
