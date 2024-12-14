@@ -53,6 +53,7 @@ const characters = [
     { charID: 1309, name: "知更鳥", eng_name: "Robin" },
     { charID: 1310, name: "流螢", eng_name: "Firefly" },
     { charID: 1312, name: "米沙", eng_name: "Misha" },
+    { charID: 1313, name: "星期日", eng_name: "Sunday" },
     { charID: 1314, name: "翡翠", eng_name: "Jade" },
     { charID: 1315, name: "波提歐", eng_name: "Boothill" },
     { charID: 1317, name: "亂破", eng_name: "Rappa" },

@@ -6,6 +6,7 @@ import { useState ,useRef} from 'react';
 import '../css/simulator.css';
 import axios from 'axios';
 import Result from './Result';
+import { Helmet } from 'react-helmet';
 
 function Import(){
     const userID=useRef('');
@@ -236,6 +237,11 @@ function Import(){
 
     return(<>
         <div className='flex flex-col w-4/5 mx-auto'>
+             <Helmet>
+                <title>星鐵--遺器匯入</title>
+                <meta name="description" content="星鐵--遺器匯入。" />
+                <meta name="keywords" content="遺器強化、遺器強化模擬器" />
+            </Helmet>
             <div className='flex flex-row [&>*]:mr-2 my-3'>
                 <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>玩家UID :</span></div>
                 <input type='text' placeholder='HSR UID' className='h-[40px] w-[200px] rounded-md pl-2' 

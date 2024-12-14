@@ -1300,7 +1300,26 @@ let standard=[{
         quantum_dmg: 0,
         imaginary_dmg: 0
     }
-}]
+},{1313: {
+    hp: .75,
+    atk: 0,
+    def: .75,
+    spd: 1,
+    crit_rate: 0,
+    crit_dmg: 1,
+    break_dmg: 0,
+    heal_rate: 0,
+    sp_rate: 1,
+    effect_hit: 0,
+    effect_res: 1,
+    physical_dmg: 0,
+    fire_dmg: 0,
+    ice_dmg: 0,
+    lightning_dmg: 0,
+    wind_dmg: 0,
+    quantum_dmg: 0,
+    imaginary_dmg: 0
+}}]
 
 standard.sort((a,b)=>{
     const keyA = Object.keys(a)[0]; // 获取第一个对象的 key
