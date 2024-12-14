@@ -50,6 +50,9 @@ function Import(){
        await axios.post(apiLink,sendData,{
             headers: {
                 'Content-Type': 'application/json',
+                'Connection':'keep-alive',
+                'Accept': 'application/json',
+                'Accept-Encoding':'gzip,deflate,br'
             }
         }).then((response)=>{
             console.log(response.data);
