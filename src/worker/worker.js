@@ -28,7 +28,7 @@ onmessage = function (event) {
     let coeEfficent=[];//當前遺器係數arr
     SubData.forEach((sub)=>{
         let SubAffixType=AffixName.find((s)=>s.name===sub.subaffix);
-        console.log(SubAffixType);
+        //console.log(SubAffixType);
         coeEfficent.push({
             type:SubAffixType.type,
             fieldName:SubAffixType.fieldName,

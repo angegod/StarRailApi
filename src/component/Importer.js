@@ -78,7 +78,7 @@ function Import(){
     //檢視過往紀錄
     function checkDetails(index){
         let data=historyData[index];
-        console.log(data);
+        //console.log(data);
         setRank(data.rank);
         setExpRate(data.expRate);
         setRscore(data.score)
