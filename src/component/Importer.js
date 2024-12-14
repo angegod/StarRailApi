@@ -50,14 +50,13 @@ function Import(){
        await axios.post(apiLink,sendData,{
             headers: {
                 'Content-Type': 'application/json',
-                'Connection':'keep-alive',
-                'Accept': 'application/json',
                 'Accept-Encoding':'gzip,deflate,br'
             }
         }).then((response)=>{
             console.log(response.data);
             //setRelic(response.data);
-
+            // 'Connection':'keep-alive',
+            //'Accept': 'application/json',
             if(response.data===800)
                 setStatusMsg('找不到該腳色。必須要將腳色放在展示區才可以抓到資料!!');
             else if(response.data===801)
