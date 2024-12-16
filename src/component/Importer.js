@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import characters from '../data/characters';
 import Select from 'react-select';
 import AffixName from '../data/AffixName';
@@ -7,19 +7,54 @@ import '../css/simulator.css';
 import axios from 'axios';
 import Result from './Result';
 import { Helmet } from 'react-helmet';
+import {useLocation} from 'react-router-dom';
 
 function Import(){
     const userID=useRef('');
     const [statusMsg,setStatusMsg]=useState(undefined);
     const [charID,setCharID]=useState(undefined);
     const [partsIndex,setPartsIndex]=useState(undefined);
-
+    const location = useLocation();
     const [ExpRate,setExpRate]=useState(undefined);
     const [Rscore,setRscore]=useState(undefined);
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [PieNums,setPieNums]=useState(undefined);
     const [historyData,setHistoryData]=useState([]);
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
+
+    useEffect(()=>{
+        //初始化歷史紀錄
+        initHistory();
+        //console.log(historyData);
+    },[location])
+
+
+    function initHistory(){
+        let history=JSON.parse(localStorage.getItem('importData'));
+        console.log(history);
+        //先針對過往紀錄作清空
+        const today = new Date(); // 當前日期
+
+        if(history===null) return;
+
+        //  過濾三天的紀錄
+        history = history.filter((h) => {
+          if (!h.calDate) return false; // 如果没有 calDate 属性，直接過濾掉
+          
+          const calDate = new Date(h.calDate); // 將 calDate 轉换为日期对象
+          const diffTime = today - calDate; // 計算時間差，單位為毫秒
+          const diffDays = diffTime / (1000 * 60 * 60 * 24); // 轉換為天數
+          
+          return diffDays <= 3; // 保留日期在 3 天内的记录
+        });
+
+        if(history != null && history.length > 0){
+            setHistoryData(history);
+            setStatusMsg('先前紀錄已匯入!!');
+        }
+            
+    }
+    
 
     //先獲得遺器資料
     async function getRecord(){
@@ -64,6 +99,8 @@ function Import(){
                 setStatusMsg('找不到該部件的遺器，如果是剛剛才更新的話建議等五分鐘再使用一次!!');
             else
                 calscore(response.data);
+        }).catch((err)=>{
+            setStatusMsg('系統正在維護中 請稍後再試!!');
         })
 
     
@@ -90,7 +127,11 @@ function Import(){
     //刪除過往紀錄
     function updateHistory(index){
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
+        let oldHistory=historyData
         setHistoryData((old)=>old.filter((item,i)=>i!==index));
+
+        oldHistory=oldHistory.filter((item,i)=>i!==index);
+        localStorage.setItem('importData',JSON.stringify(oldHistory));
         setStatusMsg('成功刪除該紀錄!!');
     }
 
@@ -98,8 +139,6 @@ function Import(){
         //將運行結果丟到背景執行
         let worker=new Worker(new URL('../worker/worker.js', import.meta.url));
         let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
-
-
         let SubData=[];
 
         relic.sub_affix.forEach((s,i)=>{
@@ -152,8 +191,11 @@ function Import(){
             return;
         }
 
+        let calDate=new Date();
+        
         //儲存紀錄
         let data={
+            calDate:calDate.toISOString().split('T')[0],
             char:selectChar,
             part:partName,
             expRate:ExpRate,
@@ -161,12 +203,15 @@ function Import(){
             rank:Rrank,
             pieData:PieNums
         };
+        let oldHistory=historyData;
+
         setHistoryData((old)=>[...old,data]);
-      
         setStatusMsg('已儲存');
-        /*const targetElement = document.getElementById('historyData');
-        targetElement.scrollIntoView({ behavior: 'smooth' });*/
+
+        oldHistory.push(data);
         
+        localStorage.setItem('importData',JSON.stringify(oldHistory));
+        console.log(localStorage.getItem('importData'));
     }
 
     const CharSelect=()=>{
@@ -267,12 +312,12 @@ function Import(){
                         statusMsg={statusMsg} 
                         Rrank={Rrank} 
                         PieNums={PieNums}/>
-                <div className={`${(historyData.length===0)?'hidden':''} w-[45%] border-t-4 border-yellow-600 p-2 my-2`}
+                <div className={`${(historyData.length===0)?'hidden':''} w-[45%] border-t-4 border-gray-600 p-2 my-2`}
                     id="historyData">
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
-                    <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll'>
+                    <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar'>
                         {historyData.map((item,i)=>
                             <PastPreview index={i} />
                         )}

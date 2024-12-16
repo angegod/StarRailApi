@@ -4,7 +4,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react
 import { useState} from 'react';
 import {Button} from 'react-bootstrap';
 import Select from 'react-select'
-
+import { useLocation } from 'react-router-dom';
 import { Col } from 'react-bootstrap';
 import { colors } from '@mui/material';
 import { Helmet } from 'react-helmet';
@@ -31,7 +31,16 @@ function Simulator(){
     const [historyData,setHistoryData]=useState([]);
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
 
-    init();
+    //當前路由
+    const location = useLocation();
+
+    useEffect(()=>{
+        //初始化歷史紀錄
+        init();
+        //console.log(historyData);
+    },[location])
+    
+    
 
     function init(){
         SubData.current=[];
@@ -44,6 +53,13 @@ function Simulator(){
             }
 
             SubData.current.push(data);
+        }
+
+        let history=sessionStorage.getItem('HistoryData');
+        console.log(history);
+        if(history!==null){
+            setHistoryData(JSON.parse(history));
+            setStatusMsg('先前紀錄已匯入!!');
         }
     }
     
@@ -65,6 +81,10 @@ function Simulator(){
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         setHistoryData((old)=>old.filter((item,i)=>i!==index));
         setStatusMsg('成功刪除該紀錄!!');
+
+        let oldHistory=historyData;
+        oldHistory=oldHistory.filter((item,i)=>i!==index);
+        sessionStorage.setItem('HistoryData',JSON.stringify(oldHistory));
     }
 
     //儲存紀錄
@@ -86,12 +106,19 @@ function Simulator(){
             rank:Rrank,
             pieData:PieNums
         };
+
+        //利用深拷貝區分原有資料
+        let oldHistory=JSON.parse(JSON.stringify(historyData));
         setHistoryData((old)=>[...old,data]);
       
         setStatusMsg('已儲存');
         const targetElement = document.getElementById('historyData');
         targetElement.scrollIntoView({ behavior: 'smooth' });
         
+
+        //將歷史紀錄合併至緩存數據中
+        oldHistory.push(data);
+        sessionStorage.setItem('HistoryData',JSON.stringify(oldHistory));
     }
 
     //檢視過往紀錄
@@ -348,7 +375,7 @@ function Simulator(){
             </div>
             <div className='flex flex-row mb-3'>
                 <Result ExpRate={ExpRate} Rscore={Rscore} statusMsg={statusMsg} Rrank={Rrank} PieNums={PieNums} />
-                <div className={`${(historyData.length==0)?'hidden':''} w-[45%] border-t-4 border-yellow-600 p-2 my-2`}
+                <div className={`${(historyData.length==0)?'hidden':''} w-[45%] border-t-4 border-gray-600 p-2 my-2`}
                     id="historyData">
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>

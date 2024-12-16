@@ -5,7 +5,7 @@ const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
 
     if(ExpRate!==undefined&&Rrank!==undefined&&PieNums!==undefined&&Rscore!==undefined){
         return(<>
-            <div className={`w-1/2 min-w-[400px] mb-5 border-t-4 border-yellow-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
+            <div className={`w-1/2 min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
                 <div className='flex flex-col'>
                     <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
                         <span className='text-white'>{statusMsg}</span>
@@ -26,7 +26,7 @@ const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
         </>)
     }else{
         return(<>
-            <div className={`w-1/2 min-w-[400px] mb-5 border-t-4 border-yellow-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
+            <div className={`w-1/2 min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
                 <div><span className='text-white'>{statusMsg}</span></div>
             </div>
         </>)

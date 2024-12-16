@@ -20,15 +20,15 @@ function Menu(){
     }];
 
     const menuList=list.map((m)=><>
-        <div className='mr-3 flex flex-col'>
-            <Link to={m.link}><span className='text-gray-500 font-bold text-lg'>{m.name}</span></Link>
+        <div className='mr-3 flex flex-col bg-gray-700 min-w-[100px] rounded-md justify-center px-2'>
+            <Link to={m.link} className='text-center'><span className='text-gray-500 font-bold text-lg'>{m.name}</span></Link>
             <span className='text-md text-gray-400'>{m.engname}</span>
         </div>
     </>);
 
 
     return(<>
-        <div className='my-3 bg-gray-700 sticky top-0 w-[100%] z-[100]'>
+        <div className='my-3  sticky top-0 w-[100%] z-[100] pt-2'>
             <div className='flex flex-row w-4/5 mx-auto'>
                 {menuList}
             </div>

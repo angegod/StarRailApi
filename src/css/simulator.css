@@ -30,3 +30,9 @@
     border-color: theme('colors.red.500');
     border-radius: theme('borderRadius.md');
 }
+
+/*隱藏滾軸*/
+
+.hiddenScrollBar{
+    scrollbar-width: none;
+}
