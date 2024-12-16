@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/StarRailApi/static/css/main.50d2005e.css",
-    "main.js": "/StarRailApi/static/js/main.a236a4c7.js",
-    "static/js/444.f99d5617.chunk.js": "/StarRailApi/static/js/444.f99d5617.chunk.js",
-    "static/js/63.eef5b8b2.chunk.js": "/StarRailApi/static/js/63.eef5b8b2.chunk.js",
+    "main.css": "/StarRailApi/static/css/main.e8cf0768.css",
+    "main.js": "/StarRailApi/static/js/main.d91533e7.js",
+    "static/js/444.4062b7f8.chunk.js": "/StarRailApi/static/js/444.4062b7f8.chunk.js",
+    "static/js/63.8ef15751.chunk.js": "/StarRailApi/static/js/63.8ef15751.chunk.js",
     "static/js/453.ee5bd44a.chunk.js": "/StarRailApi/static/js/453.ee5bd44a.chunk.js",
     "static/js/450.270538a5.chunk.js": "/StarRailApi/static/js/450.270538a5.chunk.js",
     "static/media/RankA.jpg": "/StarRailApi/static/media/RankA.305683734e193c1905c3.jpg",
@@ -13,15 +13,15 @@
     "static/media/RankD.jpg": "/StarRailApi/static/media/RankD.c21d64f92723bcbe2085.jpg",
     "static/media/loading.gif": "/StarRailApi/static/media/loading.315d2c936933d671353b.gif",
     "index.html": "/StarRailApi/index.html",
-    "main.50d2005e.css.map": "/StarRailApi/static/css/main.50d2005e.css.map",
-    "main.a236a4c7.js.map": "/StarRailApi/static/js/main.a236a4c7.js.map",
-    "444.f99d5617.chunk.js.map": "/StarRailApi/static/js/444.f99d5617.chunk.js.map",
-    "63.eef5b8b2.chunk.js.map": "/StarRailApi/static/js/63.eef5b8b2.chunk.js.map",
+    "main.e8cf0768.css.map": "/StarRailApi/static/css/main.e8cf0768.css.map",
+    "main.d91533e7.js.map": "/StarRailApi/static/js/main.d91533e7.js.map",
+    "444.4062b7f8.chunk.js.map": "/StarRailApi/static/js/444.4062b7f8.chunk.js.map",
+    "63.8ef15751.chunk.js.map": "/StarRailApi/static/js/63.8ef15751.chunk.js.map",
     "453.ee5bd44a.chunk.js.map": "/StarRailApi/static/js/453.ee5bd44a.chunk.js.map",
     "450.270538a5.chunk.js.map": "/StarRailApi/static/js/450.270538a5.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.50d2005e.css",
-    "static/js/main.a236a4c7.js"
+    "static/css/main.e8cf0768.css",
+    "static/js/main.d91533e7.js"
   ]
 }
