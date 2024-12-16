@@ -196,6 +196,7 @@ function Import(){
         //儲存紀錄
         let data={
             calDate:calDate.toISOString().split('T')[0],
+            userID:userID.current,
             char:selectChar,
             part:partName,
             expRate:ExpRate,
@@ -262,7 +263,7 @@ function Import(){
                 </div>
                 <div className='flex flex-col'>
                     <div>
-                        <span className='text-white'>玩家UID:{userID.current}</span>
+                        <span className='text-white'>玩家UID:{data.userID}</span>
                     </div>
                     <div>
                         <span className='text-white'>部位:{data.part}</span>
