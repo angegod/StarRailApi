@@ -259,7 +259,7 @@ function Import(){
         const selectedOption = options.find((option) => option.value === charID);
         return(<Select options={options} 
                     className='w-[200px]' 
-                    onChange={(option)=>setCharID(option.value)}
+                    onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
                     value={selectedOption} />)
     }
 
@@ -275,7 +275,7 @@ function Import(){
         })
 
         return(
-            <select value={partsIndex} onChange={(event)=>setPartsIndex(event.target.value)}>{options}</select>
+            <select value={partsIndex} onChange={(event)=>{setPartsIndex(event.target.value);setIsSaveAble(false);}}>{options}</select>
         )
     }
 
