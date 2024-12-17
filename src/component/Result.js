@@ -41,7 +41,7 @@ const Pie=React.memo(({PieNums})=>{
     if(PieNums!==undefined){
         const pieParams = {
             height: 200,
-            margin: { left: 2 },
+            margin: 0,
             slotProps: { legend: { hidden: true } },
         };
 
@@ -53,15 +53,15 @@ const Pie=React.memo(({PieNums})=>{
                 arcLabel: (item) => `${item.value}%`,
                 data: PieNums,
             }
-          ]}  {...pieParams}/>
-            <div className='flex flex-col w-2/5'>
+          ]}  {...pieParams} />
+            <div className='flex flex-col w-2/5 relative right-[10%]'>
                 {PieNums.map((p)=>{
                     if(p.value!=0)
                         return(<>
                             <>
                                 <div className='my-1 flex flex-row'>
-                                    <div style={{color:p.color}} className='w-[50px] text-right'>{`${p.label}`}</div>
-                                    <div style={{color:p.color}} className='w-[50px] ml-2'>{`${p.value}%`}</div>
+                                    <div style={{color:p.color}} className='w-[30px] text-right'>{`${p.label}`}</div>
+                                    <div style={{color:p.color}} className='w-[30px] ml-2'>{`${p.value}%`}</div>
                                 </div>
                             </>
                         </>)

@@ -20,7 +20,10 @@ function Import(){
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [PieNums,setPieNums]=useState(undefined);
     const [historyData,setHistoryData]=useState([]);
+    const [isSaveAble,setIsSaveAble]=useState(false);
+    
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
+
 
     useEffect(()=>{
         //初始化歷史紀錄
@@ -31,7 +34,6 @@ function Import(){
 
     function initHistory(){
         let history=JSON.parse(localStorage.getItem('importData'));
-        console.log(history);
         //先針對過往紀錄作清空
         const today = new Date(); // 當前日期
 
@@ -59,11 +61,25 @@ function Import(){
     //先獲得遺器資料
     async function getRecord(){
         //如果UID本身就不合理 則直接返回錯誤訊息
-        if (!/^\d+$/.test(userID.current)||userID.current===undefined) { // 僅允許數字
+        if (!/^\d+$/.test(userID.current)||!userID.current) { // 僅允許數字
             alert('The UID is not vaild');
             setStatusMsg('請輸入有效的UID!!');
             return ;
         }
+
+        //腳色相關防呆
+        if(!charID){
+            alert('請輸入要查詢的腳色');
+            setStatusMsg('未選擇任何腳色');
+            return ;
+        }
+
+        //部位選擇相關防呆
+        if(!partsIndex||partsIndex>6||partsIndex<0){
+            setStatusMsg('部位沒有選擇成功!!');
+            return;
+        }
+
 
         //如果是連結繩或位面球 則代號交換
         let realPart=partsIndex;
@@ -80,7 +96,7 @@ function Import(){
             partsIndex:realPart
         }
         //送出之前先清空一次資料
-        setStatusMsg('正在尋找匹配資料!!');
+        setStatusMsg('正在尋找匹配資料......');
         clearData();
 
        await axios.post(apiLink,sendData,{
@@ -89,7 +105,6 @@ function Import(){
                 'Accept-Encoding':'gzip,deflate,br'
             }
         }).then((response)=>{
-            console.log(response.data);
             //setRelic(response.data);
             // 'Connection':'keep-alive',
             //'Accept': 'application/json',
@@ -116,7 +131,7 @@ function Import(){
     //檢視過往紀錄
     function checkDetails(index){
         let data=historyData[index];
-        //console.log(data);
+       
         setRank(data.rank);
         setExpRate(data.expRate);
         setRscore(data.score)
@@ -161,18 +176,25 @@ function Import(){
             SubData:SubData,
             partsIndex:partsIndex
         };
-        setStatusMsg('數據計算處理中!!');
-        console.log(postData);
+        setIsSaveAble(false);
+        setStatusMsg('數據計算處理中......');
+
         worker.postMessage(postData);
 
         // 接收 Worker 返回的訊息
         worker.onmessage = function (event) {
-            console.log(event.data);
+            //console.log(event.data);
+            
+            //輸入相關數據
             setExpRate(event.data.expRate);
             setRscore(event.data.relicscore)
             setStatusMsg('計算完畢!!');
             setPieNums(event.data.returnData);
             setRank(event.data.relicrank);
+
+            //將儲存按鈕設為可用
+            setIsSaveAble(true);
+
         };
     }
 
@@ -190,6 +212,17 @@ function Import(){
             setStatusMsg("當前沒有任何數據，不予儲存!!");
             return;
         }
+        //如果玩家ID當前並沒有輸入成功
+        if(!userID.current){
+            setStatusMsg("沒有輸入玩家ID，請再試一次!!");
+            return;
+        }
+         //如果沒有選擇沒有任何腳色
+        if(!charID){
+            setStatusMsg("沒有選擇任何腳色!!");
+            return;
+        }
+
 
         let calDate=new Date();
         
@@ -208,11 +241,11 @@ function Import(){
 
         setHistoryData((old)=>[...old,data]);
         setStatusMsg('已儲存');
-
+        setIsSaveAble(false);
         oldHistory.push(data);
         
         localStorage.setItem('importData',JSON.stringify(oldHistory));
-        console.log(localStorage.getItem('importData'));
+       
     }
 
     const CharSelect=()=>{
@@ -305,7 +338,7 @@ function Import(){
             <div className='my-3 flex flex-row [&>*]:mr-2'>
                 <div className='text-right w-[200px] max-[600px]:max-w-[150px]'></div>
                 <button className='processBtn' onClick={getRecord}>開始匹配</button>
-                <button className='processBtn' onClick={saveRecord}>儲存紀錄</button>
+                <button className='processBtn' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
             </div>
             <div className={`mt-3 flex flex-row flex-wrap`}>
                 <Result ExpRate={ExpRate} 
@@ -313,7 +346,7 @@ function Import(){
                         statusMsg={statusMsg} 
                         Rrank={Rrank} 
                         PieNums={PieNums}/>
-                <div className={`${(historyData.length===0)?'hidden':''} w-[45%] border-t-4 border-gray-600 p-2 my-2`}
+                <div className={`${(historyData.length===0)?'hidden':''} w-[45%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
                     id="historyData">
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>

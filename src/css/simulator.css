@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 .processBtn{
-    /*text-white border-white border-2 rounded-md px-2*/
-    
+    /*text-white border-white border-2 rounded-md px-2*/  
     color: theme('colors.white');
     border-color: theme('colors.white');
     border-radius: theme('borderRadius.md');
@@ -12,12 +11,16 @@
     padding-right: 2px;
     border-width: 2px;
 }
-
-
 .processBtn:hover{
     color: theme('colors.yellow.500');
     border-color: theme('colors.yellow.500');
 }
+
+.processBtn:disabled{
+    display: none;
+}
+
+
 .deleteBtn{
     color: theme('colors.red.600');
     border-color: theme('colors.red.600');
