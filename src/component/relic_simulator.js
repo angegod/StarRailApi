@@ -30,6 +30,9 @@ function Simulator(){
     //歷史紀錄
     const [historyData,setHistoryData]=useState([]);
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
+    
+    //是否可以儲存(防呆用)
+    const [isSaveAble,setIsSaveAble]=useState(false);
 
     //當前路由
     const location = useLocation();
@@ -55,9 +58,9 @@ function Simulator(){
             SubData.current.push(data);
         }
 
-        let history=sessionStorage.getItem('HistoryData');
+        let history=localStorage.getItem('HistoryData');
         console.log(history);
-        if(history!==null){
+        if(!history){
             setHistoryData(JSON.parse(history));
             setStatusMsg('先前紀錄已匯入!!');
         }
@@ -84,13 +87,28 @@ function Simulator(){
 
         let oldHistory=historyData;
         oldHistory=oldHistory.filter((item,i)=>i!==index);
-        sessionStorage.setItem('HistoryData',JSON.stringify(oldHistory));
+        localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
     }
 
     //儲存紀錄
     function saveRecord(){
         let partName=partArr[partsIndex-1];
         let selectChar=characters.find((c)=>c.charID===charID);
+
+         //如果原本紀錄超過6個 要先刪除原有紀錄
+         if(historyData.length>=6)
+            setHistoryData((old)=>old.filter((item,i)=>i!==0));
+
+        //如果當前沒有任何資料則不予匯入
+        if(!PieNums||!ExpRate||!Rrank||!Rscore){
+            setStatusMsg("當前沒有任何數據，不予儲存!!");
+            return;
+        }
+         //如果沒有選擇沒有任何腳色
+        if(!charID){
+            setStatusMsg("沒有選擇任何腳色!!");
+            return;
+        }
 
         //如果原本紀錄超過6個 要先刪除原有紀錄
         if(historyData.length>=6)
@@ -118,7 +136,8 @@ function Simulator(){
 
         //將歷史紀錄合併至緩存數據中
         oldHistory.push(data);
-        sessionStorage.setItem('HistoryData',JSON.stringify(oldHistory));
+        localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
+        setIsSaveAble(false);
     }
 
     //檢視過往紀錄
@@ -298,6 +317,7 @@ function Simulator(){
         };
 
         //將按鈕disable
+        setIsSaveAble(false);
         setProcessBtn(false);
         setStatusMsg('數據計算處理中!!');
         setPieNums(undefined);
@@ -313,6 +333,7 @@ function Simulator(){
             setRank(event.data.relicrank);
             //恢復點擊
             setProcessBtn(true);
+            setIsSaveAble(true);
         };
     }
 
@@ -356,7 +377,7 @@ function Simulator(){
                             <button className='processBtn' 
                                 onClick={calScore} 
                                 disabled={!processBtn}>計算儀器分數</button>
-                            <button className='processBtn ml-2' onClick={saveRecord}>儲存紀錄</button>
+                            <button className='processBtn ml-2' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
                         </div>
                     </div>
                 </div>
@@ -373,14 +394,14 @@ function Simulator(){
                     </ul>
                 </div>
             </div>
-            <div className='flex flex-row mb-3'>
+            <div className='flex flex-row mb-3 flex-wrap'>
                 <Result ExpRate={ExpRate} Rscore={Rscore} statusMsg={statusMsg} Rrank={Rrank} PieNums={PieNums} />
-                <div className={`${(historyData.length==0)?'hidden':''} w-[45%] border-t-4 border-gray-600 p-2 my-2`}
+                <div className={`${(historyData.length==0)?'hidden':''} w-[45%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
                     id="historyData">
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
-                    <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll'>
+                    <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar'>
                         {historyData.map((item,i)=>
                             <PastPreview index={i} />
                         )}

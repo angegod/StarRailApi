@@ -97,41 +97,44 @@ onmessage = function (event) {
 
     p1.then((score)=>{
         let scoreStand=[
-            {rank:'SSS',stand:43,color:'rgb(185, 28, 28)'},
-            {rank:'SS',stand:38,color:'rgb(220, 38, 38 )'},
-            {rank:'S',stand:33,color:'rgb(239, 68, 68)'},
-            {rank:'A',stand:29,color:'rgb(234, 179, 8)'},
-            {rank:'B',stand:23,color:'rgb(234, 88, 12)'},
-            {rank:'C',stand:18,color:'rgb(163, 230, 53)'}
+            {rank:'SSS',stand:43,color:'rgb(185, 28, 28)',tag:'SSS(score>=43)'},
+            {rank:'SS',stand:38,color:'rgb(220, 38, 38 )',tag:'SS(38<=score<43)'},
+            {rank:'S',stand:33,color:'rgb(239, 68, 68)',tag:'S(33<=score<38)'},
+            {rank:'A',stand:29,color:'rgb(234, 179, 8)',tag:'A(29<=score<33)'},
+            {rank:'B',stand:23,color:'rgb(234, 88 , 12)',tag:'B(23<=score<29)'},
+            {rank:'C',stand:18,color:'rgb(163, 230, 53)',tag:'C(18<=score<23)'},
+            {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D(score<18)'}
         ];
         let overScoreList=result.filter((num)=>num>=Number(origin));
         let expRate=parseFloat((overScoreList.length)/(result.length)).toFixed(2);
-        let copy=[...result];
+        let copy=JSON.parse(JSON.stringify(result));
         let relicrank=undefined;
         let returnData=[]
         
         //根據標準去分類
         scoreStand.forEach((stand,i)=>{
             //區分符合區間跟不符合的 並一步步拿掉前面篩選過的區間
-            
             let match=copy.filter((num)=>num>=stand.stand);
             copy=copy.filter((num)=>num<stand.stand);
 
             returnData.push({
-                label:stand.rank,
+                label:stand.tag,
                 value:Number((parseFloat(match.length/result.length)*100).toFixed(2)),
-                color:stand.color
+                color:stand.color,
+                tag:stand.rank
             });
+
+            //console.log(`${match.length}/${result.length}`);
 
             //接著去找尋這個分數所屬的區間
             if(stand.stand<=origin&&relicrank==undefined)
                 relicrank=stand;
 
         });
+
         /*
         //如果區間數量為0 則不予顯示
         returnData=returnData.filter((r)=>r.value>0);*/
-
         this.postMessage({
             expRate:expRate,//期望值
             relicscore:score,//遺器分數

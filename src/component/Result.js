@@ -60,7 +60,7 @@ const Pie=React.memo(({PieNums})=>{
                         return(<>
                             <>
                                 <div className='my-1 flex flex-row'>
-                                    <div style={{color:p.color}} className='w-[30px] text-right'>{`${p.label}`}</div>
+                                    <div style={{color:p.color}} className='w-[30px] text-right'>{`${p.tag}`}</div>
                                     <div style={{color:p.color}} className='w-[30px] ml-2'>{`${p.value}%`}</div>
                                 </div>
                             </>
