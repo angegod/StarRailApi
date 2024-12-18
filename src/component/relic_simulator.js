@@ -28,7 +28,7 @@ function Simulator(){
     const [PieNums,setPieNums]=useState(undefined);
 
     //歷史紀錄
-    const [historyData,setHistoryData]=useState([]);
+    const [historyData,setHistoryData]=useState(undefined);
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
     
     //是否可以儲存(防呆用)
@@ -113,6 +113,9 @@ function Simulator(){
         //如果原本紀錄超過6個 要先刪除原有紀錄
         if(historyData.length>=6)
             setHistoryData((old)=>old.filter((item,i)=>i!==0));
+
+        if(!historyData)
+            setHistoryData([]);
 
         //儲存紀錄
         let data={
@@ -337,6 +340,18 @@ function Simulator(){
         };
     }
 
+    const HistoryList=()=>{
+        if(historyData){
+            return(
+                historyData.map((item,i)=>
+                    <PastPreview index={i} />
+                )
+            )
+        }else{
+            return <></>
+        }
+    }
+
     
     return(<>
         <div className='w-4/5 mx-auto '>
@@ -396,15 +411,13 @@ function Simulator(){
             </div>
             <div className='flex flex-row mb-3 flex-wrap'>
                 <Result ExpRate={ExpRate} Rscore={Rscore} statusMsg={statusMsg} Rrank={Rrank} PieNums={PieNums} />
-                <div className={`${(historyData.length==0)?'hidden':''} w-[45%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
+                <div className={`${(!historyData)?'hidden':''} w-[45%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
                     id="historyData">
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
                     <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar'>
-                        {historyData.map((item,i)=>
-                            <PastPreview index={i} />
-                        )}
+                        <HistoryList />
                     </div>
                 </div>
             </div>
