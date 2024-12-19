@@ -1,11 +1,11 @@
 {
   "files": {
     "main.css": "/StarRailApi/static/css/main.9e788a4f.css",
-    "main.js": "/StarRailApi/static/js/main.9ee1490d.js",
-    "static/js/444.5e98393a.chunk.js": "/StarRailApi/static/js/444.5e98393a.chunk.js",
-    "static/js/63.cbcf7ddc.chunk.js": "/StarRailApi/static/js/63.cbcf7ddc.chunk.js",
+    "main.js": "/StarRailApi/static/js/main.08ae5ca9.js",
+    "static/js/444.059572f9.chunk.js": "/StarRailApi/static/js/444.059572f9.chunk.js",
+    "static/js/63.12b734ee.chunk.js": "/StarRailApi/static/js/63.12b734ee.chunk.js",
     "static/js/453.ee5bd44a.chunk.js": "/StarRailApi/static/js/453.ee5bd44a.chunk.js",
-    "static/js/450.e7edfab5.chunk.js": "/StarRailApi/static/js/450.e7edfab5.chunk.js",
+    "static/js/450.e1addd8d.chunk.js": "/StarRailApi/static/js/450.e1addd8d.chunk.js",
     "static/media/RankA.jpg": "/StarRailApi/static/media/RankA.305683734e193c1905c3.jpg",
     "static/media/RankS.jpg": "/StarRailApi/static/media/RankS.ada65b03d43d1c36c17d.jpg",
     "static/media/RankB.jpg": "/StarRailApi/static/media/RankB.1323f34047c49c412f1d.jpg",
@@ -14,14 +14,14 @@
     "static/media/loading.gif": "/StarRailApi/static/media/loading.315d2c936933d671353b.gif",
     "index.html": "/StarRailApi/index.html",
     "main.9e788a4f.css.map": "/StarRailApi/static/css/main.9e788a4f.css.map",
-    "main.9ee1490d.js.map": "/StarRailApi/static/js/main.9ee1490d.js.map",
-    "444.5e98393a.chunk.js.map": "/StarRailApi/static/js/444.5e98393a.chunk.js.map",
-    "63.cbcf7ddc.chunk.js.map": "/StarRailApi/static/js/63.cbcf7ddc.chunk.js.map",
+    "main.08ae5ca9.js.map": "/StarRailApi/static/js/main.08ae5ca9.js.map",
+    "444.059572f9.chunk.js.map": "/StarRailApi/static/js/444.059572f9.chunk.js.map",
+    "63.12b734ee.chunk.js.map": "/StarRailApi/static/js/63.12b734ee.chunk.js.map",
     "453.ee5bd44a.chunk.js.map": "/StarRailApi/static/js/453.ee5bd44a.chunk.js.map",
-    "450.e7edfab5.chunk.js.map": "/StarRailApi/static/js/450.e7edfab5.chunk.js.map"
+    "450.e1addd8d.chunk.js.map": "/StarRailApi/static/js/450.e1addd8d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.9e788a4f.css",
-    "static/js/main.9ee1490d.js"
+    "static/js/main.08ae5ca9.js"
   ]
 }
