@@ -44,7 +44,6 @@ onmessage = function (event) {
         combination.forEach((c,i)=>{
             //計算各種強化程度的組合
             let subcombination=EnchanceAllCombinations(c);
-            
 
             subcombination.forEach((s)=>{
                 let res=0;
@@ -68,23 +67,23 @@ onmessage = function (event) {
                     //獲得加權有效詞條數 並加上去
                     let affixmutl=parseFloat(charStandard[sub.type]*cal);
                     
-                    let smallAffix=caltype.find((ct)=>ct.type===sub.type);//碰到同一種類的詞條需要擇優處理
+                    //碰到同一種類的詞條需要擇優處理
+                    let smallAffix=caltype.find((ct)=>ct.type===sub.type);
                     
                     //如果沒有計算過此種類詞條
-                    if(smallAffix===undefined){
-                        caltype.push({
-                            type:sub.type,
-                            affixmutl:affixmutl
-                        });
-                    }else if(smallAffix.affixmutl<affixmutl){//如果目前計算詞條數大於現有詞條數 則覆蓋處理
-                        caltype.find((ct)=>ct.type===sub.type).affixmutl=affixmutl;
-                    }   
+                    caltype.push({
+                        type:sub.fieldName,
+                        affixmutl:affixmutl
+                    });    
+                    
                 });
 
                 caltype.forEach((ms)=>{
-                    res+=ms.affixmutl;
+                    if(ms.type!=='AttackDelta'&&ms.type!=='DefenceDelta'&&ms.type!=='HPDelta')
+                        res+=ms.affixmutl;
                 });
-            
+                
+
                 //理想分數
                 let IdealyScore=Number((parseFloat(55/calPartWeights(charStandard,partsIndex))*res).toFixed(1));
                 result.push(IdealyScore);
@@ -105,7 +104,7 @@ onmessage = function (event) {
             {rank:'C',stand:18,color:'rgb(163, 230, 53)',tag:'C(18<=score<23)'},
             {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D(score<18)'}
         ];
-        let overScoreList=result.filter((num)=>num>=Number(origin));
+        let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num>=Number(origin));
         let expRate=parseFloat((overScoreList.length)/(result.length)).toFixed(2);
         let copy=JSON.parse(JSON.stringify(result));
         let relicrank=undefined;
@@ -168,21 +167,18 @@ function relicScore(partsIndex,charID,SubData,MainData){
         let affixmutl=parseFloat(charStandard[SubAffixType.type]*cal);
         let smallAffix=caltype.find((ct)=>ct.type===SubAffixType.type);
 
-
-        if(smallAffix===undefined){
-            caltype.push({
-                type:SubAffixType.type,
-                affixmutl:affixmutl,
-            })
-        }else if(smallAffix.affixmutl<affixmutl){
-            smallAffix.affixmutl=affixmutl;
-        }
+        caltype.push({
+            type:SubAffixType.fieldName,
+            affixmutl:affixmutl,
+        })
+       
     });
     console.log(caltype);
     console.log(calPartWeights(charStandard,partsIndex));
     //計算分數
     caltype.forEach((ms)=>{
-        weight+=ms.affixmutl;
+        if(ms.type!=='AttackDelta'&&ms.type!=='DefenceDelta'&&ms.type!=='HPDelta')
+            weight+=ms.affixmutl;
     });
 
     let relicscore=0;
