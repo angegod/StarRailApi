@@ -28,7 +28,7 @@ function Simulator(){
     const [PieNums,setPieNums]=useState(undefined);
 
     //歷史紀錄
-    const [historyData,setHistoryData]=useState(undefined);
+    const [historyData,setHistoryData]=useState([]);
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
     
     //是否可以儲存(防呆用)
@@ -59,8 +59,8 @@ function Simulator(){
         }
 
         let history=localStorage.getItem('HistoryData');
-        console.log(history);
-        if(!history){
+        //console.log(JSON.parse(history));
+        if(history!=null){
             setHistoryData(JSON.parse(history));
             setStatusMsg('先前紀錄已匯入!!');
         }
@@ -95,10 +95,12 @@ function Simulator(){
         let partName=partArr[partsIndex-1];
         let selectChar=characters.find((c)=>c.charID===charID);
 
-         //如果原本紀錄超過6個 要先刪除原有紀錄
-         if(historyData.length>=6)
+        //如果目前則沒有紀錄 則初始化
+        if(!historyData)
+            setHistoryData([]);
+        else if(historyData.length>=6)//如果原本紀錄超過6個 要先刪除原有紀錄
             setHistoryData((old)=>old.filter((item,i)=>i!==0));
-
+         
         //如果當前沒有任何資料則不予匯入
         if(!PieNums||!ExpRate||!Rrank||!Rscore){
             setStatusMsg("當前沒有任何數據，不予儲存!!");
@@ -110,12 +112,6 @@ function Simulator(){
             return;
         }
 
-        //如果原本紀錄超過6個 要先刪除原有紀錄
-        if(historyData.length>=6)
-            setHistoryData((old)=>old.filter((item,i)=>i!==0));
-
-        if(!historyData)
-            setHistoryData([]);
 
         //儲存紀錄
         let data={
@@ -387,13 +383,14 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
-                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 text-center max-[600px]:text-left`}>
-                        <div className='text-center'>
-                            <button className='processBtn' 
+                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 text-center max-[600px]:text-left 
+                                flex flex-row justify-end`}>
+                        
+                            <button className='processBtn mr-2' 
                                 onClick={calScore} 
                                 disabled={!processBtn}>計算儀器分數</button>
-                            <button className='processBtn ml-2' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
-                        </div>
+                            <button className='processBtn mr-2' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
+                        
                     </div>
                 </div>
                 <div className='w-1/2 max-w-[400px] flex flex-col max-[600px]:w-[100%] max-[600px]:mt-3'>
@@ -411,7 +408,7 @@ function Simulator(){
             </div>
             <div className='flex flex-row mb-3 flex-wrap'>
                 <Result ExpRate={ExpRate} Rscore={Rscore} statusMsg={statusMsg} Rrank={Rrank} PieNums={PieNums} />
-                <div className={`${(!historyData)?'hidden':''} w-[45%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
+                <div className={`${(!historyData||historyData.length===0)?'hidden':''} w-[35%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
                     id="historyData">
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>

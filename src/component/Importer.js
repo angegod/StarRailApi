@@ -335,23 +335,25 @@ function Import(){
                 <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Parts 部位:</span></div>
                 <PartSelect />   
             </div>
-            <div className='my-3 flex flex-row [&>*]:mr-2'>
-                <div className='text-right w-[200px] max-[600px]:max-w-[150px]'></div>
+            <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px]'>
                 <button className='processBtn' onClick={getRecord}>開始匹配</button>
                 <button className='processBtn' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
             </div>
-            <div className={`mt-3 flex flex-row flex-wrap`}>
-                <Result ExpRate={ExpRate} 
-                        Rscore={Rscore} 
-                        statusMsg={statusMsg} 
-                        Rrank={Rrank} 
-                        PieNums={PieNums}/>
-                <div className={`${(historyData.length===0)?'hidden':''} w-[45%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
+            <div className='flex flex-row flex-wrap w-[100%]'>
+                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]'>
+                    <Result ExpRate={ExpRate} 
+                            Rscore={Rscore} 
+                            statusMsg={statusMsg} 
+                            Rrank={Rrank} 
+                            PieNums={PieNums}/>
+                </div>
+                <div className={`${(historyData.length===0)?'hidden':''} w-[35%] max-[930px]:w-[100%] border-t-4
+                 border-gray-600 p-2 my-4 `}
                     id="historyData">
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
-                    <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar'>
+                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar'>
                         {historyData.map((item,i)=>
                             <PastPreview index={i} />
                         )}
