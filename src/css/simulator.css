@@ -16,11 +16,6 @@
     border-color: theme('colors.yellow.500');
 }
 
-.processBtn:disabled{
-    display: none;
-}
-
-
 .deleteBtn{
     color: theme('colors.red.600');
     border-color: theme('colors.red.600');
@@ -38,4 +33,9 @@
 
 .hiddenScrollBar{
     scrollbar-width: none;
+}
+
+:disabled{
+    background-color:gray;
+    color: white;
 }

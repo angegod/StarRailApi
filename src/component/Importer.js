@@ -10,16 +10,29 @@ import { Helmet } from 'react-helmet';
 import {useLocation} from 'react-router-dom';
 
 function Import(){
+    //玩家ID跟腳色ID
     const userID=useRef('');
-    const [statusMsg,setStatusMsg]=useState(undefined);
     const [charID,setCharID]=useState(undefined);
+
+    //部位代碼
     const [partsIndex,setPartsIndex]=useState(undefined);
+    
+    //router相關
     const location = useLocation();
+
+    //期望值、儀器分數、評級、圖表資料
     const [ExpRate,setExpRate]=useState(undefined);
     const [Rscore,setRscore]=useState(undefined);
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [PieNums,setPieNums]=useState(undefined);
     const [historyData,setHistoryData]=useState([]);
+
+    //狀態訊息
+    const [statusMsg,setStatusMsg]=useState(undefined);
+
+
+    //元件狀態
+    const [isChangeAble,setIsChangeAble]=useState(true);
     const [isSaveAble,setIsSaveAble]=useState(false);
     
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
@@ -97,6 +110,7 @@ function Import(){
         }
         //送出之前先清空一次資料
         setStatusMsg('正在尋找匹配資料......');
+        setIsChangeAble(false);
         clearData();
 
        await axios.post(apiLink,sendData,{
@@ -108,14 +122,17 @@ function Import(){
             //setRelic(response.data);
             // 'Connection':'keep-alive',
             //'Accept': 'application/json',
-            if(response.data===800)
+            if(response.data===800){
                 setStatusMsg('找不到該腳色。必須要將腳色放在展示區才可以抓到資料!!');
-            else if(response.data===801)
+                setIsChangeAble(true);
+            }else if(response.data===801){
                 setStatusMsg('找不到該部件的遺器，如果是剛剛才更新的話建議等五分鐘再使用一次!!');
-            else
+                setIsChangeAble(true);
+            }else
                 calscore(response.data);
         }).catch((err)=>{
             setStatusMsg('系統正在維護中 請稍後再試!!');
+            setIsChangeAble(true);
         })
 
     
@@ -194,6 +211,7 @@ function Import(){
 
             //將儲存按鈕設為可用
             setIsSaveAble(true);
+            setIsChangeAble(true);
 
         };
     }
@@ -260,7 +278,8 @@ function Import(){
         return(<Select options={options} 
                     className='w-[200px]' 
                     onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
-                    value={selectedOption} />)
+                    value={selectedOption} 
+                    isDisabled={!isChangeAble}/>)
     }
 
     //部位選擇器
@@ -275,7 +294,9 @@ function Import(){
         })
 
         return(
-            <select value={partsIndex} onChange={(event)=>{setPartsIndex(event.target.value);setIsSaveAble(false);}}>{options}</select>
+            <select value={partsIndex} 
+                    onChange={(event)=>{setPartsIndex(event.target.value);setIsSaveAble(false);}}
+                    disabled={!isChangeAble}>{options}</select>
         )
     }
 
@@ -318,14 +339,15 @@ function Import(){
         <div className='flex flex-col w-4/5 mx-auto'>
              <Helmet>
                 <title>星鐵--遺器匯入</title>
-                <meta name="description" content="星鐵--遺器匯入。" />
+                <meta name="description" content="星鐵--遺器匯入" />
                 <meta name="keywords" content="遺器強化、遺器強化模擬器" />
             </Helmet>
             <div className='flex flex-row [&>*]:mr-2 my-3'>
                 <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>玩家UID :</span></div>
                 <input type='text' placeholder='HSR UID' className='h-[40px] w-[200px] rounded-md pl-2' 
                         id="userId"
-                        onChange={(e)=>userID.current=e.target.value}/>
+                        onChange={(e)=>userID.current=e.target.value}
+                        disabled={!isChangeAble}/>
             </div>
             <div className='flex flex-row [&>*]:mr-2 my-3'>
                 <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Characters 腳色:</span></div>

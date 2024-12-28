@@ -31,8 +31,9 @@ function Simulator(){
     const [historyData,setHistoryData]=useState([]);
     const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
     
-    //是否可以儲存(防呆用)
+    //是否可以儲存(防呆用)、是否可以立馬變更
     const [isSaveAble,setIsSaveAble]=useState(false);
+    const [isChangeAble,setIsChangeAble]=useState(true);
 
     //當前路由
     const location = useLocation();
@@ -58,9 +59,9 @@ function Simulator(){
             SubData.current.push(data);
         }
 
-        let history=localStorage.getItem('HistoryData');
+        let history=JSON.parse(localStorage.getItem('HistoryData'));
         //console.log(JSON.parse(history));
-        if(history!=null){
+        if(history!=null&&history.length>0){
             setHistoryData(JSON.parse(history));
             setStatusMsg('先前紀錄已匯入!!');
         }
@@ -162,7 +163,9 @@ function Simulator(){
         })
 
         return(
-            <select value={partsIndex} onChange={(event)=>setPartsIndex(event.target.value)}>{options}</select>
+            <select value={partsIndex} 
+                    onChange={(event)=>setPartsIndex(event.target.value)}
+                    disabled={!isChangeAble}>{options}</select>
         )
     }
 
@@ -184,8 +187,9 @@ function Simulator(){
                     options.push(<><option value={s} key={'Mainaffix'+i}>{s}</option></>)
                 });
 
-                return(<select defaultValue={MainSelectOptions} 
-                    onChange={(event)=>setMainSelectOptions(event.target.value)}>{options}</select>)
+                return(<select  defaultValue={MainSelectOptions} 
+                                onChange={(event)=>setMainSelectOptions(event.target.value)}
+                                disabled={!isChangeAble}>{options}</select>)
             }
         }else{
             return(<></>)
@@ -204,16 +208,20 @@ function Simulator(){
 
             return(<><div className='my-1 '>
                 <select defaultValue={SubData.current[index].subaffix} 
-                        onChange={(event)=>updateSubAffix(event.target.value,index)} className=''>
+                        onChange={(event)=>updateSubAffix(event.target.value,index)} 
+                        className=''
+                        disabled={!isChangeAble}>
                             {options}
 
                 </select>
                 <input type='number' defaultValue={SubData.current[index].data}
                         onChange={(event)=>updateSubData(event.target.value,index)}
-                        className='ml-2 max-w-[70px] pl-2' min={0} title='詞條數值'/>
+                        className='ml-2 max-w-[70px] pl-2' 
+                        disabled={!isChangeAble} min={0} title='詞條數值'/>
                 <input type='number' defaultValue={SubData.current[index].count}
                         onChange={(event)=>updateSubCount(event.target.value,index)}
-                        className='ml-2 text-center' min={0} max={5} title='強化次數'/>
+                        className='ml-2 text-center' disabled={!isChangeAble}
+                        min={0} max={5} title='強化次數'/>
                 </div></>)
         }else{
             return(<></>)
@@ -233,7 +241,8 @@ function Simulator(){
         return(<Select options={options} 
                     className='w-[200px]' 
                     onChange={(option)=>setCharID(option.value)}
-                    value={selectedOption} />)
+                    value={selectedOption} 
+                    isDisabled={!isChangeAble}/>)
     }
 
     
@@ -318,21 +327,24 @@ function Simulator(){
         //將按鈕disable
         setIsSaveAble(false);
         setProcessBtn(false);
+        setIsChangeAble(false);
         setStatusMsg('數據計算處理中!!');
         setPieNums(undefined);
         worker.postMessage(postData);
 
         // 接收 Worker 返回的訊息
         worker.onmessage = function (event) {
-            console.log(event.data);
+            
             setExpRate(event.data.expRate);
             setRscore(event.data.relicscore)
             setStatusMsg('計算完畢!!');
             setPieNums(event.data.returnData);
             setRank(event.data.relicrank);
+            
             //恢復點擊
             setProcessBtn(true);
             setIsSaveAble(true);
+            setIsChangeAble(true);
         };
     }
 
@@ -353,7 +365,7 @@ function Simulator(){
         <div className='w-4/5 mx-auto '>
             <Helmet>
                 <title>星鐵--遺器強化模擬器</title>
-                <meta name="description" content="星鐵--遺器強化模擬器。" />
+                <meta name="description" content="星鐵--遺器強化模擬器" />
                 <meta name="keywords" content="遺器強化、遺器強化模擬器" />
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器強化模擬器</h1>
@@ -383,13 +395,19 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
-                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 text-center max-[600px]:text-left 
-                                flex flex-row justify-end`}>
-                        
-                            <button className='processBtn mr-2' 
-                                onClick={calScore} 
-                                disabled={!processBtn}>計算儀器分數</button>
-                            <button className='processBtn mr-2' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
+                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 text-center  
+                                flex flex-row [&>*]:mr-2`}>
+                            <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center
+                            max-[600px]:max-w-[150px]'>
+                                
+                            </div>
+                            <div className='flex flex-row max-[600px]:!flex-col'>
+                                <button className='processBtn mr-2' 
+                                    onClick={calScore} 
+                                    disabled={!processBtn}>計算儀器分數</button>
+                                <button className='processBtn mr-2 max-[600px]:mt-2' 
+                                onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
+                            </div>
                         
                     </div>
                 </div>
