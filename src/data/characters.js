@@ -42,6 +42,7 @@ const characters = [
     { charID: 1222, name: "靈砂", eng_name: "Lingsha" },
     { charID: 1223, name: "莫澤", eng_name: "Moze" },
     { charID: 1224, name: "三月七(巡獵)", eng_name: "March 7th" },
+    { charID: 1225, name: "忘歸人", eng_name: "Fugue" },
     { charID: 1301, name: "加拉赫", eng_name: "Gallagher" },
     { charID: 1302, name: "銀枝", eng_name: "Argenti" },
     { charID: 1303, name: "阮梅", eng_name: "Ruan Mei" },
@@ -65,4 +66,5 @@ const characters = [
     { charID: 8006, name: "開拓者(女)(同諧)", eng_name: "Trailblazer (Harmony)" }
 ];
 
+//腳色列表
 export default characters;
