@@ -28,13 +28,13 @@ function Menu(){
 
 
     return(<>
-        <div className='my-3  sticky top-0 w-[100%] z-[100] pt-2 bg-[rgb(49,48,48)]'>
+        <div className='my-3 sticky top-0 w-[100%] z-[100] pt-2 bg-[rgb(49,48,48)]'>
             <div className='flex flex-row w-4/5 mx-auto'>
                 {menuList}
             </div>
         </div>
         <Routes>
-            <Route path="/" element={<App />} />
+            <Route path="/" index element={<App />} />
             <Route path="/simulate" element={<Simulator />} />
             <Route path='/import' element={<Importer />} />
         </Routes>

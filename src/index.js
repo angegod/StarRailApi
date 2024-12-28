@@ -1,10 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App.js';
 import Menu from './component/Menu.js';
-import NotFound from './component/NotFound.js';
-import Simulator from './component/relic_simulator.js';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom'
 
