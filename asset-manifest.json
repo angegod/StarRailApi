@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/StarRailApi/static/css/main.620d89e1.css",
-    "main.js": "/StarRailApi/static/js/main.585273c8.js",
+    "main.css": "/StarRailApi/static/css/main.d9e1243b.css",
+    "main.js": "/StarRailApi/static/js/main.70169e21.js",
     "static/js/444.16a6aca5.chunk.js": "/StarRailApi/static/js/444.16a6aca5.chunk.js",
     "static/js/63.93692098.chunk.js": "/StarRailApi/static/js/63.93692098.chunk.js",
     "static/js/453.ee5bd44a.chunk.js": "/StarRailApi/static/js/453.ee5bd44a.chunk.js",
@@ -13,15 +13,15 @@
     "static/media/RankD.jpg": "/StarRailApi/static/media/RankD.c21d64f92723bcbe2085.jpg",
     "static/media/loading.gif": "/StarRailApi/static/media/loading.315d2c936933d671353b.gif",
     "index.html": "/StarRailApi/index.html",
-    "main.620d89e1.css.map": "/StarRailApi/static/css/main.620d89e1.css.map",
-    "main.585273c8.js.map": "/StarRailApi/static/js/main.585273c8.js.map",
+    "main.d9e1243b.css.map": "/StarRailApi/static/css/main.d9e1243b.css.map",
+    "main.70169e21.js.map": "/StarRailApi/static/js/main.70169e21.js.map",
     "444.16a6aca5.chunk.js.map": "/StarRailApi/static/js/444.16a6aca5.chunk.js.map",
     "63.93692098.chunk.js.map": "/StarRailApi/static/js/63.93692098.chunk.js.map",
     "453.ee5bd44a.chunk.js.map": "/StarRailApi/static/js/453.ee5bd44a.chunk.js.map",
     "450.c7f602e0.chunk.js.map": "/StarRailApi/static/js/450.c7f602e0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.620d89e1.css",
-    "static/js/main.585273c8.js"
+    "static/css/main.d9e1243b.css",
+    "static/js/main.70169e21.js"
   ]
 }
