@@ -1,4 +1,4 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Allow: /sitemap.txt
+Sitemap:https://angegod.github.io/StarRailApi/sitemap.xml
 
