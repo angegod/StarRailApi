@@ -109,6 +109,7 @@ function Import(){
             partsIndex:realPart
         }
         //送出之前先清空一次資料
+        setIsSaveAble(false);
         setStatusMsg('正在尋找匹配資料......');
         setIsChangeAble(false);
         clearData();
@@ -193,7 +194,7 @@ function Import(){
             SubData:SubData,
             partsIndex:partsIndex
         };
-        setIsSaveAble(false);
+        
         setStatusMsg('數據計算處理中......');
 
         worker.postMessage(postData);
@@ -342,24 +343,42 @@ function Import(){
                 <meta name="description" content="星鐵--遺器匯入" />
                 <meta name="keywords" content="遺器強化、遺器強化模擬器" />
             </Helmet>
-            <div className='flex flex-row [&>*]:mr-2 my-3'>
-                <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>玩家UID :</span></div>
-                <input type='text' placeholder='HSR UID' className='h-[40px] w-[200px] rounded-md pl-2' 
-                        id="userId"
-                        onChange={(e)=>userID.current=e.target.value}
-                        disabled={!isChangeAble}/>
-            </div>
-            <div className='flex flex-row [&>*]:mr-2 my-3'>
-                <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Characters 腳色:</span></div>
-                <CharSelect />
-            </div>
-            <div className={`mt-2 [&>*]:mr-2 flex flex-row`}>
-                <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Parts 部位:</span></div>
-                <PartSelect />   
-            </div>
-            <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px]'>
-                <button className='processBtn' onClick={getRecord}>開始匹配</button>
-                <button className='processBtn' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
+            <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>
+            <div className='flex flex-row flex-wrap'>
+                <div className='flex flex-col w-1/2 max-[600px]:w-[100%]'>
+                    <div className='flex flex-row [&>*]:mr-2 my-3'>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>玩家UID :</span></div>
+                        <input type='text' placeholder='HSR UID' className='h-[40px] w-[200px] rounded-md pl-2' 
+                                id="userId"
+                                onChange={(e)=>userID.current=e.target.value}
+                                disabled={!isChangeAble}/>
+                    </div>
+                    <div className='flex flex-row [&>*]:mr-2 my-3'>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Characters 腳色:</span></div>
+                        <CharSelect />
+                    </div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Parts 部位:</span></div>
+                        <PartSelect />   
+                    </div>
+                    <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px]'>
+                        <button className='processBtn' onClick={getRecord}  disabled={!isChangeAble}>開始匹配</button>
+                        <button className='processBtn' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
+                    </div>
+                    
+                </div>
+                <div className='w-1/2 max-w-[400px] flex flex-col max-[600px]:w-[100%] max-[600px]:mt-3'>
+                    <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
+                    <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
+                        <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>
+                        <li>此工具的一些數據以及標準是參考
+                            <a href='https://www.otameta.com/hub/honkai-starrail/relic-scorer' className='underline'>relic scorer</a>
+                        </li>
+                        <li>翻盤機率是指說該遺器透過重洗詞條道具後導致遺器分數變高的機率為何</li>
+                        <li>目前遺器只支援計算五星強化至滿等遺器</li>
+                        <li>此工具目前處於BETA階段，相關數據仍有更改的可能</li>
+                    </ul>
+                </div>
             </div>
             <div className='flex flex-row flex-wrap w-[100%]'>
                 <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]'>
@@ -370,7 +389,7 @@ function Import(){
                             PieNums={PieNums}/>
                 </div>
                 <div className={`${(historyData.length===0)?'hidden':''} w-[35%] max-[930px]:w-[100%] border-t-4
-                 border-gray-600 p-2 my-4 `}
+                border-gray-600 p-2 my-4 `}
                     id="historyData">
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>

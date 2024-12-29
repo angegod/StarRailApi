@@ -58,11 +58,11 @@ function Simulator(){
 
             SubData.current.push(data);
         }
-
+        
         let history=JSON.parse(localStorage.getItem('HistoryData'));
-        //console.log(JSON.parse(history));
+        console.log(history);
         if(history!=null&&history.length>0){
-            setHistoryData(JSON.parse(history));
+            setHistoryData(history);
             setStatusMsg('先前紀錄已匯入!!');
         }
     }
@@ -425,7 +425,13 @@ function Simulator(){
                 </div>
             </div>
             <div className='flex flex-row mb-3 flex-wrap'>
-                <Result ExpRate={ExpRate} Rscore={Rscore} statusMsg={statusMsg} Rrank={Rrank} PieNums={PieNums} />
+                <div className=' flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]'>
+                    <Result ExpRate={ExpRate} 
+                            Rscore={Rscore} 
+                            statusMsg={statusMsg} 
+                            Rrank={Rrank} 
+                            PieNums={PieNums}/>
+                </div>
                 <div className={`${(!historyData||historyData.length===0)?'hidden':''} w-[35%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
                     id="historyData">
                     <div>

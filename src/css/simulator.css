@@ -35,7 +35,16 @@
     scrollbar-width: none;
 }
 
-:disabled{
+select:disabled,input:disabled{
     background-color:gray;
     color: white;
+}
+
+button:disabled{
+    opacity: 0.5;
+}
+
+.processBtn:disabled:hover{
+    color: white;
+    border-color: inherit;
 }
