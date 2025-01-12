@@ -1,9 +1,6 @@
-import score from '../data/score';
 import standard from '../data/standard';
 import weight from '../data/weight';
-import Stats from '../data/Stats';
 import AffixName from '../data/AffixName';
-import AffixList from '../data/AffixList';
 import {findCombinations,EnchanceAllCombinations} from '../data/combination';
 
 
@@ -11,9 +8,8 @@ onmessage = function (event) {
     //宣告變數
     let SubData=event.data.SubData;
     let partsIndex=parseInt(event.data.partsIndex);
-    let charID=event.data.charID;
-    let MainAffix=AffixName.find((a)=>a.name==event.data.MainData);
-    console.log(partsIndex);
+    //let charID=event.data.charID;
+    let MainAffix=AffixName.find((a)=>a.name===event.data.MainData);
 
     //計算可用強化次數
     var enchanceCount=0;
@@ -24,11 +20,12 @@ onmessage = function (event) {
     //計算可能的強化組合
     let combination=findCombinations(enchanceCount+4,4);
     
-    var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
+    //var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
+    let charStandard=calStand(event.data.standard);
+    
     let coeEfficent=[];//當前遺器係數arr
     SubData.forEach((sub)=>{
         let SubAffixType=AffixName.find((s)=>s.name===sub.subaffix);
-        //console.log(SubAffixType);
         coeEfficent.push({
             type:SubAffixType.type,
             fieldName:SubAffixType.fieldName,
@@ -37,7 +34,8 @@ onmessage = function (event) {
     });
     let MainData=charStandard[MainAffix.type];
     let result =[];
-    let origin = relicScore(partsIndex,charID,SubData,MainData);
+    //let origin = relicScore(partsIndex,charID,SubData,MainData);
+    let origin=relicScore(partsIndex,charStandard,SubData,MainData);
     //先算原本的遺器的分數
 
     let p1=new Promise(async (resolve,reject)=>{
@@ -68,7 +66,7 @@ onmessage = function (event) {
                     let affixmutl=parseFloat(charStandard[sub.type]*cal);
                     
                     //碰到同一種類的詞條需要擇優處理
-                    let smallAffix=caltype.find((ct)=>ct.type===sub.type);
+                    //let smallAffix=caltype.find((ct)=>ct.type===sub.type);
                     
                     //如果沒有計算過此種類詞條
                     caltype.push({
@@ -85,7 +83,7 @@ onmessage = function (event) {
                 
 
                 //理想分數
-                let IdealyScore=Number((parseFloat(55/calPartWeights(charStandard,partsIndex))*res).toFixed(1));
+                let IdealyScore=Number((parseFloat(res/calPartWeights(charStandard,partsIndex))*100).toFixed(1));
                 result.push(IdealyScore);
                 
             });
@@ -95,14 +93,14 @@ onmessage = function (event) {
     })
 
     p1.then((score)=>{
+        //設立分數標準
         let scoreStand=[
-            {rank:'SSS',stand:43,color:'rgb(185, 28, 28)',tag:'SSS(score>=43)'},
-            {rank:'SS',stand:38,color:'rgb(220, 38, 38 )',tag:'SS(38<=score<43)'},
-            {rank:'S',stand:33,color:'rgb(239, 68, 68)',tag:'S(33<=score<38)'},
-            {rank:'A',stand:29,color:'rgb(234, 179, 8)',tag:'A(29<=score<33)'},
-            {rank:'B',stand:23,color:'rgb(234, 88 , 12)',tag:'B(23<=score<29)'},
-            {rank:'C',stand:18,color:'rgb(163, 230, 53)',tag:'C(18<=score<23)'},
-            {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D(score<18)'}
+            {rank:'S+',stand:85,color:'rgb(239, 68, 68)',tag:'S+'},
+            {rank:'S',stand:75,color:'rgb(239, 68, 68)',tag:'S'},
+            {rank:'A',stand:50,color:'rgb(234, 179, 8)',tag:'A'},
+            {rank:'B',stand:35,color:'rgb(234, 88 , 12)',tag:'B'},
+            {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},
+            {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
         ];
         let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num>=Number(origin));
         let expRate=parseFloat((overScoreList.length)/(result.length)).toFixed(2);
@@ -126,7 +124,7 @@ onmessage = function (event) {
             //console.log(`${match.length}/${result.length}`);
 
             //接著去找尋這個分數所屬的區間
-            if(stand.stand<=origin&&relicrank==undefined)
+            if(stand.stand<=origin&&relicrank===undefined)
                 relicrank=stand;
 
         });
@@ -137,16 +135,16 @@ onmessage = function (event) {
         this.postMessage({
             expRate:expRate,//期望值
             relicscore:score,//遺器分數
-            relicrank:relicrank,
+            relicrank:relicrank,//遺器區間
             returnData:returnData//區間機率        
         })
         
     });
 };
 
-function relicScore(partsIndex,charID,SubData,MainData){
+function relicScore(partsIndex,charStandard,SubData,MainData){
     let weight = 0
-    var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
+    //var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
     var mutl=3*MainData;//直接默認強化至滿等
     let caltype=[];
 
@@ -165,7 +163,7 @@ function relicScore(partsIndex,charID,SubData,MainData){
         
         //獲得有效詞條
         let affixmutl=parseFloat(charStandard[SubAffixType.type]*cal);
-        let smallAffix=caltype.find((ct)=>ct.type===SubAffixType.type);
+        //let smallAffix=caltype.find((ct)=>ct.type===SubAffixType.type);
 
         caltype.push({
             type:SubAffixType.fieldName,
@@ -174,6 +172,7 @@ function relicScore(partsIndex,charID,SubData,MainData){
        
     });
     console.log(caltype);
+    //計算這件遺器的最大有效詞條數
     console.log(calPartWeights(charStandard,partsIndex));
     //計算分數
     caltype.forEach((ms)=>{
@@ -184,7 +183,9 @@ function relicScore(partsIndex,charID,SubData,MainData){
     let relicscore=0;
 
     //接下來根據部位調整分數
-    relicscore=parseFloat(55/calPartWeights(charStandard,partsIndex))*weight;
+    //假設最大有效詞條數為10 實際只拿8個 代表你這件有80分以上的水準
+    //relicscore=parseFloat(55/calPartWeights(charStandard,partsIndex))*weight;
+    relicscore=parseFloat(weight/calPartWeights(charStandard,partsIndex))*100;
     return parseFloat(relicscore).toFixed(1);
     
 }
@@ -230,7 +231,41 @@ function calPartWeights(charstandard,partIndex){
         }
     });
     return partWeight;
+}
 
+//製作標準
+function calStand(stand){
+
+    //設立一個模板 根據使用者填入參數更改
+    let model={
+        hp: 0,
+        atk: 0,
+        def: 0,
+        spd: 0,
+        crit_rate: 0,
+        crit_dmg: 0,
+        break_dmg: 0,
+        heal_rate: 0,
+        sp_rate: 0,
+        effect_hit: 0,
+        effect_res: 0,
+        physical_dmg: 0,
+        fire_dmg: 0,
+        ice_dmg: 0,
+        lightning_dmg: 0,
+        wind_dmg: 0,
+        quantum_dmg: 0,
+        imaginary_dmg: 0
+    };
+
+    //根據有效詞條關鍵字
+    stand.forEach((s)=>{
+        let target=AffixName.find((a)=>a.name===s.name).type;
+
+        model[target]=parseFloat(s.value);
+    });
+
+    return model;
 }
 
 //計算將會移置後台worker運作

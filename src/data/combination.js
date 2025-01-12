@@ -23,7 +23,7 @@ export function findCombinations(sum, length) {
 }
 
 // 測試
-console.log(findCombinations(4, 9));
+//console.log(findCombinations(4, 9));
 
 export  function EnchanceAllCombinations(enhanceCounts) {
     const results = [];

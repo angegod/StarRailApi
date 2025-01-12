@@ -7,10 +7,6 @@ import Importer from './Importer.js';
 function Menu(){
     let list=[{
         link:'/',
-        name:'遺器查詢器',
-        engname:'searcher'
-    },{
-        link:'/simulate',
         name:'遺器強化模擬器',
         engname:'simulator'
     },{
@@ -34,8 +30,7 @@ function Menu(){
             </div>
         </div>
         <Routes>
-            <Route path="/" index element={<App />} />
-            <Route path="/simulate" element={<Simulator />} />
+            <Route path="/" index element={<Simulator />} />
             <Route path='/import' element={<Importer />} />
         </Routes>
     </>)

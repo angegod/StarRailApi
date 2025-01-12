@@ -1,18 +1,18 @@
 import AffixList from '../data/AffixList';
 import characters from '../data/characters';
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useState} from 'react';
-import {Button} from 'react-bootstrap';
 import Select from 'react-select'
 import { useLocation } from 'react-router-dom';
-import { Col } from 'react-bootstrap';
-import { colors } from '@mui/material';
 import { Helmet } from 'react-helmet';
 import Result from './Result';
 import '../css/simulator.css';
 
 //遺器強化模擬器
 function Simulator(){
+    //版本代號
+    const version="1.0";
+
     //部位選擇 跟主詞條選擇
     const [partsIndex,setPartsIndex]=useState(undefined);
     const [MainSelectOptions,setMainSelectOptions]=useState();
@@ -26,6 +26,12 @@ function Simulator(){
     const SubData=useRef([]);
     const [charID,setCharID]=useState(undefined);
     const [PieNums,setPieNums]=useState(undefined);
+
+    //自訂義標準
+    const [selfStand,setSelfStand]=useState([]);
+
+    //找到的遺器
+    const [relic,setRelic]=useState();
 
     //歷史紀錄
     const [historyData,setHistoryData]=useState([]);
@@ -41,7 +47,6 @@ function Simulator(){
     useEffect(()=>{
         //初始化歷史紀錄
         init();
-        //console.log(historyData);
     },[location])
     
     
@@ -60,13 +65,17 @@ function Simulator(){
         }
         
         let history=JSON.parse(localStorage.getItem('HistoryData'));
-        console.log(history);
+        
+        //為了避免更新迭代而造成歷史紀錄格式上的問題 
+        //必須要核對重大版本代號 如果版本不一致也不予顯示並且刪除
+        history=history.filter((h)=>h.version===version);
+        localStorage.setItem('HistoryData',JSON.stringify(history));
         if(history!=null&&history.length>0){
             setHistoryData(history);
             setStatusMsg('先前紀錄已匯入!!');
         }
     }
-    
+
 
     function updateSubAffix(val,index){
         SubData.current.find((s,i)=>i===parseInt(index)).subaffix=val;
@@ -116,13 +125,16 @@ function Simulator(){
 
         //儲存紀錄
         let data={
+            version:"1.0",
             char:selectChar,
             part:partName,
             mainaffix:MainSelectOptions,
             expRate:ExpRate,
             score:Rscore,
             rank:Rrank,
-            pieData:PieNums
+            pieData:PieNums,
+            stand:selfStand,
+            relic:relic
         };
 
         //利用深拷貝區分原有資料
@@ -143,12 +155,32 @@ function Simulator(){
     //檢視過往紀錄
     function checkDetails(index){
         let data=historyData[index];
-        console.log(data);
+        //console.log(data);
         setRank(data.rank);
         setExpRate(data.expRate);
         setRscore(data.score)
         setStatusMsg('資料替換完畢!!');
         setPieNums(data.pieData);
+        setSelfStand(data.stand);
+        setRelic(data.relic);
+    }
+
+    //儲存遺器資訊
+    function saveRelic(){
+        let data={
+            main_affix:MainSelectOptions,
+            subaffix:[]
+        }
+
+        SubData.current.forEach((s,i)=>{
+            if(!['生命力','攻擊力','防禦力','速度'].includes(s.subaffix))
+                s.display=s.data+'%';
+            else
+                s.display=s.data;
+        })
+        data.subaffix=SubData.current;
+
+        setRelic(data);
     }
 
     //部位選擇器
@@ -245,7 +277,39 @@ function Simulator(){
                     isDisabled={!isChangeAble}/>)
     }
 
-    
+    //顯示你所輸入的標準
+    const ShowStand=()=>{
+        const list=selfStand.map((s,i)=><>
+            <div className='flex flex-row'>
+                <div className='flex justify-between w-[200px] mt-0.5 max-[600px]:w-[130px]'>
+                    <span className='whitespace-nowrap overflow-hidden'>{s.name}</span>
+                    <input type='number' min={0} max={1} 
+                        className='ml-2 text-center' defaultValue={selfStand[i].value}
+                        title='最小值為0 最大為1'
+                        onChange={(event)=>changeVal(i,event.target.value)}/>
+                    
+                </div>
+                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-0.5'>移除</button>
+            </div>
+        </>)
+
+        function removeAffix(index){
+            setSelfStand((arr)=>arr.filter((item,i)=>i!==index));
+        }
+
+        function changeVal(index,val){
+            let stand=selfStand;
+            selfStand[index].value=val;
+
+            setSelfStand(stand);
+        }
+
+        return(<>
+            <div className='flex flex-col'>
+                {list}
+            </div>
+        </>)
+    }
 
     //簡易瀏覽
     const PastPreview=({index})=>{
@@ -281,6 +345,46 @@ function Simulator(){
         
         </>)
     };
+
+    //顯示儀器分數區間
+    const RelicData=()=>{
+        //console.log(SubData.current);
+        if(relic!==undefined){
+
+            const list=[];
+
+            relic.subaffix.forEach((s)=>{
+                list.push(<>
+                    <div className='flex flex-row'>
+                        <span className='text-white text-left flex w-[80px]'>{s.subaffix}</span>
+                        <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
+                    </div>
+                    
+                </>)
+            })
+            
+            return(<>
+                <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
+                    ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
+                    <div>
+                        <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
+                    </div>
+                    <div className='mt-1'>
+                        <span>主詞條</span><br/>
+                        <span className='text-white'>{relic.main_affix}</span>   
+                    </div>
+                    <div className='mt-2'>
+                        <span>副詞條</span>
+                        <div className='flex flex-col w-[160px]'>
+                            {list}
+                        </div>
+                    </div>
+                </div>
+            </>)
+        }else{
+            return(<></>)
+        }
+    }
         
     function calScore(){
         //先驗證選擇是否有誤
@@ -321,7 +425,8 @@ function Simulator(){
             charID:charID,
             MainData:MainSelectOptions,
             SubData:SubData.current,
-            partsIndex:partsIndex
+            partsIndex:partsIndex,
+            standard:selfStand
         };
 
         //將按鈕disable
@@ -340,6 +445,7 @@ function Simulator(){
             setStatusMsg('計算完畢!!');
             setPieNums(event.data.returnData);
             setRank(event.data.relicrank);
+            saveRelic();
             
             //恢復點擊
             setProcessBtn(true);
@@ -360,6 +466,86 @@ function Simulator(){
         }
     }
 
+    const StandardSelect=()=>{
+        const [selectAffix,setAffix]=useState(undefined);
+        
+        //添加標準 目前設定先不超過六個有效 且不重複
+        function addAffix(){
+            let newItem={
+                name:selectAffix,
+                value:1
+            }
+
+            if(selfStand.length<6&&!(selfStand.findIndex((item)=>item.name===selectAffix)>=0))
+                setSelfStand((old)=>[...old,newItem]);
+        }
+
+        function clearAffix(){
+            setSelfStand([]);
+        }
+
+        if(partsIndex!==undefined){
+            //依據所選部位 給出不同的選澤
+            let target=AffixList.find((a)=>a.id===parseInt(partsIndex));
+            //合併所有選項 並且移除重複值
+            let mergedArray = [...new Set([...target.main, ...target.sub])];
+            mergedArray=mergedArray.filter((item)=>item!=='生命力'&&item!=='攻擊力'&&item!=='防禦力')
+
+            let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
+
+            mergedArray.forEach((a,i)=>{
+                options.push(<>
+                    <option value={a} key={'Affix'+i} >{a}</option>       
+                </>)
+            });
+
+            return(
+                <>
+                    <div className='flex flex-col'>
+                        <div className='flex flex-row flex-wrap'>
+                            <select value={selectAffix} 
+                                onChange={(event)=>{setAffix(event.target.value)}}
+                                disabled={!isChangeAble} className='mr-1'>{options}</select>
+                            <div className='max-[520px]:mt-1 '>
+                                <button className='processBtn' onClick={addAffix}>添加</button>
+                                <button className='deleteBtn ml-1' onClick={clearAffix}>清空</button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )
+        }else{
+            return(<></>)
+        }
+
+    }
+
+    //顯示你輸出的標準為何?
+    const StandDetails=()=>{
+        if(selfStand!==undefined){
+            const list=selfStand.map((s)=><>
+                <div className='flex flex-row'>
+                    <div className='flex justify-between w-[200px] mt-0.5'>
+                        <span>{s.name}</span>
+                        <span>{s.value}</span>
+                    </div>
+                </div>
+            </>)
+
+            return(<>
+                <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
+                    max-[600px]:!min-w-[0px]`}>
+                    <div>
+                        <span className='text-red-600 text-lg font-bold'>標準加權</span>
+                    </div>
+                    <div>
+                        {list}
+                    </div>
+                </div>
+            
+            </>)
+        }
+    }
     
     return(<>
         <div className='w-4/5 mx-auto '>
@@ -395,6 +581,14 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={partsIndex===undefined}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Affix 有效詞條:</span></div>
+                        <StandardSelect />
+                    </div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={selfStand.length==0}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Params 參數:</span></div>
+                        <ShowStand />
+                    </div>
                     <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 text-center  
                                 flex flex-row [&>*]:mr-2`}>
                             <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center
@@ -421,19 +615,14 @@ function Simulator(){
                         <li>翻盤機率是指說該遺器透過重洗詞條道具後導致遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星遺器</li>
                         <li>此工具目前處於BETA階段，相關數據仍有更改的可能</li>
+                        <li>聲明:此工具相關程式邏輯均為本人Ange完成</li>
+                        <li>如果有碰到歷史紀錄打開有問題的建議刪掉!!</li>
                     </ul>
                 </div>
             </div>
             <div className='flex flex-row mb-3 flex-wrap'>
-                <div className=' flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]'>
-                    <Result ExpRate={ExpRate} 
-                            Rscore={Rscore} 
-                            statusMsg={statusMsg} 
-                            Rrank={Rrank} 
-                            PieNums={PieNums}/>
-                </div>
-                <div className={`${(!historyData||historyData.length===0)?'hidden':''} w-[35%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
-                    id="historyData">
+                <div className={`w-[100%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
+                    id="historyData" hidden={(!historyData||historyData.length===0)}>
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
@@ -441,21 +630,27 @@ function Simulator(){
                         <HistoryList />
                     </div>
                 </div>
+                <div className='mt-3 flex flex-row flex-wrap w-1/4  max-[600px]:w-[50%]' hidden={PieNums===undefined}>
+                    <RelicData />
+                </div>
+                <div className='mt-3 w-1/4 max-[600px]:w-[50%]' hidden={PieNums===undefined}>
+                    <StandDetails />
+                </div>
+                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]'>
+                    <Result ExpRate={ExpRate} 
+                            Rscore={Rscore} 
+                            statusMsg={statusMsg} 
+                            Rrank={Rrank} 
+                            PieNums={PieNums}/>
+                </div>
+                
             </div>
-            
-            
         </div>
     
     </>)
 
 
 }
-
-
-
-
-
-
 
 export default Simulator;
 

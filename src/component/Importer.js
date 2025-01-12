@@ -8,14 +8,21 @@ import axios from 'axios';
 import Result from './Result';
 import { Helmet } from 'react-helmet';
 import {useLocation} from 'react-router-dom';
+import AffixList from '../data/AffixList';
 
 function Import(){
+    //版本序號
+    const version="1.0";
+
     //玩家ID跟腳色ID
     const userID=useRef('');
     const [charID,setCharID]=useState(undefined);
 
     //部位代碼
     const [partsIndex,setPartsIndex]=useState(undefined);
+
+    //找到的遺器
+    const [relic,setRelic]=useState();
     
     //router相關
     const location = useLocation();
@@ -30,6 +37,8 @@ function Import(){
     //狀態訊息
     const [statusMsg,setStatusMsg]=useState(undefined);
 
+    //自訂義標準
+    const [selfStand,setSelfStand]=useState([]);
 
     //元件狀態
     const [isChangeAble,setIsChangeAble]=useState(true);
@@ -41,7 +50,6 @@ function Import(){
     useEffect(()=>{
         //初始化歷史紀錄
         initHistory();
-        //console.log(historyData);
     },[location])
 
 
@@ -63,9 +71,13 @@ function Import(){
           return diffDays <= 3; // 保留日期在 3 天内的记录
         });
 
+        //為了避免更新迭代而造成歷史紀錄格式上的問題 
+        //必須要核對重大版本代號 如果版本不一致也不予顯示並且刪除
+        history=history.filter((h)=>h.version===version);
+        localStorage.setItem('importData',JSON.stringify(history));
+
         if(history != null && history.length > 0){
             setHistoryData(history);
-            setStatusMsg('先前紀錄已匯入!!');
         }
             
     }
@@ -120,9 +132,6 @@ function Import(){
                 'Accept-Encoding':'gzip,deflate,br'
             }
         }).then((response)=>{
-            //setRelic(response.data);
-            // 'Connection':'keep-alive',
-            //'Accept': 'application/json',
             if(response.data===800){
                 setStatusMsg('找不到該腳色。必須要將腳色放在展示區才可以抓到資料!!');
                 setIsChangeAble(true);
@@ -144,6 +153,7 @@ function Import(){
         setRank({color:undefined,rank:undefined});
         setPieNums(undefined);
         setRscore(undefined);
+        setRelic(undefined);
     }
 
     //檢視過往紀錄
@@ -155,12 +165,16 @@ function Import(){
         setRscore(data.score)
         setStatusMsg('資料替換完畢!!');
         setPieNums(data.pieData);
+        setRelic(data.relic);
+        setSelfStand(data.stand);
+
+        document.getElementById("resultDetails").scrollIntoView({ behavior: "smooth" });
     }
 
     //刪除過往紀錄
     function updateHistory(index){
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
-        let oldHistory=historyData
+        let oldHistory=historyData;
         setHistoryData((old)=>old.filter((item,i)=>i!==index));
 
         oldHistory=oldHistory.filter((item,i)=>i!==index);
@@ -169,6 +183,9 @@ function Import(){
     }
 
     function calscore(relic){
+        //將獲得到遺器先儲存起來
+        setRelic(relic);
+
         //將運行結果丟到背景執行
         let worker=new Worker(new URL('../worker/worker.js', import.meta.url));
         let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
@@ -192,7 +209,8 @@ function Import(){
             charID:charID,
             MainData:MainAffix.name,
             SubData:SubData,
-            partsIndex:partsIndex
+            partsIndex:partsIndex,
+            standard:selfStand
         };
         
         setStatusMsg('數據計算處理中......');
@@ -201,7 +219,6 @@ function Import(){
 
         // 接收 Worker 返回的訊息
         worker.onmessage = function (event) {
-            //console.log(event.data);
             
             //輸入相關數據
             setExpRate(event.data.expRate);
@@ -213,7 +230,7 @@ function Import(){
             //將儲存按鈕設為可用
             setIsSaveAble(true);
             setIsChangeAble(true);
-
+            document.getElementById("resultDetails").scrollIntoView({ behavior: "smooth" });
         };
     }
 
@@ -247,6 +264,7 @@ function Import(){
         
         //儲存紀錄
         let data={
+            version:version,
             calDate:calDate.toISOString().split('T')[0],
             userID:userID.current,
             char:selectChar,
@@ -254,10 +272,12 @@ function Import(){
             expRate:ExpRate,
             score:Rscore,
             rank:Rrank,
-            pieData:PieNums
+            pieData:PieNums,
+            relic:relic,
+            stand:selfStand
         };
         let oldHistory=historyData;
-
+        console.log(data);
         setHistoryData((old)=>[...old,data]);
         setStatusMsg('已儲存');
         setIsSaveAble(false);
@@ -285,7 +305,6 @@ function Import(){
 
     //部位選擇器
     const PartSelect=()=>{
-        
         let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
         partArr.forEach((a,i)=>{
@@ -299,6 +318,166 @@ function Import(){
                     onChange={(event)=>{setPartsIndex(event.target.value);setIsSaveAble(false);}}
                     disabled={!isChangeAble}>{options}</select>
         )
+    }
+
+    //自訂義有效詞條種類
+    const StandardSelect=()=>{
+        const [selectAffix,setAffix]=useState(undefined);
+        
+        //添加標準 目前設定先不超過六個有效 且不重複
+        function addAffix(){
+            let newItem={
+                name:selectAffix,
+                value:1
+            }
+
+            if(selfStand.length<6&&!(selfStand.findIndex((item)=>item.name===selectAffix)>=0))
+                setSelfStand((old)=>[...old,newItem]);
+        }
+
+        function clearAffix(){
+            setSelfStand([]);
+        }
+
+        if(partsIndex!==undefined){
+            //依據所選部位 給出不同的選澤
+            let target=AffixList.find((a)=>a.id===parseInt(partsIndex));
+            //合併所有選項 並且移除重複值
+            let mergedArray = [...new Set([...target.main, ...target.sub])];
+            mergedArray=mergedArray.filter((item)=>item!=='生命力'&&item!=='攻擊力'&&item!=='防禦力')
+
+            let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
+
+            mergedArray.forEach((a,i)=>{
+                options.push(<>
+                    <option value={a} key={'Affix'+i} >{a}</option>       
+                </>)
+            });
+
+            return(
+                <>
+                    <div className='flex flex-col'>
+                        <div className='flex flex-row flex-wrap'>
+                            <select value={selectAffix} 
+                                onChange={(event)=>{setAffix(event.target.value)}}
+                                disabled={!isChangeAble} className='mr-1'>{options}</select>
+                            <div className='max-[520px]:mt-1 '>
+                                <button className='processBtn' onClick={addAffix}>添加</button>
+                                <button className='deleteBtn ml-1' onClick={clearAffix}>清空</button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )
+        }else{
+            return(<></>)
+        }
+
+    }
+
+    //顯示儀器分數區間
+    const RelicData=()=>{
+        if(relic!==undefined){
+
+            const list=[];
+
+            relic.sub_affix.forEach((s)=>{
+                list.push(<>
+                    <div className='flex flex-row'>
+                        <span className='text-white text-left flex w-[70px]'>{s.name}</span>
+                        <span className='flex w-[70px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
+                    </div>
+                    
+                </>)
+            })
+            
+            
+            return(<>
+                <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
+                    ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
+                    <div>
+                        <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
+                    </div>
+                    <div>
+                        <span>套裝:</span><br/>
+                        <span className='text-white'>{relic.set_name}</span>
+                    </div>
+                    <div className='mt-1'>
+                        <span>主詞條</span><br/>
+                        <span className='text-white'>{relic.main_affix.name}:{relic.main_affix.display}</span>   
+                    </div>
+                    <div className='mt-2'>
+                        <span>副詞條</span>
+                        <div className='flex flex-col w-[150px]'>
+                            {list}
+                        </div>
+                    </div>
+                </div>
+            </>)
+        }else{
+            return(<></>)
+        }
+    }
+
+    //顯示你所輸入的標準
+    const ShowStand=()=>{
+        const list=selfStand.map((s,i)=><>
+            <div className='flex flex-row'>
+                <div className='flex justify-between w-[200px] mt-0.5 max-[600px]:w-[130px]'>
+                    <span className='whitespace-nowrap overflow-hidden'>{s.name}</span>
+                    <input type='number' min={0} max={1} 
+                        className='ml-2 text-center' defaultValue={selfStand[i].value}
+                        title='最小值為0 最大為1'
+                        onChange={(event)=>changeVal(i,event.target.value)}/>
+                    
+                </div>
+                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-0.5'>移除</button>
+            </div>
+        </>)
+
+        function removeAffix(index){
+            setSelfStand((arr)=>arr.filter((item,i)=>i!==index));
+        }
+
+        function changeVal(index,val){
+            let stand=selfStand;
+            selfStand[index].value=val;
+
+            setSelfStand(stand);
+        }
+
+        return(<>
+            <div className='flex flex-col'>
+                {list}
+            </div>
+        </>)
+    }
+    
+    //顯示你輸出的標準為何?
+    const StandDetails=()=>{
+        if(selfStand!==undefined){
+            const list=selfStand.map((s)=><>
+                <div className='flex flex-row'>
+                    <div className='flex justify-between w-[200px] mt-0.5'>
+                        <span>{s.name}</span>
+                        <span>{s.value}</span>
+                    </div>
+                </div>
+            </>)
+
+            return(<>
+                <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
+                    max-[600px]:!min-w-[0px]`}>
+                    <div>
+                        <span className='text-red-600 text-lg font-bold'>標準加權</span>
+                    </div>
+                    <div>
+                        {list}
+                    </div>
+                </div>
+            
+            </>)
+        }
     }
 
     //簡易瀏覽
@@ -361,6 +540,14 @@ function Import(){
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Parts 部位:</span></div>
                         <PartSelect />   
                     </div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={partsIndex===undefined}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Affix 有效詞條:</span></div>
+                        <StandardSelect />
+                    </div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={selfStand.length===0}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Params 參數:</span></div>
+                        <ShowStand />
+                    </div>
                     <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px]'>
                         <button className='processBtn' onClick={getRecord}  disabled={!isChangeAble}>開始匹配</button>
                         <button className='processBtn' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
@@ -371,35 +558,43 @@ function Import(){
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>
-                        <li>此工具的一些數據以及標準是參考
-                            <a href='https://www.otameta.com/hub/honkai-starrail/relic-scorer' className='underline'>relic scorer</a>
-                        </li>
-                        <li>翻盤機率是指說該遺器透過重洗詞條道具後導致遺器分數變高的機率為何</li>
+                        <li>此工具是計算該遺器依據您的標準持有的有效詞條數量</li>
+                        <li>翻盤機率是指該遺器透過重洗詞條道具後遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星強化至滿等遺器</li>
                         <li>此工具目前處於BETA階段，相關數據仍有更改的可能</li>
+                        <li>聲明:此工具相關程式邏輯均為本人Ange完成</li>
+                        <li>如果有碰到歷史紀錄打開有問題的建議刪掉!!</li>
                     </ul>
                 </div>
             </div>
-            <div className='flex flex-row flex-wrap w-[100%]'>
-                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]'>
+            <div className={`${(historyData.length===0)?'hidden':''} flex-wrap max-[930px]:w-[100%] border-t-4
+                border-gray-600 p-2 my-4 `}
+                    id="historyData">
+                    <div>
+                        <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
+                    </div>
+                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row max-[600px]:!flex-col'>
+                        {historyData.map((item,i)=>
+                            <PastPreview index={i} />
+                        )}
+                    </div>
+                </div>
+            <div className='flex flex-row flex-wrap w-[100%]' >
+                <div className='mt-3 flex flex-row flex-wrap w-1/4  max-[600px]:w-[50%]' hidden={PieNums===undefined}>
+                    <RelicData />
+                </div>
+                <div className='mt-3 w-1/4 max-[600px]:w-[50%]' hidden={PieNums===undefined}>
+                    <StandDetails />
+                </div>
+                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]' hidden={statusMsg===undefined}
+                    id="resultDetails">
                     <Result ExpRate={ExpRate} 
                             Rscore={Rscore} 
                             statusMsg={statusMsg} 
                             Rrank={Rrank} 
                             PieNums={PieNums}/>
                 </div>
-                <div className={`${(historyData.length===0)?'hidden':''} w-[35%] max-[930px]:w-[100%] border-t-4
-                border-gray-600 p-2 my-4 `}
-                    id="historyData">
-                    <div>
-                        <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
-                    </div>
-                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar'>
-                        {historyData.map((item,i)=>
-                            <PastPreview index={i} />
-                        )}
-                    </div>
-                </div>
+                
             </div>
 
         </div>
