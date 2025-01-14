@@ -22,6 +22,7 @@ function Simulator(){
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [statusMsg,setStatusMsg]=useState(undefined);
     const [processBtn,setProcessBtn]=useState(true);
+    const standDetails=useRef([]);
 
     const SubData=useRef([]);
     const [charID,setCharID]=useState(undefined);
@@ -50,6 +51,15 @@ function Simulator(){
     },[location])
     
     
+    useEffect(() => {
+        if(partsIndex!==undefined&&Number.isInteger(partsIndex)){
+            let range=AffixList.find((s)=>s.id===(parseInt(partsIndex))).main;
+            const targetAffix = range[0];
+            setMainSelectOptions(targetAffix); 
+        }
+       
+        
+    }, [partsIndex]); 
 
     function init(){
         SubData.current=[];
@@ -99,6 +109,14 @@ function Simulator(){
         oldHistory=oldHistory.filter((item,i)=>i!==index);
         localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
     }
+    //清除相關資料
+    function clearData(){
+        setExpRate(undefined);
+        setRank({color:undefined,rank:undefined});
+        setPieNums(undefined);
+        setRscore(undefined);
+        setRelic(undefined);
+    }
 
     //儲存紀錄
     function saveRecord(){
@@ -133,7 +151,7 @@ function Simulator(){
             score:Rscore,
             rank:Rrank,
             pieData:PieNums,
-            stand:selfStand,
+            stand:standDetails.current,
             relic:relic
         };
 
@@ -161,8 +179,10 @@ function Simulator(){
         setRscore(data.score)
         setStatusMsg('資料替換完畢!!');
         setPieNums(data.pieData);
-        setSelfStand(data.stand);
+        standDetails.current=data.stand;
         setRelic(data.relic);
+
+        document.getElementById("resultDetails").scrollIntoView({ behavior: "smooth" });
     }
 
     //儲存遺器資訊
@@ -186,12 +206,12 @@ function Simulator(){
     //部位選擇器
     const PartSelect=()=>{
         
-        let options=[<option value={'undefined'} key={'Parts'+'undefined'}>請選擇</option>];
+        let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
         partArr.map((a,i)=>{
-            options.push(<>
+            options.push(
                 <option value={i+1} key={'Parts'+i} >{a}</option>       
-            </>)
+            )
         })
 
         return(
@@ -202,21 +222,18 @@ function Simulator(){
     }
 
     const MainAffixSelect=()=>{
-        if(Number.isInteger(parseInt(partsIndex))){
+        if(Number.isInteger(parseInt(partsIndex))&&partsIndex!==undefined){
             let range=AffixList.find((s)=>s.id===(parseInt(partsIndex))).main;
             
             //如果只有固定一個主屬性的情況下
             if(range.length===1){
-                let targetAffix=range[0];
-                setMainSelectOptions(targetAffix);
-
-                return(<span className='text-white'>{targetAffix}</span>)
+                return(<span className='text-white'>{MainSelectOptions}</span>)
             }else{
                 //如果超過一個的情況下
-                let options=[<option value={'undefined'}>請選擇</option>];
+                let options=[<option value={'undefined'} key={"MainAfffixUndefined"}>請選擇</option>];
 
                 range.map((s,i)=>{
-                    options.push(<><option value={s} key={'Mainaffix'+i}>{s}</option></>)
+                    options.push(<option value={s} key={'Mainaffix'+i}>{s}</option>)
                 });
 
                 return(<select  defaultValue={MainSelectOptions} 
@@ -231,14 +248,14 @@ function Simulator(){
     const SubAffixSelect=({index})=>{
         if(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'){
             let range=AffixList.find((s)=>s.id===parseInt(partsIndex)).sub;
-            let options=[<option value={'undefined'}>請選擇</option>];
+            let options=[<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
 
             range.map((s,i)=>{
-                options.push(<><option value={s} key={`Subaffix${i}`}>{s}</option></>)
+                options.push(<option value={s} key={`Subaffix${i}`}>{s}</option>)
             });
             
 
-            return(<><div className='my-1 '>
+            return(<div className='my-1' key={'SubAffixSelect'}>
                 <select defaultValue={SubData.current[index].subaffix} 
                         onChange={(event)=>updateSubAffix(event.target.value,index)} 
                         className=''
@@ -254,7 +271,7 @@ function Simulator(){
                         onChange={(event)=>updateSubCount(event.target.value,index)}
                         className='ml-2 text-center' disabled={!isChangeAble}
                         min={0} max={5} title='強化次數'/>
-                </div></>)
+                </div>)
         }else{
             return(<></>)
         }   
@@ -304,11 +321,11 @@ function Simulator(){
             setSelfStand(stand);
         }
 
-        return(<>
+        return(
             <div className='flex flex-col'>
                 {list}
             </div>
-        </>)
+        )
     }
 
     //簡易瀏覽
@@ -354,16 +371,15 @@ function Simulator(){
             const list=[];
 
             relic.subaffix.forEach((s)=>{
-                list.push(<>
-                    <div className='flex flex-row'>
+                list.push(
+                    <div className='flex flex-row' key={'Data'+s.subaffix}>
                         <span className='text-white text-left flex w-[80px]'>{s.subaffix}</span>
                         <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
-                    </div>
-                    
-                </>)
+                    </div>    
+                )
             })
             
-            return(<>
+            return(
                 <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
                     ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
                     <div>
@@ -380,7 +396,7 @@ function Simulator(){
                         </div>
                     </div>
                 </div>
-            </>)
+            )
         }else{
             return(<></>)
         }
@@ -434,7 +450,7 @@ function Simulator(){
         setProcessBtn(false);
         setIsChangeAble(false);
         setStatusMsg('數據計算處理中!!');
-        setPieNums(undefined);
+        clearData();
         worker.postMessage(postData);
 
         // 接收 Worker 返回的訊息
@@ -446,6 +462,7 @@ function Simulator(){
             setPieNums(event.data.returnData);
             setRank(event.data.relicrank);
             saveRelic();
+            standDetails.current=selfStand;
             
             //恢復點擊
             setProcessBtn(true);
@@ -458,7 +475,7 @@ function Simulator(){
         if(historyData){
             return(
                 historyData.map((item,i)=>
-                    <PastPreview index={i} />
+                    <PastPreview index={i} key={'historyData'+i}/>
                 )
             )
         }else{
@@ -494,25 +511,22 @@ function Simulator(){
             let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
             mergedArray.forEach((a,i)=>{
-                options.push(<>
+                options.push(
                     <option value={a} key={'Affix'+i} >{a}</option>       
-                </>)
+                )
             });
 
             return(
-                <>
-                    <div className='flex flex-col'>
-                        <div className='flex flex-row flex-wrap'>
-                            <select value={selectAffix} 
-                                onChange={(event)=>{setAffix(event.target.value)}}
-                                disabled={!isChangeAble} className='mr-1'>{options}</select>
-                            <div className='max-[520px]:mt-1 '>
-                                <button className='processBtn' onClick={addAffix}>添加</button>
-                                <button className='deleteBtn ml-1' onClick={clearAffix}>清空</button>
-                            </div>
-                        </div>
+                <div className='flex flex-row flex-wrap'>
+                    <select value={selectAffix} 
+                        onChange={(event)=>{setAffix(event.target.value)}}
+                        disabled={!isChangeAble} className='mr-1'>{options}</select>
+                    <div className='max-[520px]:mt-1 '>
+                        <button className='processBtn' onClick={addAffix}>添加</button>
+                        <button className='deleteBtn ml-1' onClick={clearAffix}>清空</button>
                     </div>
-                </>
+                </div>
+                
             )
         }else{
             return(<></>)
@@ -522,15 +536,15 @@ function Simulator(){
 
     //顯示你輸出的標準為何?
     const StandDetails=()=>{
-        if(selfStand!==undefined){
-            const list=selfStand.map((s)=><>
-                <div className='flex flex-row'>
+        if(standDetails.current!==undefined){
+            const list=standDetails.current.map((s,i)=>
+                <div className='flex flex-row' key={'StandDetails'+i}>
                     <div className='flex justify-between w-[200px] mt-0.5'>
                         <span>{s.name}</span>
                         <span>{s.value}</span>
                     </div>
                 </div>
-            </>)
+            )
 
             return(<>
                 <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
@@ -609,14 +623,10 @@ function Simulator(){
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具主要目的是給予一些想要重洗詞條的人參考</li>
-                        <li>此工具的一些數據以及標準是參考
-                            <a href='https://www.otameta.com/hub/honkai-starrail/relic-scorer' className='underline'>relic scorer</a>
-                        </li>
                         <li>翻盤機率是指說該遺器透過重洗詞條道具後導致遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星遺器</li>
                         <li>此工具目前處於BETA階段，相關數據仍有更改的可能</li>
                         <li>聲明:此工具相關程式邏輯均為本人Ange完成</li>
-                        <li>如果有碰到歷史紀錄打開有問題的建議刪掉!!</li>
                     </ul>
                 </div>
             </div>
@@ -636,7 +646,7 @@ function Simulator(){
                 <div className='mt-3 w-1/4 max-[600px]:w-[50%]' hidden={PieNums===undefined}>
                     <StandDetails />
                 </div>
-                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]'>
+                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]' id="resultDetails">
                     <Result ExpRate={ExpRate} 
                             Rscore={Rscore} 
                             statusMsg={statusMsg} 

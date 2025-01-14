@@ -15,12 +15,12 @@ function Menu(){
         engname:'import'
     }];
 
-    const menuList=list.map((m)=><>
-        <div className='mr-3 flex flex-col bg-gray-700 min-w-[100px] rounded-md justify-center px-2'>
+    const menuList=list.map((m,i)=>
+        <div className='mr-3 flex flex-col bg-gray-700 min-w-[100px] rounded-md justify-center px-2' key={'menu'+i}>
             <Link to={m.link} className='text-center'><span className='text-gray-500 font-bold text-lg'>{m.name}</span></Link>
             <span className='text-md text-gray-400'>{m.engname}</span>
         </div>
-    </>);
+    );
 
 
     return(<>

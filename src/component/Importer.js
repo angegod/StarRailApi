@@ -39,6 +39,7 @@ function Import(){
 
     //自訂義標準
     const [selfStand,setSelfStand]=useState([]);
+    const standDetails=useRef([])
 
     //元件狀態
     const [isChangeAble,setIsChangeAble]=useState(true);
@@ -166,7 +167,7 @@ function Import(){
         setStatusMsg('資料替換完畢!!');
         setPieNums(data.pieData);
         setRelic(data.relic);
-        setSelfStand(data.stand);
+        standDetails.current=data.stand;
 
         document.getElementById("resultDetails").scrollIntoView({ behavior: "smooth" });
     }
@@ -226,6 +227,7 @@ function Import(){
             setStatusMsg('計算完畢!!');
             setPieNums(event.data.returnData);
             setRank(event.data.relicrank);
+            standDetails.current=selfStand;
 
             //將儲存按鈕設為可用
             setIsSaveAble(true);
@@ -274,7 +276,7 @@ function Import(){
             rank:Rrank,
             pieData:PieNums,
             relic:relic,
-            stand:selfStand
+            stand:standDetails.current
         };
         let oldHistory=historyData;
         console.log(data);
@@ -308,9 +310,9 @@ function Import(){
         let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
         partArr.forEach((a,i)=>{
-            options.push(<>
-                <option value={i+1} key={'Parts'+i} >{a}</option>       
-            </>)
+            options.push(
+                <option value={i+1} key={`PartSelect${i}`} >{a}</option>       
+            )
         })
 
         return(
@@ -382,17 +384,17 @@ function Import(){
             const list=[];
 
             relic.sub_affix.forEach((s)=>{
-                list.push(<>
-                    <div className='flex flex-row'>
+                list.push(
+                    <div className='flex flex-row' key={'Subaffix_'+s.name}>
                         <span className='text-white text-left flex w-[70px]'>{s.name}</span>
                         <span className='flex w-[70px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
                     </div>
                     
-                </>)
+                )
             })
             
             
-            return(<>
+            return(
                 <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
                     ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
                     <div>
@@ -413,7 +415,7 @@ function Import(){
                         </div>
                     </div>
                 </div>
-            </>)
+            )
         }else{
             return(<></>)
         }
@@ -455,15 +457,15 @@ function Import(){
     
     //顯示你輸出的標準為何?
     const StandDetails=()=>{
-        if(selfStand!==undefined){
-            const list=selfStand.map((s)=><>
-                <div className='flex flex-row'>
+        if(standDetails.current!==undefined){
+            const list=standDetails.current.map((s)=>
+                <div className='flex flex-row' key={'StandDetails_'+s.name}>
                     <div className='flex justify-between w-[200px] mt-0.5'>
                         <span>{s.name}</span>
                         <span>{s.value}</span>
                     </div>
                 </div>
-            </>)
+            )
 
             return(<>
                 <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
@@ -538,7 +540,7 @@ function Import(){
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Parts 部位:</span></div>
-                        <PartSelect />   
+                        <PartSelect key={"partSelect"}/>   
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={partsIndex===undefined}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Affix 有效詞條:</span></div>
@@ -575,7 +577,7 @@ function Import(){
                     </div>
                     <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row max-[600px]:!flex-col'>
                         {historyData.map((item,i)=>
-                            <PastPreview index={i} />
+                            <PastPreview index={i} key={'ImportData'+i}/>
                         )}
                     </div>
                 </div>
