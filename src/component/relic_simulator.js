@@ -78,9 +78,10 @@ function Simulator(){
         
         //為了避免更新迭代而造成歷史紀錄格式上的問題 
         //必須要核對重大版本代號 如果版本不一致也不予顯示並且刪除
-        history=history.filter((h)=>h.version===version);
-        localStorage.setItem('HistoryData',JSON.stringify(history));
+        
         if(history!=null&&history.length>0){
+            history=history.filter((h)=>h.version===version);
+            localStorage.setItem('HistoryData',JSON.stringify(history));
             setHistoryData(history);
             setStatusMsg('先前紀錄已匯入!!');
         }
