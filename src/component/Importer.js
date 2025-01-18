@@ -210,7 +210,9 @@ function Import(){
 
         relic.sub_affix.forEach((s,i)=>{
             let typeName=AffixName.find((a)=>a.fieldName===s.type);
-            let val=Number(s.display.split('%')[0]);
+            //let val=Number(s.display.split('%')[0]);
+            let val=(!typeName.percent)?Number(s.value.toFixed(2)):Number((s.value*100).toFixed(2));
+            
 
             let data={
                 index:i, 
@@ -220,7 +222,8 @@ function Import(){
             }
 
             SubData.push(data);
-        })
+        });
+
         
         let postData={
             charID:charID,
@@ -348,7 +351,7 @@ function Import(){
                 name:selectAffix,
                 value:1
             }
-
+            console.log(selectAffix);
             if(selfStand.length<6&&!(selfStand.findIndex((item)=>item.name===selectAffix)>=0))
                 setSelfStand((old)=>[...old,newItem]);
         }
@@ -367,13 +370,10 @@ function Import(){
             let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
             mergedArray.forEach((a,i)=>{
-                options.push(<>
-                    <option value={a} key={'Affix'+i} >{a}</option>       
-                </>)
+                options.push(<option value={a} key={'Affix'+i} >{a}</option>)
             });
 
             return(
-                <>
                     <div className='flex flex-col'>
                         <div className='flex flex-row flex-wrap'>
                             <select value={selectAffix} 
@@ -385,7 +385,6 @@ function Import(){
                             </div>
                         </div>
                     </div>
-                </>
             )
         }else{
             return(<></>)
@@ -592,7 +591,7 @@ function Import(){
                     </div>
                     <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row max-[600px]:!flex-col'>
                         {historyData.map((item,i)=>
-                            <PastPreview index={i} key={'ImportData'+i}/>
+                            <PastPreview index={i} />
                         )}
                     </div>
                 </div>

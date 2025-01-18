@@ -19,7 +19,6 @@ onmessage = function (event) {
 
     //計算可能的強化組合
     let combination=findCombinations(enchanceCount,4);
-    console.log(combination);
     
     //var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
     let charStandard=calStand(event.data.standard);
@@ -102,7 +101,7 @@ onmessage = function (event) {
             {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},
             {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
         ];
-        let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num>Number(origin)-0.8);
+        let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num>Number(origin));
         let expRate=parseFloat((overScoreList.length)/(result.length)).toFixed(2);
         let copy=JSON.parse(JSON.stringify(result));
         let relicrank=undefined;
@@ -261,7 +260,6 @@ function calStand(stand){
     //根據有效詞條關鍵字
     stand.forEach((s)=>{
         let target=AffixName.find((a)=>a.name===s.name).type;
-
         model[target]=parseFloat(s.value);
     });
 
