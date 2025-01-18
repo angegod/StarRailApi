@@ -11,7 +11,7 @@ import '../css/simulator.css';
 //遺器強化模擬器
 function Simulator(){
     //版本代號
-    const version="1.0";
+    const version="1.1";
 
     //部位選擇 跟主詞條選擇
     const [partsIndex,setPartsIndex]=useState(undefined);

@@ -1,3 +1,4 @@
+//強化詞條種類組合
 export function findCombinations(sum, length) {
   const result = [];
 
@@ -10,7 +11,7 @@ export function findCombinations(sum, length) {
     }
 
     // 每個元素最少是 1，並且剩下的元素總和不能超過剩餘的 sum
-    for (let i = 1; i <= sum - currentSum - (length - arr.length - 1); i++) {
+    for (let i = 0; i <= sum - currentSum ; i++) {
       arr.push(i);
       generateCombination(arr, currentSum + i, arr.length);
       arr.pop();
@@ -25,6 +26,7 @@ export function findCombinations(sum, length) {
 // 測試
 //console.log(findCombinations(4, 9));
 
+//強化詞條數據種類
 export  function EnchanceAllCombinations(enhanceCounts) {
     const results = [];
     const values = [0, 1, 2]; // 強化程度可能的值

@@ -12,7 +12,7 @@ import AffixList from '../data/AffixList';
 
 function Import(){
     //版本序號
-    const version="1.0";
+    const version="1.1";
 
     //玩家ID跟腳色ID
     const userID=useRef('');

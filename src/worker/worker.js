@@ -18,7 +18,8 @@ onmessage = function (event) {
     });
 
     //計算可能的強化組合
-    let combination=findCombinations(enchanceCount+4,4);
+    let combination=findCombinations(enchanceCount,4);
+    console.log(combination);
     
     //var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
     let charStandard=calStand(event.data.standard);
@@ -42,6 +43,7 @@ onmessage = function (event) {
         combination.forEach((c,i)=>{
             //計算各種強化程度的組合
             let subcombination=EnchanceAllCombinations(c);
+            
 
             subcombination.forEach((s)=>{
                 let res=0;
@@ -52,10 +54,10 @@ onmessage = function (event) {
                 let caltype=[];//已經計算過的詞條種類
 
                 s.forEach((el,i) => {//對每個屬性詞條開始進行模擬計算
-                    total=0;//詞條模擬出來的總和
-
                     let sub=coeEfficent[i];
+                    
                     let targetRange=AffixName.find((st)=>st.fieldName===sub.fieldName).range;
+                    total=targetRange[1];//詞條模擬出來的總和，初始為
                     el.forEach((num)=>total+=targetRange[num]);
 
                     //計算有效詞條數
@@ -65,8 +67,6 @@ onmessage = function (event) {
                     //獲得加權有效詞條數 並加上去
                     let affixmutl=parseFloat(charStandard[sub.type]*cal);
                     
-                    //碰到同一種類的詞條需要擇優處理
-                    //let smallAffix=caltype.find((ct)=>ct.type===sub.type);
                     
                     //如果沒有計算過此種類詞條
                     caltype.push({
@@ -83,7 +83,7 @@ onmessage = function (event) {
                 
 
                 //理想分數
-                let IdealyScore=Number((parseFloat(res/calPartWeights(charStandard,partsIndex))*100).toFixed(1));
+                let IdealyScore=Number((parseFloat(res/calPartWeights(charStandard,partsIndex))*100).toFixed(2));
                 result.push(IdealyScore);
                 
             });
@@ -102,7 +102,7 @@ onmessage = function (event) {
             {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},
             {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
         ];
-        let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num>=Number(origin));
+        let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num>Number(origin)-0.8);
         let expRate=parseFloat((overScoreList.length)/(result.length)).toFixed(2);
         let copy=JSON.parse(JSON.stringify(result));
         let relicrank=undefined;
