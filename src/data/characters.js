@@ -58,12 +58,16 @@ const characters = [
     { charID: 1314, name: "翡翠", eng_name: "Jade" },
     { charID: 1315, name: "波提歐", eng_name: "Boothill" },
     { charID: 1317, name: "亂破", eng_name: "Rappa" },
+    { charID: 1401, name: "大黑塔", eng_name: "The Herta" },
+    { charID: 1402, name: "阿格萊雅", eng_name: "Aglaea" },
     { charID: 8001, name: "開拓者(男)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8002, name: "開拓者(女)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8003, name: "開拓者(男)(存護)", eng_name: "Trailblazer (Preservation)" },
     { charID: 8004, name: "開拓者(女)(存護)", eng_name: "Trailblazer (Preservation)" },
     { charID: 8005, name: "開拓者(男)(同諧)", eng_name: "Trailblazer (Harmony)" },
-    { charID: 8006, name: "開拓者(女)(同諧)", eng_name: "Trailblazer (Harmony)" }
+    { charID: 8006, name: "開拓者(女)(同諧)", eng_name: "Trailblazer (Harmony)" },
+    { charID: 8007, name: "開拓者(男)(記憶)", eng_name: "Trailblazer (Memory)" },
+    { charID: 8008, name: "開拓者(女)(記憶)", eng_name: "Trailblazer (memory)" }
 ];
 
 //腳色列表

@@ -133,14 +133,30 @@ function Import(){
                 'Accept-Encoding':'gzip,deflate,br'
             }
         }).then((response)=>{
-            if(response.data===800){
-                setStatusMsg('找不到該腳色。必須要將腳色放在展示區才可以抓到資料!!');
-                setIsChangeAble(true);
-            }else if(response.data===801){
-                setStatusMsg('找不到該部件的遺器，如果是剛剛才更新的話建議等五分鐘再使用一次!!');
-                setIsChangeAble(true);
-            }else
-                calscore(response.data);
+            console.log(response.data);
+
+            switch(response.data){
+                case 800:
+                    setStatusMsg('找不到該腳色。必須要將腳色放在展示區才可以抓到資料!!');
+                    setIsChangeAble(true);
+                    break;
+                case 801:
+                    setStatusMsg('找不到該部件的遺器，如果是剛剛才更新的話建議等五分鐘再使用一次!!');
+                    setIsChangeAble(true);
+                    break;
+                case 802:
+                    setStatusMsg('該遺器等級尚未強化至滿等，請先強化至滿等後再嘗試');
+                    setIsChangeAble(true);
+                    break;
+                case 803:
+                    setStatusMsg('該遺器非五星遺器，請選擇部位為五星強化滿等之遺器');
+                    setIsChangeAble(true);
+                    break;
+                default:
+                    calscore(response.data);
+                    break;
+            }
+
         }).catch((err)=>{
             setStatusMsg('系統正在維護中 請稍後再試!!');
             setIsChangeAble(true);
@@ -154,7 +170,7 @@ function Import(){
         setRank({color:undefined,rank:undefined});
         setPieNums(undefined);
         setRscore(undefined);
-        setRelic(undefined);
+        setRelic();
     }
 
     //檢視過往紀錄
@@ -520,8 +536,8 @@ function Import(){
     return(<>
         <div className='flex flex-col w-4/5 mx-auto'>
              <Helmet>
-                <title>星鐵--遺器匯入</title>
-                <meta name="description" content="星鐵--遺器匯入" />
+                <title>崩鐵--遺器匯入</title>
+                <meta name="description" content="崩鐵--遺器匯入" />
                 <meta name="keywords" content="遺器強化、遺器強化模擬器" />
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>

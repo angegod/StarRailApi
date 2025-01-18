@@ -565,8 +565,8 @@ function Simulator(){
     return(<>
         <div className='w-4/5 mx-auto '>
             <Helmet>
-                <title>星鐵--遺器強化模擬器</title>
-                <meta name="description" content="星鐵--遺器強化模擬器" />
+                <title>崩鐵--遺器強化模擬器</title>
+                <meta name="description" content="崩鐵--遺器強化模擬器" />
                 <meta name="keywords" content="遺器強化、遺器強化模擬器" />
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器強化模擬器</h1>

@@ -13,7 +13,7 @@ const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
                     </div>
                     <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
                         <span className='text-white'>遺器評級:
-                            <span style={{color:Rrank.color}} className='pl-2'>{Rrank.rank} &nbsp; {Rscore} </span>
+                            <span style={{color:Rrank.color}} className='pl-2'>{Rrank.rank} &nbsp; {Rscore}/100 </span>
                         </span>
                     </div>
                     <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
