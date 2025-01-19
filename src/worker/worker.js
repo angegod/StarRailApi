@@ -103,7 +103,7 @@ onmessage = function (event) {
             {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
         ];
         let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num-deviation>Number(origin));
-        let expRate=parseFloat((overScoreList.length)/(result.length)).toFixed(2);
+        let expRate=(overScoreList.length)/(result.length).toFixed(2);
         let copy=JSON.parse(JSON.stringify(result));
         let relicrank=undefined;
         let returnData=[]
