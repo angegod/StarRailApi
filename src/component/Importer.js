@@ -585,7 +585,7 @@ function Import(){
                         <li>此工具是計算該遺器依據您的標準持有的有效詞條數量</li>
                         <li>翻盤機率是指該遺器透過重洗詞條道具後遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星強化至滿等遺器</li>
-                        <li>此工具目前處於BETA階段，相關數據仍有更改的可能
+                        <li>此工具相關數據仍有更改的可能。操作說明可以參考
                             <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a>
                         </li>
                         <li>聲明:此工具相關程式邏輯均為本人Ange完成</li>
