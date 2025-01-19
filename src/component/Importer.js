@@ -185,7 +185,10 @@ function Import(){
         setRelic(data.relic);
         standDetails.current=data.stand;
 
-        document.getElementById("resultDetails").scrollIntoView({ behavior: "smooth" });
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
     }
 
     //刪除過往紀錄
@@ -211,12 +214,11 @@ function Import(){
         relic.sub_affix.forEach((s,i)=>{
             let typeName=AffixName.find((a)=>a.fieldName===s.type);
             //let val=Number(s.display.split('%')[0]);
-            let val=(!typeName.percent)?Number(s.value.toFixed(2)):Number((s.value*100).toFixed(2));
+            let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
             
-
             let data={
                 index:i, 
-                subaffix:typeName.name  ,
+                subaffix:typeName.name,
                 data:val, //詞條數值
                 count:s.count-1//強化次數
             }
@@ -251,7 +253,10 @@ function Import(){
             //將儲存按鈕設為可用
             setIsSaveAble(true);
             setIsChangeAble(true);
-            document.getElementById("resultDetails").scrollIntoView({ behavior: "smooth" });
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
         };
     }
 
@@ -347,11 +352,13 @@ function Import(){
         
         //添加標準 目前設定先不超過六個有效 且不重複
         function addAffix(){
+            //如果為預設選項則不予選擇
+            if(selectAffix===undefined)
+                return;
             let newItem={
                 name:selectAffix,
                 value:1
             }
-            console.log(selectAffix);
             if(selfStand.length<6&&!(selfStand.findIndex((item)=>item.name===selectAffix)>=0))
                 setSelfStand((old)=>[...old,newItem]);
         }

@@ -10,6 +10,7 @@ onmessage = function (event) {
     let partsIndex=parseInt(event.data.partsIndex);
     //let charID=event.data.charID;
     let MainAffix=AffixName.find((a)=>a.name===event.data.MainData);
+    let deviation=(event.data.deviation!==undefined)?event.data.deviation:0;
 
     //計算可用強化次數
     var enchanceCount=0;
@@ -101,7 +102,7 @@ onmessage = function (event) {
             {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},
             {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
         ];
-        let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num>Number(origin));
+        let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num-deviation>Number(origin));
         let expRate=parseFloat((overScoreList.length)/(result.length)).toFixed(2);
         let copy=JSON.parse(JSON.stringify(result));
         let relicrank=undefined;

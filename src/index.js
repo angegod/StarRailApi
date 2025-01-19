@@ -4,12 +4,19 @@ import './index.css';
 import Menu from './component/Menu.js';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, Routes, Route,Link } from 'react-router-dom'
+import Footer from './component/Footer.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <Router basename="/StarRailApi">
-      <Menu />
+      <div className='min-h-[100vh]'>
+          <Menu />
+      </div>
+      <div >
+          <Footer />
+      </div>
+      
   </Router>
 );
 

@@ -228,6 +228,7 @@ function Simulator(){
             
             //如果只有固定一個主屬性的情況下
             if(range.length===1){
+                setMainSelectOptions(range[0]);
                 return(<span className='text-white'>{MainSelectOptions}</span>)
             }else{
                 //如果超過一個的情況下
@@ -443,7 +444,8 @@ function Simulator(){
             MainData:MainSelectOptions,
             SubData:SubData.current,
             partsIndex:partsIndex,
-            standard:selfStand
+            standard:selfStand,
+            deviation:0.5 //誤差值
         };
 
         //將按鈕disable
@@ -509,6 +511,7 @@ function Simulator(){
             let mergedArray = [...new Set([...target.main, ...target.sub])];
             mergedArray=mergedArray.filter((item)=>item!=='生命力'&&item!=='攻擊力'&&item!=='防禦力')
 
+            console.log(mergedArray);
             let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
             mergedArray.forEach((a,i)=>{
