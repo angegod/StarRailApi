@@ -491,6 +491,8 @@ function Simulator(){
         
         //添加標準 目前設定先不超過六個有效 且不重複
         function addAffix(){
+            if(selectAffix===undefined)
+                return;
             let newItem={
                 name:selectAffix,
                 value:1
