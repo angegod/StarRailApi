@@ -542,9 +542,9 @@ function Import(){
     return(<>
         <div className='flex flex-col w-4/5 mx-auto'>
              <Helmet>
-                <title>崩鐵--遺器匯入</title>
-                <meta name="description" content="崩鐵--遺器匯入" />
-                <meta name="keywords" content="遺器強化、遺器強化模擬器" />
+                <title>崩鐵--遺器重洗匯入</title>
+                <meta name="description" content="崩鐵--遺器重洗匯入" />
+                <meta name="keywords" content="遺器重洗、遺器重洗模擬器" />
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>
             <div className='flex flex-row flex-wrap'>

@@ -7,11 +7,11 @@ import Importer from './Importer.js';
 function Menu(){
     let list=[{
         link:'/',
-        name:'遺器強化模擬器',
+        name:'遺器重洗模擬器',
         engname:'simulator'
     },{
         link:'/import',
-        name:'遺器匯入',
+        name:'遺器重洗匯入',
         engname:'import'
     }];
 

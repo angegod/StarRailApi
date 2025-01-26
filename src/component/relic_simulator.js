@@ -570,11 +570,11 @@ function Simulator(){
     return(<>
         <div className='w-4/5 mx-auto '>
             <Helmet>
-                <title>崩鐵--遺器強化模擬器</title>
-                <meta name="description" content="崩鐵--遺器強化模擬器" />
-                <meta name="keywords" content="遺器強化、遺器強化模擬器" />
+                <title>崩鐵--遺器重洗模擬器</title>
+                <meta name="description" content="崩鐵--遺器重洗模擬器" />
+                <meta name="keywords" content="遺器重洗、遺器重洗模擬器" />
             </Helmet>
-            <h1 className='text-red-500 font-bold text-2xl'>遺器強化模擬器</h1>
+            <h1 className='text-red-500 font-bold text-2xl'>遺器重洗模擬器</h1>
             <div className='flex flex-row flex-wrap'>
                 <div className='flex flex-col mt-2 min-w-[600px] w-1/2 max-[600px]:w-[100%] max-[600px]:min-w-[275px]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3'>
