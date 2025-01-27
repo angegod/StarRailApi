@@ -95,8 +95,8 @@ onmessage = function (event) {
     p1.then((score)=>{
         //設立分數標準
         let scoreStand=[
-            {rank:'S+',stand:85,color:'rgb(239, 68, 68)',tag:'S+'},
-            {rank:'S',stand:75,color:'rgb(239, 68, 68)',tag:'S'},
+            {rank:'S+',stand:80,color:'rgb(239, 68, 68)',tag:'S+'},
+            {rank:'S',stand:65,color:'rgb(239, 68, 68)',tag:'S'},
             {rank:'A',stand:50,color:'rgb(234, 179, 8)',tag:'A'},
             {rank:'B',stand:35,color:'rgb(234, 88 , 12)',tag:'B'},
             {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},

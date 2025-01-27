@@ -131,7 +131,7 @@ function Simulator(){
             setHistoryData((old)=>old.filter((item,i)=>i!==0));
          
         //如果當前沒有任何資料則不予匯入
-        if(!PieNums||!ExpRate||!Rrank||!Rscore){
+        if(!PieNums||!ExpRate||!Rrank||Rscore===undefined){
             setStatusMsg("當前沒有任何數據，不予儲存!!");
             return;
         }
@@ -209,7 +209,7 @@ function Simulator(){
         
         let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
-        partArr.map((a,i)=>{
+        partArr.forEach((a,i)=>{
             options.push(
                 <option value={i+1} key={'Parts'+i} >{a}</option>       
             )
@@ -234,7 +234,7 @@ function Simulator(){
                 //如果超過一個的情況下
                 let options=[<option value={'undefined'} key={"MainAfffixUndefined"}>請選擇</option>];
 
-                range.map((s,i)=>{
+                range.forEach((s,i)=>{
                     options.push(<option value={s} key={'Mainaffix'+i}>{s}</option>)
                 });
 
@@ -252,7 +252,7 @@ function Simulator(){
             let range=AffixList.find((s)=>s.id===parseInt(partsIndex)).sub;
             let options=[<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
 
-            range.map((s,i)=>{
+            range.forEach((s,i)=>{
                 options.push(<option value={s} key={`Subaffix${i}`}>{s}</option>)
             });
             
@@ -283,7 +283,7 @@ function Simulator(){
     const CharSelect=()=>{
         let options=[];
         
-        characters.map((c)=>{
+        characters.forEach((c)=>{
             options.push({
                 value: c.charID, label: c.name
             })
@@ -424,7 +424,7 @@ function Simulator(){
         })
 
         if(errors) return;
-        //副詞條之間是否重複?
+        //輸入的副詞條之間是否重複?
         const seen = new Set();
         for (const obj of SubData.current) {
             if (seen.has(obj['subaffix'])) {
@@ -434,6 +434,15 @@ function Simulator(){
             }
             seen.add(obj['subaffix']);
         }
+
+        //檢查標準是否合法
+        selfStand.forEach((s)=>{
+            if(s.value===''){
+                errors=true;
+                alert('加權指數不可為空或其他非法型式');
+            }
+                
+        })
 
         if(errors) return;
         
@@ -513,7 +522,7 @@ function Simulator(){
             let mergedArray = [...new Set([...target.main, ...target.sub])];
             mergedArray=mergedArray.filter((item)=>item!=='生命力'&&item!=='攻擊力'&&item!=='防禦力')
 
-            console.log(mergedArray);
+            //console.log(mergedArray);
             let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
             mergedArray.forEach((a,i)=>{
@@ -605,7 +614,7 @@ function Simulator(){
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Affix 有效詞條:</span></div>
                         <StandardSelect />
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={selfStand.length==0}>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={selfStand.length===0}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Params 參數:</span></div>
                         <ShowStand />
                     </div>

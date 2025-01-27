@@ -203,6 +203,7 @@ function Import(){
     }
 
     function calscore(relic){
+        let isCheck=true;
         //將獲得到遺器先儲存起來
         setRelic(relic);
 
@@ -219,14 +220,23 @@ function Import(){
             let data={
                 index:i, 
                 subaffix:typeName.name,
-                data:val, //詞條數值
+                data:val, //詞條數值    
                 count:s.count-1//強化次數
             }
 
             SubData.push(data);
         });
 
-        
+        //檢查標準是否合法
+        selfStand.forEach((s)=>{
+            if(s.value===''){
+                isCheck=false;
+                setStatusMsg('加權指數不可為空或其他非法型式');
+            }
+                
+        })
+
+        //制定送出資料格式
         let postData={
             charID:charID,
             MainData:MainAffix.name,
@@ -235,29 +245,32 @@ function Import(){
             standard:selfStand
         };
         
-        setStatusMsg('數據計算處理中......');
+        if(isCheck){
+            setStatusMsg('數據計算處理中......');
+            worker.postMessage(postData);
 
-        worker.postMessage(postData);
+            // 接收 Worker 返回的訊息
+            worker.onmessage = function (event) {
+                
+                //輸入相關數據
+                setExpRate(event.data.expRate);
+                setRscore(event.data.relicscore)
+                setStatusMsg('計算完畢!!');
+                setPieNums(event.data.returnData);
+                setRank(event.data.relicrank);
+                standDetails.current=selfStand;
 
-        // 接收 Worker 返回的訊息
-        worker.onmessage = function (event) {
-            
-            //輸入相關數據
-            setExpRate(event.data.expRate);
-            setRscore(event.data.relicscore)
-            setStatusMsg('計算完畢!!');
-            setPieNums(event.data.returnData);
-            setRank(event.data.relicrank);
-            standDetails.current=selfStand;
-
-            //將儲存按鈕設為可用
-            setIsSaveAble(true);
-            setIsChangeAble(true);
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
-            });
-        };
+                //將儲存按鈕設為可用
+                setIsSaveAble(true);
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            };
+        }
+        
+        //將送出按鈕設為可用
+        setIsChangeAble(true);
     }
 
     //儲存紀錄
@@ -447,10 +460,10 @@ function Import(){
     const ShowStand=()=>{
         const list=selfStand.map((s,i)=><>
             <div className='flex flex-row'>
-                <div className='flex justify-between w-[200px] mt-0.5 max-[600px]:w-[130px]'>
+                <div className='flex justify-between w-[200px] mt-0.5 max-[800px]:w-[130px] mr-2'>
                     <span className='whitespace-nowrap overflow-hidden'>{s.name}</span>
                     <input type='number' min={0} max={1} 
-                        className='ml-2 text-center' defaultValue={selfStand[i].value}
+                        className='ml-2 text-center max-h-[30px]' defaultValue={selfStand[i].value}
                         title='最小值為0 最大為1'
                         onChange={(event)=>changeVal(i,event.target.value)}/>
                     
@@ -464,6 +477,11 @@ function Import(){
         }
 
         function changeVal(index,val){
+            if(val>1||val<0){
+                val=1;
+                setStatusMsg('加權指數不可高於1或低於0!')
+            }
+
             let stand=selfStand;
             selfStand[index].value=val;
 
@@ -547,8 +565,8 @@ function Import(){
                 <meta name="keywords" content="遺器重洗、遺器重洗模擬器" />
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>
-            <div className='flex flex-row flex-wrap'>
-                <div className='flex flex-col w-1/2 max-[600px]:w-[100%]'>
+            <div className='flex flex-row flex-wrap justify-between'>
+                <div className='flex flex-col w-1/2 max-[700px]:w-[100%]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3'>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>玩家UID :</span></div>
                         <input type='text' placeholder='HSR UID' className='h-[40px] w-[200px] rounded-md pl-2' 
@@ -578,7 +596,7 @@ function Import(){
                     </div>
                     
                 </div>
-                <div className='w-1/2 max-w-[400px] flex flex-col max-[600px]:w-[100%] max-[600px]:mt-3'>
+                <div className='w-[40%] max-w-[400px] flex flex-col max-[700px]:w-[100%] max-[700px]:mt-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>
@@ -598,7 +616,7 @@ function Import(){
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
-                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row max-[600px]:!flex-col'>
+                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col'>
                         {historyData.map((item,i)=>
                             <PastPreview index={i} />
                         )}
