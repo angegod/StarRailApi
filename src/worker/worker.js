@@ -8,7 +8,7 @@ onmessage = function (event) {
     //宣告變數
     let SubData=event.data.SubData;
     let partsIndex=parseInt(event.data.partsIndex);
-    //let charID=event.data.charID;
+    console.log(SubData);
     let MainAffix=AffixName.find((a)=>a.name===event.data.MainData);
     let deviation=(event.data.deviation!==undefined)?event.data.deviation:0;
 
@@ -18,8 +18,9 @@ onmessage = function (event) {
         enchanceCount=enchanceCount+Number(sb.count);
     });
 
+
     //計算可能的強化組合
-    let combination=findCombinations(enchanceCount,4);
+    let combination=findCombinations(enchanceCount,SubData.filter((s)=>!s.locked).length);
     
     //var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
     let charStandard=calStand(event.data.standard);
@@ -30,12 +31,17 @@ onmessage = function (event) {
         coeEfficent.push({
             type:SubAffixType.type,
             fieldName:SubAffixType.fieldName,
-            num:Number(charStandard[SubAffixType.type])
+            num:Number(charStandard[SubAffixType.type]),
+            locked:(sub.locked)?true:false
         });
     });
+
+    console.log(coeEfficent);
+    //將沒有被鎖住不可計算的詞條倒裝
+    //coeEfficent.sort((a,b)=>)
+
     let MainData=charStandard[MainAffix.type];
     let result =[];
-    //let origin = relicScore(partsIndex,charID,SubData,MainData);
     let origin=relicScore(partsIndex,charStandard,SubData,MainData);
     //先算原本的遺器的分數
 
@@ -57,7 +63,7 @@ onmessage = function (event) {
                     let sub=coeEfficent[i];
                     
                     let targetRange=AffixName.find((st)=>st.fieldName===sub.fieldName).range;
-                    total=targetRange[1];//詞條模擬出來的總和，初始為
+                    total=targetRange[1];//詞條模擬出來的總和，初始為最中間的值
                     el.forEach((num)=>total+=targetRange[num]);
 
                     //計算有效詞條數
@@ -184,7 +190,6 @@ function relicScore(partsIndex,charStandard,SubData,MainData){
 
     //接下來根據部位調整分數
     //假設最大有效詞條數為10 實際只拿8個 代表你這件有80分以上的水準
-    //relicscore=parseFloat(55/calPartWeights(charStandard,partsIndex))*weight;
     relicscore=parseFloat(weight/calPartWeights(charStandard,partsIndex))*100;
     return parseFloat(relicscore).toFixed(1);
     

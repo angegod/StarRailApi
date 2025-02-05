@@ -290,7 +290,7 @@ function Simulator(){
         })
         const selectedOption = options.find((option) => option.value === charID);
         return(<Select options={options} 
-                    className='w-[200px]' 
+                    className='w-[170px]' 
                     onChange={(option)=>setCharID(option.value)}
                     value={selectedOption} 
                     isDisabled={!isChangeAble}/>)
@@ -308,7 +308,7 @@ function Simulator(){
                         onChange={(event)=>changeVal(i,event.target.value)}/>
                     
                 </div>
-                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-0.5'>移除</button>
+                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-0.5 min-w-[50px]'>移除</button>
             </div>
         </>)
 
@@ -577,7 +577,7 @@ function Simulator(){
     }
     
     return(<>
-        <div className='w-4/5 mx-auto '>
+        <div className='w-4/5 mx-auto max-[600px]:w-[90%]'>
             <Helmet>
                 <title>崩鐵--遺器重洗模擬器</title>
                 <meta name="description" content="崩鐵--遺器重洗模擬器" />

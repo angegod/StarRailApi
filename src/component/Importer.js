@@ -129,8 +129,7 @@ function Import(){
 
        await axios.post(apiLink,sendData,{
             headers: {
-                'Content-Type': 'application/json',
-                'Accept-Encoding':'gzip,deflate,br'
+                'Content-Type': 'application/json'
             }
         }).then((response)=>{
             console.log(response.data);
@@ -152,13 +151,26 @@ function Import(){
                     setStatusMsg('該遺器非五星遺器，請選擇部位為五星強化滿等之遺器');
                     setIsChangeAble(true);
                     break;
+                case 810:
+                    alert('溝通次數太過於頻繁 請稍後再試!!');
+                    break;
                 default:
                     calscore(response.data);
                     break;
             }
 
-        }).catch((err)=>{
-            setStatusMsg('系統正在維護中 請稍後再試!!');
+        }).catch((error)=>{
+            console.log(error);
+            if(error.response){
+                if(error.response.status===429){
+                    setStatusMsg('請求次數過於頻繁，請稍後再試!!');
+                }else{
+                    setStatusMsg('系統正在維護中 請稍後再試!!');
+                }
+            }else{
+                setStatusMsg('發生錯誤請稍後再試!!');    
+            }
+            
             setIsChangeAble(true);
         })
 
@@ -214,7 +226,6 @@ function Import(){
 
         relic.sub_affix.forEach((s,i)=>{
             let typeName=AffixName.find((a)=>a.fieldName===s.type);
-            //let val=Number(s.display.split('%')[0]);
             let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
             
             let data={
@@ -336,7 +347,7 @@ function Import(){
         })
         const selectedOption = options.find((option) => option.value === charID);
         return(<Select options={options} 
-                    className='w-[200px]' 
+                    className='w-[170px]' 
                     onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
                     value={selectedOption} 
                     isDisabled={!isChangeAble}/>)
@@ -463,12 +474,12 @@ function Import(){
                 <div className='flex justify-between w-[200px] mt-0.5 max-[800px]:w-[130px] mr-2'>
                     <span className='whitespace-nowrap overflow-hidden'>{s.name}</span>
                     <input type='number' min={0} max={1} 
-                        className='ml-2 text-center max-h-[30px]' defaultValue={selfStand[i].value}
+                        className='ml-2 text-center max-h-[30px] min-w-[40px]' defaultValue={selfStand[i].value}
                         title='最小值為0 最大為1'
                         onChange={(event)=>changeVal(i,event.target.value)}/>
                     
                 </div>
-                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-0.5'>移除</button>
+                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-0.5 min-w-[50px]'>移除</button>
             </div>
         </>)
 
@@ -558,7 +569,7 @@ function Import(){
     });
 
     return(<>
-        <div className='flex flex-col w-4/5 mx-auto'>
+        <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
              <Helmet>
                 <title>崩鐵--遺器重洗匯入</title>
                 <meta name="description" content="崩鐵--遺器重洗匯入" />
@@ -568,26 +579,26 @@ function Import(){
             <div className='flex flex-row flex-wrap justify-between'>
                 <div className='flex flex-col w-1/2 max-[700px]:w-[100%]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3'>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>玩家UID :</span></div>
+                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>玩家UID :</span></div>
                         <input type='text' placeholder='HSR UID' className='h-[40px] w-[200px] rounded-md pl-2' 
                                 id="userId"
                                 onChange={(e)=>userID.current=e.target.value}
                                 disabled={!isChangeAble}/>
                     </div>
                     <div className='flex flex-row [&>*]:mr-2 my-3'>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Characters 腳色:</span></div>
+                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Characters 腳色:</span></div>
                         <CharSelect />
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row`}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Parts 部位:</span></div>
+                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Parts 部位:</span></div>
                         <PartSelect key={"partSelect"}/>   
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={partsIndex===undefined}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Affix 有效詞條:</span></div>
+                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Affix 有效詞條:</span></div>
                         <StandardSelect />
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={selfStand.length===0}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Params 參數:</span></div>
+                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Params 參數:</span></div>
                         <ShowStand />
                     </div>
                     <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px]'>
@@ -596,7 +607,7 @@ function Import(){
                     </div>
                     
                 </div>
-                <div className='w-[40%] max-w-[400px] flex flex-col max-[700px]:w-[100%] max-[700px]:mt-3'>
+                <div className='w-[40%] max-w-[400px] flex flex-col max-[700px]:w-[100%] max-[700px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>
