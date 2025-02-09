@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import characters from '../data/characters';
 import Select from 'react-select';
 import AffixName from '../data/AffixName';
-import { useState ,useRef} from 'react';
+import { useState ,useRef,useCallback ,useMemo} from 'react';
 import '../css/simulator.css';
 import axios from 'axios';
 import Result from './Result';
@@ -33,6 +33,7 @@ function Import(){
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [PieNums,setPieNums]=useState(undefined);
     const [historyData,setHistoryData]=useState([]);
+    const memoizedHistoryData = useMemo(() => historyData, [JSON.stringify(historyData)]);
 
     //狀態訊息
     const [statusMsg,setStatusMsg]=useState(undefined);
@@ -51,7 +52,7 @@ function Import(){
     useEffect(()=>{
         //初始化歷史紀錄
         initHistory();
-    },[location])
+    },[location.pathname])
 
 
     function initHistory(){
@@ -61,24 +62,13 @@ function Import(){
 
         if(history===null) return;
 
-        //  過濾三天的紀錄
-        history = history.filter((h) => {
-          if (!h.calDate) return false; // 如果没有 calDate 属性，直接過濾掉
-          
-          const calDate = new Date(h.calDate); // 將 calDate 轉换为日期对象
-          const diffTime = today - calDate; // 計算時間差，單位為毫秒
-          const diffDays = diffTime / (1000 * 60 * 60 * 24); // 轉換為天數
-          
-          return diffDays <= 3; // 保留日期在 3 天内的记录
-        });
-
         //為了避免更新迭代而造成歷史紀錄格式上的問題 
         //必須要核對重大版本代號 如果版本不一致也不予顯示並且刪除
         history=history.filter((h)=>h.version===version);
         localStorage.setItem('importData',JSON.stringify(history));
 
         if(history != null && history.length > 0){
-            setHistoryData(history);
+            setHistoryData(prev=>prev != history ? history : prev);
         }
             
     }
@@ -189,12 +179,13 @@ function Import(){
     function checkDetails(index){
         let data=historyData[index];
        
-        setRank(data.rank);
-        setExpRate(data.expRate);
-        setRscore(data.score)
+        setRank(prev => prev !== data.rank ? data.rank : prev);
+        setExpRate(prev => prev !== data.expRate ? data.expRate : prev);
+        setRscore(prev => prev !== data.score ? data.score : prev);
+        setPieNums(prev => prev !== data.pieData ? data.pieData : prev);
+        setRelic(prev => prev !== data.relic ? data.relic : prev);
+
         setStatusMsg('資料替換完畢!!');
-        setPieNums(data.pieData);
-        setRelic(data.relic);
         standDetails.current=data.stand;
 
         window.scrollTo({
@@ -327,7 +318,7 @@ function Import(){
             stand:standDetails.current
         };
         let oldHistory=historyData;
-        console.log(data);
+        //console.log(data);
         setHistoryData((old)=>[...old,data]);
         setStatusMsg('已儲存');
         setIsSaveAble(false);
@@ -366,7 +357,7 @@ function Import(){
         return(
             <select value={partsIndex} 
                     onChange={(event)=>{setPartsIndex(event.target.value);setIsSaveAble(false);}}
-                    disabled={!isChangeAble}>{options}</select>
+                    disabled={!isChangeAble} className='h-[25px]'>{options}</select>
         )
     }
 
@@ -406,11 +397,11 @@ function Import(){
 
             return(
                     <div className='flex flex-col'>
-                        <div className='flex flex-row flex-wrap'>
+                        <div className='flex flex-row flex-wrap items-baseline'>
                             <select value={selectAffix} 
                                 onChange={(event)=>{setAffix(event.target.value)}}
-                                disabled={!isChangeAble} className='mr-1'>{options}</select>
-                            <div className='max-[520px]:mt-1 '>
+                                disabled={!isChangeAble} className='mr-1 h-[25px]'>{options}</select>
+                            <div className='max-[520px]:mt-1'>
                                 <button className='processBtn' onClick={addAffix}>添加</button>
                                 <button className='deleteBtn ml-1' onClick={clearAffix}>清空</button>
                             </div>
@@ -429,10 +420,39 @@ function Import(){
 
             const list=[];
 
+            
+
             relic.sub_affix.forEach((s)=>{
+                let markcolor="";
+                switch(s.count-1){
+                    case 0:
+                        markcolor='rgb(122, 122, 122)';
+                        break;
+                    case 1:
+                        markcolor='rgb(67, 143, 67)';
+                        break;
+                    case 2:
+                        markcolor='rgb(23, 93, 232)';
+                        break;
+                    case 3:
+                        markcolor='rgb(67, 17, 184)';
+                        break;
+                    case 4:
+                        markcolor='rgb(219, 171, 15)';
+                        break;
+                    default:
+                        break;
+                }
+
                 list.push(
                     <div className='flex flex-row' key={'Subaffix_'+s.name}>
-                        <span className='text-white text-left flex w-[70px]'>{s.name}</span>
+                        <div className='flex justify-center items-center'>
+                            <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
+                                flex justify-center items-center' style={{backgroundColor:markcolor}}>
+                                {s.count-1}
+                            </span>
+                        </div>
+                        <span className='text-white text-left flex w-[120px]'>{s.name}</span>
                         <span className='flex w-[70px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
                     </div>
                     
@@ -511,7 +531,7 @@ function Import(){
         if(standDetails.current!==undefined){
             const list=standDetails.current.map((s)=>
                 <div className='flex flex-row' key={'StandDetails_'+s.name}>
-                    <div className='flex justify-between w-[200px] mt-0.5'>
+                    <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
                         <span>{s.name}</span>
                         <span>{s.value}</span>
                     </div>
@@ -535,10 +555,10 @@ function Import(){
 
     //簡易瀏覽
     const PastPreview=React.memo(({index})=>{
-        let data=historyData[index];
+        let data=memoizedHistoryData[index];
         let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
-        return(<>
+        return(
             <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2'>
                 <div className='flex flex-col mr-3'>
                     <div>
@@ -565,8 +585,24 @@ function Import(){
                 </div>
             </div>
         
-        </>)
+        )
+    },(prev,next)=>{
+        return prev.index === next.index; // 只有 value1 改變才重新渲染
     });
+
+    const PastPreviewList = React.memo(({ historyData }) => {
+        console.log('rerender');
+    
+        // 使用 useCallback 確保每個 index 不會因為 map 重新執行而變動
+        const renderItem = useCallback((item, i) => (
+            <PastPreview index={i} key={'history' + i} />
+        ), [historyData]);
+    
+        return <>{historyData.map(renderItem)}</>;
+    }, (prev, next) => {
+        return JSON.stringify(prev.historyData) === JSON.stringify(next.historyData); // 只有 historyData 改變才重新渲染
+    });
+    
 
     return(<>
         <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
@@ -578,14 +614,14 @@ function Import(){
             <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>
             <div className='flex flex-row flex-wrap justify-between'>
                 <div className='flex flex-col w-1/2 max-[700px]:w-[100%]'>
-                    <div className='flex flex-row [&>*]:mr-2 my-3'>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline'>
                         <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>玩家UID :</span></div>
                         <input type='text' placeholder='HSR UID' className='h-[40px] w-[200px] rounded-md pl-2' 
                                 id="userId"
                                 onChange={(e)=>userID.current=e.target.value}
                                 disabled={!isChangeAble}/>
                     </div>
-                    <div className='flex flex-row [&>*]:mr-2 my-3'>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline'>
                         <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Characters 腳色:</span></div>
                         <CharSelect />
                     </div>
@@ -593,7 +629,7 @@ function Import(){
                         <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Parts 部位:</span></div>
                         <PartSelect key={"partSelect"}/>   
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={partsIndex===undefined}>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline`} hidden={partsIndex===undefined}>
                         <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Affix 有效詞條:</span></div>
                         <StandardSelect />
                     </div>
@@ -628,10 +664,9 @@ function Import(){
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
                     <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col'>
-                        {historyData.map((item,i)=>
-                            <PastPreview index={i} />
-                        )}
+                        <PastPreviewList historyData={memoizedHistoryData} />
                     </div>
+                    
                 </div>
             <div className='flex flex-row flex-wrap w-[100%]' >
                 <div className='mt-3 flex flex-row flex-wrap w-1/4  max-[600px]:w-[50%]' hidden={PieNums===undefined}>

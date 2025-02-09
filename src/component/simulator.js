@@ -82,7 +82,7 @@ function Simulator(){
         if(history!=null&&history.length>0){
             history=history.filter((h)=>h.version===version);
             localStorage.setItem('HistoryData',JSON.stringify(history));
-            setHistoryData(history);
+            setHistoryData(prev=>prev != history ? history : prev);
             setStatusMsg('先前紀錄已匯入!!');
         }
     }
@@ -144,7 +144,7 @@ function Simulator(){
 
         //儲存紀錄
         let data={
-            version:"1.0",
+            version:version,
             char:selectChar,
             part:partName,
             mainaffix:MainSelectOptions,
@@ -375,7 +375,13 @@ function Simulator(){
             relic.subaffix.forEach((s)=>{
                 list.push(
                     <div className='flex flex-row' key={'Data'+s.subaffix}>
-                        <span className='text-white text-left flex w-[80px]'>{s.subaffix}</span>
+                        <div className='flex justify-center items-center'>
+                            <span className='mr-0.5 text-black bg-white w-[20px] h-[20px] rounded-[20px]
+                                flex justify-center items-center'>
+                                {s.count}
+                            </span>
+                        </div>
+                        <span className='text-white text-left flex w-[120px]'>{s.subaffix}</span>
                         <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
                     </div>    
                 )
@@ -532,10 +538,10 @@ function Simulator(){
             });
 
             return(
-                <div className='flex flex-row flex-wrap'>
+                <div className='flex flex-row flex-wrap items-center'>
                     <select value={selectAffix} 
                         onChange={(event)=>{setAffix(event.target.value)}}
-                        disabled={!isChangeAble} className='mr-1'>{options}</select>
+                        disabled={!isChangeAble} className='mr-1 h-[25px]'>{options}</select>
                     <div className='max-[520px]:mt-1 '>
                         <button className='processBtn' onClick={addAffix}>添加</button>
                         <button className='deleteBtn ml-1' onClick={clearAffix}>清空</button>
@@ -586,7 +592,7 @@ function Simulator(){
             <h1 className='text-red-500 font-bold text-2xl'>遺器重洗模擬器</h1>
             <div className='flex flex-row flex-wrap'>
                 <div className='flex flex-col mt-2 min-w-[600px] w-1/2 max-[600px]:w-[100%] max-[600px]:min-w-[275px]'>
-                    <div className='flex flex-row [&>*]:mr-2 my-3'>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 items-center'>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Characters 腳色:</span></div>
                         <CharSelect />
                     </div>
@@ -610,7 +616,7 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={partsIndex===undefined}>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline`} hidden={partsIndex===undefined}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Affix 有效詞條:</span></div>
                         <StandardSelect />
                     </div>
@@ -657,7 +663,7 @@ function Simulator(){
                         <HistoryList />
                     </div>
                 </div>
-                <div className='mt-3 flex flex-row flex-wrap w-1/4  max-[600px]:w-[50%]' hidden={PieNums===undefined}>
+                <div className='mt-3 flex flex-row flex-wrap w-[18vw]  max-[600px]:w-[50%]' hidden={PieNums===undefined}>
                     <RelicData />
                 </div>
                 <div className='mt-3 w-1/4 max-[600px]:w-[50%]' hidden={PieNums===undefined}>

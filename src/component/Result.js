@@ -4,6 +4,12 @@ import { PieChart } from '@mui/x-charts/PieChart';
 const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
 
     if(ExpRate!==undefined&&Rrank!==undefined&&PieNums!==undefined&&Rscore!==undefined){
+        
+        
+        const hue = ExpRate * 120;
+        // 0% 對應 HSL 0 (红色)，100% 對應 HSL 120 (綠色)
+        const bgColor =`hsl(${hue}, 100%, 50%)`;
+        
         return(
             <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
                 ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
@@ -17,7 +23,9 @@ const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
                         </span>
                     </div>
                     <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
-                        <span className='text-white'>重洗詞條翻盤機率:{`${(ExpRate*100).toFixed(1)}%`}</span>
+                        <span className={`text-white`}>重洗詞條翻盤機率:
+                            <label style={{ color: bgColor,marginLeft:'4px' }} className='font-bold'>{`${(ExpRate*100).toFixed(1)}%`}</label>
+                        </span>
                     </div>
                 </div>
                 <div className='max-w-[500px] flex flex-row mt-2'>

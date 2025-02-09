@@ -1,7 +1,7 @@
 import React from 'react';
 import {Routes, Route,Link } from 'react-router-dom'
 import App from '../App.js';
-import Simulator from './relic_simulator.js';
+import Simulator from './simulator.js';
 import Importer from './Importer.js';
 
 function Menu(){

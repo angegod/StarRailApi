@@ -113,6 +113,8 @@ onmessage = function (event) {
         let copy=JSON.parse(JSON.stringify(result));
         let relicrank=undefined;
         let returnData=[]
+
+        //console.log(copy);
         
         //根據標準去分類
         scoreStand.forEach((stand,i)=>{
@@ -177,7 +179,6 @@ function relicScore(partsIndex,charStandard,SubData,MainData){
         })
        
     });
-    console.log(caltype);
     //計算這件遺器的最大有效詞條數
     console.log(calPartWeights(charStandard,partsIndex));
     //計算分數
