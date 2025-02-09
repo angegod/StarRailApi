@@ -452,7 +452,9 @@ function Import(){
                                 {s.count-1}
                             </span>
                         </div>
-                        <span className='text-white text-left flex w-[120px]'>{s.name}</span>
+                        <div className='w-[120px]'>
+                            <span className='text-white text-left flex '>{s.name}</span>
+                        </div>
                         <span className='flex w-[70px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
                     </div>
                     
@@ -476,7 +478,7 @@ function Import(){
                     </div>
                     <div className='mt-2'>
                         <span>副詞條</span>
-                        <div className='flex flex-col w-[150px]'>
+                        <div className='flex flex-col w-[180px]'>
                             {list}
                         </div>
                     </div>

@@ -373,15 +373,38 @@ function Simulator(){
             const list=[];
 
             relic.subaffix.forEach((s)=>{
+
+                let markcolor="";
+                switch(s.count){
+                    case 0:
+                        markcolor='rgb(122, 122, 122)';
+                        break;
+                    case 1:
+                        markcolor='rgb(67, 143, 67)';
+                        break;
+                    case 2:
+                        markcolor='rgb(23, 93, 232)';
+                        break;
+                    case 3:
+                        markcolor='rgb(67, 17, 184)';
+                        break;
+                    case 4:
+                        markcolor='rgb(219, 171, 15)';
+                        break;
+                    default:
+                        break;
+                }
                 list.push(
                     <div className='flex flex-row' key={'Data'+s.subaffix}>
                         <div className='flex justify-center items-center'>
-                            <span className='mr-0.5 text-black bg-white w-[20px] h-[20px] rounded-[20px]
-                                flex justify-center items-center'>
+                            <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
+                                flex justify-center items-center' style={{backgroundColor:markcolor}}>
                                 {s.count}
                             </span>
                         </div>
-                        <span className='text-white text-left flex w-[120px]'>{s.subaffix}</span>
+                        <div className='w-[120px]'>
+                            <span className='text-white text-left flex '>{s.subaffix}</span>
+                        </div>
                         <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
                     </div>    
                 )
@@ -399,7 +422,7 @@ function Simulator(){
                     </div>
                     <div className='mt-2'>
                         <span>副詞條</span>
-                        <div className='flex flex-col w-[160px]'>
+                        <div className='flex flex-col w-[180px]'>
                             {list}
                         </div>
                     </div>
