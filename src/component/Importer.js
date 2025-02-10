@@ -46,7 +46,7 @@ function Import(){
     const [isChangeAble,setIsChangeAble]=useState(true);
     const [isSaveAble,setIsSaveAble]=useState(false);
     
-    const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
+    const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
 
 
     useEffect(()=>{
@@ -357,7 +357,7 @@ function Import(){
         return(
             <select value={partsIndex} 
                     onChange={(event)=>{setPartsIndex(event.target.value);setIsSaveAble(false);}}
-                    disabled={!isChangeAble} className='h-[25px]'>{options}</select>
+                    disabled={!isChangeAble} className='h-[25px] w-[150px]'>{options}</select>
         )
     }
 
@@ -392,7 +392,8 @@ function Import(){
             let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
             mergedArray.forEach((a,i)=>{
-                options.push(<option value={a} key={'Affix'+i} >{a}</option>)
+                options.push(<option value={a} key={'Affix'+i} title={a} 
+                    className='w-[150px] text-ellipsis whitespace-nowrap'>{a}</option>)
             });
 
             return(
@@ -400,10 +401,10 @@ function Import(){
                         <div className='flex flex-row flex-wrap items-baseline'>
                             <select value={selectAffix} 
                                 onChange={(event)=>{setAffix(event.target.value)}}
-                                disabled={!isChangeAble} className='mr-1 h-[25px]'>{options}</select>
-                            <div className='max-[520px]:mt-1'>
-                                <button className='processBtn' onClick={addAffix}>添加</button>
-                                <button className='deleteBtn ml-1' onClick={clearAffix}>清空</button>
+                                disabled={!isChangeAble} className='mr-1 h-[25px] w-[100px]'>{options}</select>
+                            <div className='max-[520px]:mt-1 ml-1'>
+                                <button className='processBtn px-1' onClick={addAffix}>添加</button>
+                                <button className='deleteBtn ml-2 px-1' onClick={clearAffix}>清空</button>
                             </div>
                         </div>
                     </div>
@@ -419,9 +420,6 @@ function Import(){
         if(relic!==undefined){
 
             const list=[];
-
-            
-
             relic.sub_affix.forEach((s)=>{
                 let markcolor="";
                 switch(s.count-1){
@@ -493,15 +491,15 @@ function Import(){
     const ShowStand=()=>{
         const list=selfStand.map((s,i)=><>
             <div className='flex flex-row'>
-                <div className='flex justify-between w-[200px] mt-0.5 max-[800px]:w-[130px] mr-2'>
-                    <span className='whitespace-nowrap overflow-hidden'>{s.name}</span>
+                <div className='flex justify-between w-[150px] mt-0.5 max-[800px]:w-[130px] mr-2'>
+                    <span className='whitespace-nowrap overflow-hidden w-[100px] text-ellipsis text-left'>{s.name}</span>
                     <input type='number' min={0} max={1} 
                         className='ml-2 text-center max-h-[30px] min-w-[40px]' defaultValue={selfStand[i].value}
                         title='最小值為0 最大為1'
                         onChange={(event)=>changeVal(i,event.target.value)}/>
                     
                 </div>
-                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-0.5 min-w-[50px]'>移除</button>
+                <button onClick={()=>removeAffix(i)} className='deleteBtn px-1 whitespace-nowrap'>移除</button>
             </div>
         </>)
 
@@ -615,37 +613,43 @@ function Import(){
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>
             <div className='flex flex-row flex-wrap justify-between'>
-                <div className='flex flex-col w-1/2 max-[700px]:w-[100%]'>
-                    <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline'>
-                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>玩家UID :</span></div>
-                        <input type='text' placeholder='HSR UID' className='h-[40px] w-[200px] rounded-md pl-2' 
+                <div className='flex flex-col w-1/2 max-[800px]:w-[100%]'>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
+                        <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>玩家UID :</span></div>
+                        <input type='text' placeholder='HSR UID' className='h-[40px] max-w-[170px] rounded-md pl-2' 
                                 id="userId"
                                 onChange={(e)=>userID.current=e.target.value}
                                 disabled={!isChangeAble}/>
                     </div>
-                    <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline'>
-                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Characters 腳色:</span></div>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
+                        <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
+                            <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
+                        </div>
                         <CharSelect />
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`}>
-                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Parts 部位:</span></div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`}>
+                        <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>Parts 部位:</span></div>
                         <PartSelect key={"partSelect"}/>   
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline`} hidden={partsIndex===undefined}>
-                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Affix 有效詞條:</span></div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col`} hidden={partsIndex===undefined}>
+                        <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
+                            <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
+                        </div>
                         <StandardSelect />
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={selfStand.length===0}>
-                        <div className='text-right w-[200px] max-[600px]:w-[auto] max-[600px]:text-left'><span className='text-white'>Params 參數:</span></div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`} hidden={selfStand.length===0}>
+                        <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
+                            <span className='text-white'>Params 參數:</span>
+                        </div>
                         <ShowStand />
                     </div>
-                    <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px]'>
+                    <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px] max-[400px]:justify-start'>
                         <button className='processBtn' onClick={getRecord}  disabled={!isChangeAble}>開始匹配</button>
                         <button className='processBtn' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
                     </div>
                     
                 </div>
-                <div className='w-[40%] max-w-[400px] flex flex-col max-[700px]:w-[100%] max-[700px]:my-3'>
+                <div className='w-[40%] max-w-[400px] flex flex-col max-[800px]:w-[100%] max-[600px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>

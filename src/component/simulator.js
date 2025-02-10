@@ -36,7 +36,7 @@ function Simulator(){
 
     //歷史紀錄
     const [historyData,setHistoryData]=useState([]);
-    const partArr=['Head 頭部','Hands 手部','Body 軀幹','Feet 腳部','Link Rope 連結繩','Planar Sphere 位面球'];
+    const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
     
     //是否可以儲存(防呆用)、是否可以立馬變更
     const [isSaveAble,setIsSaveAble]=useState(false);
@@ -218,7 +218,8 @@ function Simulator(){
         return(
             <select value={partsIndex} 
                     onChange={(event)=>setPartsIndex(event.target.value)}
-                    disabled={!isChangeAble}>{options}</select>
+                    disabled={!isChangeAble}
+                    className='w-[120px]'>{options}</select>
         )
     }
 
@@ -240,7 +241,8 @@ function Simulator(){
 
                 return(<select  defaultValue={MainSelectOptions} 
                                 onChange={(event)=>setMainSelectOptions(event.target.value)}
-                                disabled={!isChangeAble}>{options}</select>)
+                                disabled={!isChangeAble}
+                                className='w-[120px]'>{options}</select>)
             }
         }else{
             return(<></>)
@@ -299,16 +301,16 @@ function Simulator(){
     //顯示你所輸入的標準
     const ShowStand=()=>{
         const list=selfStand.map((s,i)=><>
-            <div className='flex flex-row'>
-                <div className='flex justify-between w-[200px] mt-0.5 max-[600px]:w-[130px]'>
-                    <span className='whitespace-nowrap overflow-hidden'>{s.name}</span>
+            <div className='flex flex-row my-0.5'>
+                <div className='flex justify-between w-[200px] mt-0.5 max-[800px]:w-[130px]'>
+                    <span className='whitespace-nowrap overflow-hidden text-ellipsis'>{s.name}</span>
                     <input type='number' min={0} max={1} 
-                        className='ml-2 text-center' defaultValue={selfStand[i].value}
+                        className='ml-2 text-center min-w-[40px]' defaultValue={selfStand[i].value}
                         title='最小值為0 最大為1'
                         onChange={(event)=>changeVal(i,event.target.value)}/>
                     
                 </div>
-                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-0.5 min-w-[50px]'>移除</button>
+                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-2 px-1'>移除</button>
             </div>
         </>)
 
@@ -565,9 +567,9 @@ function Simulator(){
                     <select value={selectAffix} 
                         onChange={(event)=>{setAffix(event.target.value)}}
                         disabled={!isChangeAble} className='mr-1 h-[25px]'>{options}</select>
-                    <div className='max-[520px]:mt-1 '>
-                        <button className='processBtn' onClick={addAffix}>添加</button>
-                        <button className='deleteBtn ml-1' onClick={clearAffix}>清空</button>
+                    <div className='max-[520px]:mt-1'>
+                        <button className='processBtn px-1' onClick={addAffix}>添加</button>
+                        <button className='deleteBtn ml-1 px-1' onClick={clearAffix}>清空</button>
                     </div>
                 </div>
                 
@@ -615,21 +617,27 @@ function Simulator(){
             <h1 className='text-red-500 font-bold text-2xl'>遺器重洗模擬器</h1>
             <div className='flex flex-row flex-wrap'>
                 <div className='flex flex-col mt-2 min-w-[600px] w-1/2 max-[600px]:w-[100%] max-[600px]:min-w-[275px]'>
-                    <div className='flex flex-row [&>*]:mr-2 my-3 items-center'>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Characters 腳色:</span></div>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col max-[400px]:items-start'>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
+                            <span className='text-white'>Characters 腳色:</span>
+                        </div>
                         <CharSelect />
                     </div>
-                    <div className={`${(Number.isInteger(charID)&&charID!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row`}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Parts 部位:</span></div>
+                    <div className={`my-1 ${(Number.isInteger(charID)&&charID!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col max-[400px]:items-start`}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
+                            <span className='text-white'>Parts 部位:</span>
+                        </div>
                         <PartSelect />   
                     </div>
-                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row`}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>MainAffix 主屬性:</span></div>
+                    <div className={`my-1 ${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:items-start max-[400px]:!flex-col`}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
+                            <span className='text-white'>MainAffix 主屬性:</span>
+                        </div>
                         <MainAffixSelect />
                     </div>
-                    <div className={`${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined')?'':'hidden'} 
-                            mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center`}>
-                        <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center'>
+                    <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined')?'':'hidden'} 
+                            mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center max-[400px]:text-left`}>
+                        <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center max-[400px]:text-left'>
                             <span className='text-white'>SubAffix 副屬性:</span>
                         </div>
                         <div className='flex flex-col'>
@@ -639,25 +647,25 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline`} hidden={partsIndex===undefined}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Affix 有效詞條:</span></div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col`} hidden={partsIndex===undefined}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
+                            <span className='text-white'>Affix 有效詞條:</span>
+                        </div>
                         <StandardSelect />
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row`} hidden={selfStand.length===0}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px]'><span className='text-white'>Params 參數:</span></div>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`} hidden={selfStand.length===0}>
+                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
+                            <span className='text-white'>Params 參數:</span>
+                        </div>
                         <ShowStand />
                     </div>
-                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 text-center  
-                                flex flex-row [&>*]:mr-2`}>
-                            <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center
-                            max-[600px]:max-w-[150px]'>
-                                
-                            </div>
-                            <div className='flex flex-row max-[600px]:!flex-col'>
-                                <button className='processBtn mr-2' 
+                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px]  
+                                flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
+                            <div className='flex flex-row mt-1'>
+                                <button className='processBtn mr-2 whitespace-nowrap' 
                                     onClick={calScore} 
-                                    disabled={!processBtn}>計算儀器分數</button>
-                                <button className='processBtn mr-2 max-[600px]:mt-2' 
+                                    disabled={!processBtn}>計算分數</button>
+                                <button className='processBtn mr-2 whitespace-nowrap' 
                                 onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
                             </div>
                         
