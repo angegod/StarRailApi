@@ -35,7 +35,8 @@ function Simulator(){
     const [relic,setRelic]=useState();
 
     //歷史紀錄
-    const [historyData,setHistoryData]=useState([]);
+    //const [historyData,setHistoryData]=useState([]);
+    const historyData=useRef([]);
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
     
     //是否可以儲存(防呆用)、是否可以立馬變更
@@ -49,16 +50,13 @@ function Simulator(){
         //初始化歷史紀錄
         init();
     },[location])
-    
-    
+
     useEffect(() => {
         if(partsIndex!==undefined&&Number.isInteger(partsIndex)){
             let range=AffixList.find((s)=>s.id===(parseInt(partsIndex))).main;
             const targetAffix = range[0];
             setMainSelectOptions(targetAffix); 
         }
-       
-        
     }, [partsIndex]); 
 
     function init(){
@@ -66,7 +64,7 @@ function Simulator(){
         for(var i=0;i<=3;i++){
             let data={
                 index:i, 
-                subaffix:0,
+                subaffix:0,//詞條種類
                 data:0, //詞條數值
                 count:0 //強化次數
             }
@@ -82,7 +80,8 @@ function Simulator(){
         if(history!=null&&history.length>0){
             history=history.filter((h)=>h.version===version);
             localStorage.setItem('HistoryData',JSON.stringify(history));
-            setHistoryData(prev=>prev != history ? history : prev);
+            //setHistoryData(prev=>prev != history ? history : prev);
+            historyData.current=history;
             setStatusMsg('先前紀錄已匯入!!');
         }
     }
@@ -103,12 +102,9 @@ function Simulator(){
     //刪除過往紀錄
     function updateHistory(index){
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
-        setHistoryData((old)=>old.filter((item,i)=>i!==index));
+        historyData.current=historyData.current.filter((item,i)=>i!==index);
         setStatusMsg('成功刪除該紀錄!!');
-
-        let oldHistory=historyData;
-        oldHistory=oldHistory.filter((item,i)=>i!==index);
-        localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
+        localStorage.setItem('HistoryData',JSON.stringify(historyData.current));
     }
     //清除相關資料
     function clearData(){
@@ -125,13 +121,13 @@ function Simulator(){
         let selectChar=characters.find((c)=>c.charID===charID);
 
         //如果目前則沒有紀錄 則初始化
-        if(!historyData)
-            setHistoryData([]);
-        else if(historyData.length>=6)//如果原本紀錄超過6個 要先刪除原有紀錄
-            setHistoryData((old)=>old.filter((item,i)=>i!==0));
-         
+        if(!historyData.current)
+            historyData.current=[];
+        else if(historyData.current.length>=6)//如果原本紀錄超過6個 要先刪除原有紀錄
+            historyData.current=historyData.current.filter((item,i)=>i!==0);
+        
         //如果當前沒有任何資料則不予匯入
-        if(!PieNums||!ExpRate||!Rrank||Rscore===undefined){
+        if(!PieNums||ExpRate===undefined||!Rrank||Rscore===undefined){
             setStatusMsg("當前沒有任何數據，不予儲存!!");
             return;
         }
@@ -157,9 +153,8 @@ function Simulator(){
         };
 
         //利用深拷貝區分原有資料
-        let oldHistory=JSON.parse(JSON.stringify(historyData));
-        setHistoryData((old)=>[...old,data]);
-      
+        let oldHistory=JSON.parse(JSON.stringify(historyData.current));
+        historyData.current.push(data);
         setStatusMsg('已儲存');
         const targetElement = document.getElementById('historyData');
         targetElement.scrollIntoView({ behavior: 'smooth' });
@@ -173,7 +168,7 @@ function Simulator(){
 
     //檢視過往紀錄
     function checkDetails(index){
-        let data=historyData[index];
+        let data=historyData.current[index];
         //console.log(data);
         setRank(data.rank);
         setExpRate(data.expRate);
@@ -334,7 +329,7 @@ function Simulator(){
 
     //簡易瀏覽
     const PastPreview=({index})=>{
-        let data=historyData[index];
+        let data=historyData.current[index];
         let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
         return(<>
@@ -369,13 +364,13 @@ function Simulator(){
 
     //顯示儀器分數區間
     const RelicData=()=>{
-        //console.log(SubData.current);
         if(relic!==undefined){
-
+            
             const list=[];
 
             relic.subaffix.forEach((s)=>{
-
+                let isBold=(standDetails.current.find((st)=>st.name===s.subaffix)!==undefined)?true:false;
+                
                 let markcolor="";
                 switch(s.count){
                     case 0:
@@ -405,7 +400,7 @@ function Simulator(){
                             </span>
                         </div>
                         <div className='w-[120px]'>
-                            <span className='text-white text-left flex '>{s.subaffix}</span>
+                            <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.subaffix}</span>
                         </div>
                         <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
                     </div>    
@@ -476,6 +471,13 @@ function Simulator(){
         })
 
         if(errors) return;
+
+        //如果篩選有速度詞條 需給予0.5誤差計算 
+        let deviation=(SubData.current.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        SubData.current.forEach(s=>{
+            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+                deviation+=0.2;
+        })
         
         //將運行結果丟到背景執行
         let worker=new Worker(new URL('../worker/worker.js', import.meta.url));
@@ -485,7 +487,7 @@ function Simulator(){
             SubData:SubData.current,
             partsIndex:partsIndex,
             standard:selfStand,
-            deviation:0.5 //誤差值
+            deviation:deviation
         };
 
         //將按鈕disable
@@ -515,9 +517,9 @@ function Simulator(){
     }
 
     const HistoryList=()=>{
-        if(historyData){
+        if(historyData.current){
             return(
-                historyData.map((item,i)=>
+                historyData.current.map((item,i)=>
                     <PastPreview index={i} key={'historyData'+i}/>
                 )
             )
@@ -686,11 +688,11 @@ function Simulator(){
             </div>
             <div className='flex flex-row mb-3 flex-wrap'>
                 <div className={`w-[100%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
-                    id="historyData" hidden={(!historyData||historyData.length===0)}>
+                    id="historyData" hidden={(!historyData.current||historyData.current.length===0)}>
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
-                    <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar'>
+                    <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
                         <HistoryList />
                     </div>
                 </div>

@@ -206,6 +206,7 @@ function Import(){
     }
 
     function calscore(relic){
+        console.log(standDetails);
         let isCheck=true;
         //將獲得到遺器先儲存起來
         setRelic(relic);
@@ -236,6 +237,13 @@ function Import(){
                 setStatusMsg('加權指數不可為空或其他非法型式');
             }
                 
+        });
+        
+        //如果篩選有速度詞條 需給予0.5誤差計算 
+        let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        SubData.forEach(s=>{
+            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+                deviation+=0.2;
         })
 
         //制定送出資料格式
@@ -244,7 +252,8 @@ function Import(){
             MainData:MainAffix.name,
             SubData:SubData,
             partsIndex:partsIndex,
-            standard:selfStand
+            standard:selfStand,
+            deviation:0.5
         };
         
         if(isCheck){
@@ -422,6 +431,8 @@ function Import(){
             const list=[];
             relic.sub_affix.forEach((s)=>{
                 let markcolor="";
+                let isBold=(standDetails.current.find((st)=>st.name===s.name)!==undefined)?true:false;
+
                 switch(s.count-1){
                     case 0:
                         markcolor='rgb(122, 122, 122)';
@@ -451,7 +462,7 @@ function Import(){
                             </span>
                         </div>
                         <div className='w-[120px]'>
-                            <span className='text-white text-left flex '>{s.name}</span>
+                            <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.name}</span>
                         </div>
                         <span className='flex w-[70px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
                     </div>
@@ -591,7 +602,6 @@ function Import(){
     });
 
     const PastPreviewList = React.memo(({ historyData }) => {
-        console.log('rerender');
     
         // 使用 useCallback 確保每個 index 不會因為 map 重新執行而變動
         const renderItem = useCallback((item, i) => (
@@ -669,7 +679,7 @@ function Import(){
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
-                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col'>
+                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
                         <PastPreviewList historyData={memoizedHistoryData} />
                     </div>
                     

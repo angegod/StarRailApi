@@ -8,9 +8,9 @@ onmessage = function (event) {
     //宣告變數
     let SubData=event.data.SubData;
     let partsIndex=parseInt(event.data.partsIndex);
-    console.log(SubData);
     let MainAffix=AffixName.find((a)=>a.name===event.data.MainData);
     let deviation=(event.data.deviation!==undefined)?event.data.deviation:0;
+    
 
     //計算可用強化次數
     var enchanceCount=0;
@@ -24,7 +24,9 @@ onmessage = function (event) {
     
     //var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
     let charStandard=calStand(event.data.standard);
-    
+    //分數誤差 目前先預設少半個有效詞條
+    //let deviation =0.5/calPartWeights(charStandard,partsIndex)*100;
+
     let coeEfficent=[];//當前遺器係數arr
     SubData.forEach((sub)=>{
         let SubAffixType=AffixName.find((s)=>s.name===sub.subaffix);
@@ -36,7 +38,6 @@ onmessage = function (event) {
         });
     });
 
-    console.log(coeEfficent);
     //將沒有被鎖住不可計算的詞條倒裝
     //coeEfficent.sort((a,b)=>)
 
@@ -49,7 +50,6 @@ onmessage = function (event) {
         combination.forEach((c,i)=>{
             //計算各種強化程度的組合
             let subcombination=EnchanceAllCombinations(c);
-            
 
             subcombination.forEach((s)=>{
                 let res=0;
@@ -63,7 +63,13 @@ onmessage = function (event) {
                     let sub=coeEfficent[i];
                     
                     let targetRange=AffixName.find((st)=>st.fieldName===sub.fieldName).range;
-                    total=targetRange[1];//詞條模擬出來的總和，初始為最中間的值
+
+                    //如果該詞條所獲得的強化次數為0 可以推測該數值為初始詞條數值 則直接繼承使用
+                    if(SubData[i].count===0)
+                        total=SubData[i].data;
+                    else
+                        total=targetRange[1];//詞條模擬出來的總和，初始為最中間的值
+                    
                     el.forEach((num)=>total+=targetRange[num]);
 
                     //計算有效詞條數
@@ -113,9 +119,8 @@ onmessage = function (event) {
         let copy=JSON.parse(JSON.stringify(result));
         let relicrank=undefined;
         let returnData=[]
-
-        //console.log(copy);
         
+        //console.log(result);
         //根據標準去分類
         scoreStand.forEach((stand,i)=>{
             //區分符合區間跟不符合的 並一步步拿掉前面篩選過的區間
@@ -129,7 +134,6 @@ onmessage = function (event) {
                 tag:stand.rank
             });
 
-            //console.log(`${match.length}/${result.length}`);
 
             //接著去找尋這個分數所屬的區間
             if(stand.stand<=origin&&relicrank===undefined)
@@ -152,7 +156,6 @@ onmessage = function (event) {
 
 function relicScore(partsIndex,charStandard,SubData,MainData){
     let weight = 0
-    //var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
     var mutl=3*MainData;//直接默認強化至滿等
     let caltype=[];
 
