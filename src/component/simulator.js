@@ -408,7 +408,7 @@ function Simulator(){
             })
             
             return(
-                <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
+                <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
                     ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
                     <div>
                         <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
@@ -587,7 +587,7 @@ function Simulator(){
         if(standDetails.current!==undefined){
             const list=standDetails.current.map((s,i)=>
                 <div className='flex flex-row' key={'StandDetails'+i}>
-                    <div className='flex justify-between w-[200px] mt-0.5'>
+                    <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
                         <span>{s.name}</span>
                         <span>{s.value}</span>
                     </div>
@@ -595,7 +595,7 @@ function Simulator(){
             )
 
             return(<>
-                <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
+                <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
                     max-[600px]:!min-w-[0px]`}>
                     <div>
                         <span className='text-red-600 text-lg font-bold'>標準加權</span>
@@ -696,13 +696,13 @@ function Simulator(){
                         <HistoryList />
                     </div>
                 </div>
-                <div className='mt-3 flex flex-row flex-wrap w-[18vw]  max-[600px]:w-[50%]' hidden={PieNums===undefined}>
+                <div className='mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%]' hidden={PieNums===undefined}>
                     <RelicData />
                 </div>
-                <div className='mt-3 w-1/4 max-[600px]:w-[50%]' hidden={PieNums===undefined}>
+                <div className='mt-3 w-1/4 max-[700px]:w-[50%]' hidden={PieNums===undefined}>
                     <StandDetails />
                 </div>
-                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[600px]:w-[100%]' id="resultDetails">
+                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' id="resultDetails">
                     <Result ExpRate={ExpRate} 
                             Rscore={Rscore} 
                             statusMsg={statusMsg} 
