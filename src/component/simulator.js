@@ -6,6 +6,7 @@ import Select from 'react-select'
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Result from './Result';
+import { prefetchDNS } from 'react-dom';
 import '../css/simulator.css';
 
 //遺器強化模擬器
@@ -47,6 +48,9 @@ function Simulator(){
     const location = useLocation();
 
     useEffect(()=>{
+        //初始連線
+        //prefetchDNS("https://example.com");
+
         //初始化歷史紀錄
         init();
     },[location])

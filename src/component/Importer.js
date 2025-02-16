@@ -50,6 +50,8 @@ function Import(){
 
 
     useEffect(()=>{
+        //prefetchDNS("https://expressapi-o9du.onrender.com");
+
         //初始化歷史紀錄
         initHistory();
     },[location.pathname])
@@ -58,7 +60,6 @@ function Import(){
     function initHistory(){
         let history=JSON.parse(localStorage.getItem('importData'));
         //先針對過往紀錄作清空
-        const today = new Date(); // 當前日期
 
         if(history===null) return;
 
@@ -68,7 +69,7 @@ function Import(){
         localStorage.setItem('importData',JSON.stringify(history));
 
         if(history != null && history.length > 0){
-            setHistoryData(prev=>prev != history ? history : prev);
+            setHistoryData(prev=>prev !== history ? history : prev);
         }
             
     }
