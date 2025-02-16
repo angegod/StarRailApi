@@ -202,7 +202,11 @@ function Import(){
 
         oldHistory=oldHistory.filter((item,i)=>i!==index);
         localStorage.setItem('importData',JSON.stringify(oldHistory));
-        setStatusMsg('成功刪除該紀錄!!');
+        //強制觸發刷新紀錄
+        setStatusMsg('正在處理中.....');
+        setTimeout(() => {
+            setStatusMsg('成功刪除該紀錄!!');
+        }, 0);
     }
 
     function calscore(relic){
@@ -412,8 +416,8 @@ function Import(){
                                 onChange={(event)=>{setAffix(event.target.value)}}
                                 disabled={!isChangeAble} className='mr-1 h-[25px] w-[100px]'>{options}</select>
                             <div className='max-[520px]:mt-1 ml-1'>
-                                <button className='processBtn px-1' onClick={addAffix}>添加</button>
-                                <button className='deleteBtn ml-2 px-1' onClick={clearAffix}>清空</button>
+                                <button className='processBtn px-1' onClick={addAffix} disabled={!isChangeAble}>添加</button>
+                                <button className='deleteBtn ml-2 px-1' onClick={clearAffix} disabled={!isChangeAble}>清空</button>
                             </div>
                         </div>
                     </div>
@@ -510,7 +514,7 @@ function Import(){
                         onChange={(event)=>changeVal(i,event.target.value)}/>
                     
                 </div>
-                <button onClick={()=>removeAffix(i)} className='deleteBtn px-1 whitespace-nowrap'>移除</button>
+                <button onClick={()=>removeAffix(i)} className='deleteBtn px-1 whitespace-nowrap' disabled={!isChangeAble}>移除</button>
             </div>
         </>)
 
@@ -567,6 +571,13 @@ function Import(){
     //簡易瀏覽
     const PastPreview=React.memo(({index})=>{
         let data=memoizedHistoryData[index];
+
+        let isBold=(standDetails.current.find((st)=>st.name===data.name)!==undefined)?true:false;
+        const hue = data.expRate * 120;
+        
+        const textColor =`hsl(${hue}, 100%, 50%)`;
+       
+
         let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
         return(
@@ -587,11 +598,13 @@ function Import(){
                         <span className='text-white'>部位:{data.part}</span>
                     </div>
                     <div>
-                        <span className='text-white'>期望機率:{(data.expRate*100).toFixed(1)}%</span>
+                        <span className='text-white'>期望機率:
+                            <span style={{color:textColor}} className='pl-1 font-bold'>{(data.expRate*100).toFixed(1)}%</span>
+                        </span>
                     </div>
                     <div>
-                        <button className='processBtn mr-2' onClick={()=>checkDetails(index)}>檢視</button>
-                        <button className='deleteBtn' onClick={()=>updateHistory(index)}>刪除</button>
+                        <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)}>檢視</button>
+                        <button className='deleteBtn px-1' onClick={()=>updateHistory(index)}>刪除</button>
                     </div>
                 </div>
             </div>
@@ -663,13 +676,11 @@ function Import(){
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>
-                        <li>此工具是計算該遺器依據您的標準持有的有效詞條數量</li>
                         <li>翻盤機率是指該遺器透過重洗詞條道具後遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星強化至滿等遺器</li>
-                        <li>此工具相關數據仍有更改的可能。操作說明可以參考
-                            <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a>
-                        </li>
-                        <li>聲明:此工具相關程式邏輯均為本人Ange完成</li>
+                        <li>此工具相關數據仍有更改的可能，敬請見諒!</li>
+                        <li>操作說明可以參考
+                        <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a></li>
                     </ul>
                 </div>
             </div>

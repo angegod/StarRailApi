@@ -7,7 +7,7 @@ const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
         
         
         const hue = ExpRate * 120;
-        // 0% 對應 HSL 0 (红色)，100% 對應 HSL 120 (綠色)
+        
         const bgColor =`hsl(${hue}, 100%, 50%)`;
         
         return(

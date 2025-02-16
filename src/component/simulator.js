@@ -103,7 +103,11 @@ function Simulator(){
     function updateHistory(index){
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         historyData.current=historyData.current.filter((item,i)=>i!==index);
-        setStatusMsg('成功刪除該紀錄!!');
+        setStatusMsg('正在處理中.....');
+        //強制觸發刷新紀錄
+        setTimeout(() => {
+            setStatusMsg('成功刪除該紀錄!!');
+        }, 0);
         localStorage.setItem('HistoryData',JSON.stringify(historyData.current));
     }
     //清除相關資料
@@ -305,7 +309,7 @@ function Simulator(){
                         onChange={(event)=>changeVal(i,event.target.value)}/>
                     
                 </div>
-                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-2 px-1'>移除</button>
+                <button onClick={()=>removeAffix(i)} className='deleteBtn ml-2 px-1' disabled={!isChangeAble}>移除</button>
             </div>
         </>)
 
@@ -330,6 +334,10 @@ function Simulator(){
     //簡易瀏覽
     const PastPreview=({index})=>{
         let data=historyData.current[index];
+
+        const hue = data.expRate * 120;
+        
+        const textColor =`hsl(${hue}, 100%, 50%)`;
         let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
         return(<>
@@ -350,11 +358,13 @@ function Simulator(){
                         <span className='text-white'>主詞條:{data.mainaffix}</span>
                     </div>
                     <div>
-                        <span className='text-white'>期望機率:{(data.expRate*100).toFixed(1)}%</span>
+                        <span className='text-white'>期望機率:
+                            <span style={{color:textColor}} className='pl-1 font-bold'>{(data.expRate*100).toFixed(1)}%</span>
+                        </span>
                     </div>
                     <div>
-                        <button className='processBtn mr-2' onClick={()=>checkDetails(index)}>檢視</button>
-                        <button className='deleteBtn' onClick={()=>updateHistory(index)}>刪除</button>
+                        <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)}>檢視</button>
+                        <button className='deleteBtn px-1' onClick={()=>updateHistory(index)}>刪除</button>
                     </div>
                 </div>
             </div>
@@ -570,8 +580,8 @@ function Simulator(){
                         onChange={(event)=>{setAffix(event.target.value)}}
                         disabled={!isChangeAble} className='mr-1 h-[25px]'>{options}</select>
                     <div className='max-[520px]:mt-1'>
-                        <button className='processBtn px-1' onClick={addAffix}>添加</button>
-                        <button className='deleteBtn ml-1 px-1' onClick={clearAffix}>清空</button>
+                        <button className='processBtn px-1' onClick={addAffix} disabled={!isChangeAble}>添加</button>
+                        <button className='deleteBtn ml-1 px-1' onClick={clearAffix} disabled={!isChangeAble}>清空</button>
                     </div>
                 </div>
                 
@@ -679,10 +689,9 @@ function Simulator(){
                         <li>此工具主要目的是給予一些想要重洗詞條的人參考</li>
                         <li>翻盤機率是指說該遺器透過重洗詞條道具後導致遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星遺器</li>
-                        <li>此工具相關數據仍有更改的可能，詳細說明可以參考
-                            <a href='https://home.gamer.com.tw/artwork.php?sn=6065608'>這篇</a>
-                        </li>
-                        <li>聲明:此工具相關程式邏輯均為本人Ange完成</li>
+                        <li>此工具相關數據仍有更改的可能，敬請見諒!</li>
+                        <li>操作說明可以參考
+                        <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a></li>
                     </ul>
                 </div>
             </div>
