@@ -6,8 +6,8 @@ import Select from 'react-select'
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Result from './Result';
-import { prefetchDNS } from 'react-dom';
 import '../css/simulator.css';
+import AffixName from '../data/AffixName';
 
 //遺器強化模擬器
 function Simulator(){
@@ -48,10 +48,6 @@ function Simulator(){
     const location = useLocation();
 
     useEffect(()=>{
-        //初始連線
-        //prefetchDNS("https://example.com");
-
-        //初始化歷史紀錄
         init();
     },[location])
 
@@ -290,15 +286,30 @@ function Simulator(){
         
         characters.forEach((c)=>{
             options.push({
-                value: c.charID, label: c.name
+                value: c.charID, 
+                label: c.name,
+                icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
             })
         })
+
+        //自訂義篩選
+        const customFilterOption = (option, inputValue) => {
+            return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
+        };
+        
         const selectedOption = options.find((option) => option.value === charID);
         return(<Select options={options} 
-                    className='w-[170px]' 
+                    className='w-[200px]' 
                     onChange={(option)=>setCharID(option.value)}
                     value={selectedOption} 
-                    isDisabled={!isChangeAble}/>)
+                    isDisabled={!isChangeAble}
+                    getOptionLabel={(e) => (
+                        <div style={{ display: "flex", alignItems: "center"  }}>
+                          <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
+                          {e.label}
+                        </div>
+                    )}
+                    filterOption={customFilterOption}/>)
     }
 
     //顯示你所輸入的標準
@@ -310,7 +321,8 @@ function Simulator(){
                     <input type='number' min={0} max={1} 
                         className='ml-2 text-center min-w-[40px]' defaultValue={selfStand[i].value}
                         title='最小值為0 最大為1'
-                        onChange={(event)=>changeVal(i,event.target.value)}/>
+                        onChange={(event)=>changeVal(i,event.target.value)}
+                        disabled={!isChangeAble}/>
                     
                 </div>
                 <button onClick={()=>removeAffix(i)} className='deleteBtn ml-2 px-1' disabled={!isChangeAble}>移除</button>
@@ -386,6 +398,11 @@ function Simulator(){
                 let isBold=(standDetails.current.find((st)=>st.name===s.subaffix)!==undefined)?true:false;
                 
                 let markcolor="";
+
+                var IconName = AffixName.find((a)=>a.name===s.subaffix).icon;
+                console.log(IconName);
+
+                var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
                 switch(s.count){
                     case 0:
                         markcolor='rgb(122, 122, 122)';
@@ -413,7 +430,10 @@ function Simulator(){
                                 {s.count}
                             </span>
                         </div>
-                        <div className='w-[120px]'>
+                        <div className='w-[160px] flex flex-row'>
+                            <div className='flex justify-center items-center'>
+                                <img src={imglink} alt='555' width={24} height={24}/>
+                            </div>
                             <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.subaffix}</span>
                         </div>
                         <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
@@ -433,7 +453,7 @@ function Simulator(){
                     </div>
                     <div className='mt-2'>
                         <span>副詞條</span>
-                        <div className='flex flex-col w-[180px]'>
+                        <div className='flex flex-col w-[200px]'>
                             {list}
                         </div>
                     </div>
@@ -598,15 +618,25 @@ function Simulator(){
 
     //顯示你輸出的標準為何?
     const StandDetails=()=>{
+    
         if(standDetails.current!==undefined){
-            const list=standDetails.current.map((s,i)=>
-                <div className='flex flex-row' key={'StandDetails'+i}>
-                    <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
-                        <span>{s.name}</span>
-                        <span>{s.value}</span>
+            const list=standDetails.current.map((s,i)=>{
+                var IconName = AffixName.find((a)=>a.name===s.name).icon;
+
+                var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
+                
+                return(
+                    <div className='flex flex-row' key={'StandDetails'+i}>
+                        <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
+                            <div className='flex flex-row'>
+                                <img src={imglink} alt="icon" width={24} height={24}/>
+                                <span>{s.name}</span>
+                            </div>
+                            <span>{s.value}</span>
+                        </div>
                     </div>
-                </div>
-            )
+                );
+            })
 
             return(<>
                 <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
@@ -632,7 +662,7 @@ function Simulator(){
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器重洗模擬器</h1>
             <div className='flex flex-row flex-wrap'>
-                <div className='flex flex-col mt-2 min-w-[600px] w-1/2 max-[600px]:w-[100%] max-[600px]:min-w-[275px]'>
+                <div className='flex flex-col mt-2 w-1/2 max-[800px]:w-[100%]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col max-[400px]:items-start'>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Characters 腳色:</span>
@@ -663,13 +693,13 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col`} hidden={partsIndex===undefined}>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Affix 有效詞條:</span>
                         </div>
                         <StandardSelect />
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`} hidden={selfStand.length===0}>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`} >
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Params 參數:</span>
                         </div>
@@ -687,7 +717,7 @@ function Simulator(){
                         
                     </div>
                 </div>
-                <div className='w-1/2 max-w-[400px] flex flex-col max-[600px]:w-[100%] max-[600px]:mt-3'>
+                <div className='w-1/2 max-w-[400px] flex flex-col max-[800px]:w-[100%] max-[600px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具主要目的是給予一些想要重洗詞條的人參考</li>
@@ -700,7 +730,7 @@ function Simulator(){
                 </div>
             </div>
             <div className='flex flex-row mb-3 flex-wrap'>
-                <div className={`w-[100%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-2`}
+                <div className={`w-[100%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-4`}
                     id="historyData" hidden={(!historyData.current||historyData.current.length===0)}>
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>

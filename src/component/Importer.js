@@ -347,15 +347,30 @@ function Import(){
         
         characters.forEach((c)=>{
             options.push({
-                value: c.charID, label: c.name
+                value: c.charID, 
+                label: c.name,
+                icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
             })
         })
+
+        //自訂義篩選
+        const customFilterOption = (option, inputValue) => {
+            return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
+        };
+
         const selectedOption = options.find((option) => option.value === charID);
         return(<Select options={options} 
                     className='w-[170px]' 
                     onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
                     value={selectedOption} 
-                    isDisabled={!isChangeAble}/>)
+                    isDisabled={!isChangeAble}
+                    getOptionLabel={(e) => (
+                        <div style={{ display: "flex", alignItems: "center"  }}>
+                          <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
+                          {e.label}
+                        </div>
+                    )}
+                    filterOption={customFilterOption}/>)
     }
 
     //部位選擇器
@@ -438,6 +453,10 @@ function Import(){
                 let markcolor="";
                 let isBold=(standDetails.current.find((st)=>st.name===s.name)!==undefined)?true:false;
 
+                var IconName = AffixName.find((a)=>a.name===s.name).icon;
+
+                var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
+
                 switch(s.count-1){
                     case 0:
                         markcolor='rgb(122, 122, 122)';
@@ -466,7 +485,10 @@ function Import(){
                                 {s.count-1}
                             </span>
                         </div>
-                        <div className='w-[120px]'>
+                        <div className='w-[120px] flex flex-row'>
+                            <div className='flex justify-center items-center'>
+                                <img src={imglink} alt='555' width={24} height={24}/>
+                            </div>
                             <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.name}</span>
                         </div>
                         <span className='flex w-[70px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
@@ -545,14 +567,24 @@ function Import(){
     //顯示你輸出的標準為何?
     const StandDetails=()=>{
         if(standDetails.current!==undefined){
-            const list=standDetails.current.map((s)=>
-                <div className='flex flex-row' key={'StandDetails_'+s.name}>
-                    <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
-                        <span>{s.name}</span>
-                        <span>{s.value}</span>
+            const list=standDetails.current.map((s)=>{
+                var IconName = AffixName.find((a)=>a.name===s.name).icon;
+
+                var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
+                
+                
+                return(
+                    <div className='flex flex-row' key={'StandDetails_'+s.name}>
+                        <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
+                            <div className='flex flex-row'>
+                                <img src={imglink} alt="icon" width={24} height={24}/>
+                                <span>{s.name}</span>
+                            </div>
+                            <span>{s.value}</span>
+                        </div>
                     </div>
-                </div>
-            )
+                )
+            })
 
             return(<>
                 <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
@@ -573,7 +605,7 @@ function Import(){
     const PastPreview=React.memo(({index})=>{
         let data=memoizedHistoryData[index];
 
-        let isBold=(standDetails.current.find((st)=>st.name===data.name)!==undefined)?true:false;
+        //let isBold=(standDetails.current.find((st)=>st.name===data.name)!==undefined)?true:false;
         const hue = data.expRate * 120;
         
         const textColor =`hsl(${hue}, 100%, 50%)`;
@@ -636,7 +668,7 @@ function Import(){
                 <meta name="keywords" content="遺器重洗、遺器重洗模擬器" />
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>
-            <div className='flex flex-row flex-wrap justify-between'>
+            <div className='flex flex-row flex-wrap '>
                 <div className='flex flex-col w-1/2 max-[800px]:w-[100%]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>玩家UID :</span></div>
@@ -655,13 +687,13 @@ function Import(){
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>Parts 部位:</span></div>
                         <PartSelect key={"partSelect"}/>   
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col`} hidden={partsIndex===undefined}>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`} >
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
                         </div>
                         <StandardSelect />
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`} hidden={selfStand.length===0}>
+                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`}>
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white'>Params 參數:</span>
                         </div>
@@ -673,7 +705,7 @@ function Import(){
                     </div>
                     
                 </div>
-                <div className='w-[40%] max-w-[400px] flex flex-col max-[800px]:w-[100%] max-[600px]:my-3'>
+                <div className='w-1/2 max-w-[400px] flex flex-col max-[800px]:w-[100%] max-[600px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
                         <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>

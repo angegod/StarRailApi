@@ -1343,9 +1343,9 @@ let standard=[{
 }}]
 
 standard.sort((a,b)=>{
-    const keyA = Object.keys(a)[0]; // 获取第一个对象的 key
-    const keyB = Object.keys(b)[0]; // 获取第二个对象的 key
-    return keyA - keyB;             // 按数值大小排序
+    const keyA = Object.keys(a)[0]; 
+    const keyB = Object.keys(b)[0]; 
+    return keyA - keyB;             
 })
 
 export default standard;

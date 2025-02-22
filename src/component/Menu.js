@@ -1,6 +1,5 @@
 import React from 'react';
 import {Routes, Route,Link } from 'react-router-dom'
-import App from '../App.js';
 import Simulator from './simulator.js';
 import Importer from './Importer.js';
 
@@ -18,7 +17,7 @@ function Menu(){
     const menuList=list.map((m,i)=>
         <div className='mr-3 flex flex-col bg-gray-700 min-w-[100px] rounded-md justify-center px-2' key={'menu'+i}>
             <Link to={m.link} className='text-center'><span className='text-gray-500 font-bold text-lg'>{m.name}</span></Link>
-            <span className='text-md text-gray-400'>{m.engname}</span>
+            <span className='text-lg text-gray-400 text-center'>{m.engname}</span>
         </div>
     );
 
