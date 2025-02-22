@@ -70,6 +70,7 @@ function Import(){
 
         if(history != null && history.length > 0){
             setHistoryData(prev=>prev !== history ? history : prev);
+            setStatusMsg('先前紀錄已匯入!!');
         }
             
     }
@@ -452,9 +453,13 @@ function Import(){
             relic.sub_affix.forEach((s)=>{
                 let markcolor="";
                 let isBold=(standDetails.current.find((st)=>st.name===s.name)!==undefined)?true:false;
+                
+                if(s.name==="生命值"){
+                    s.name="生命力";
+                }
 
                 var IconName = AffixName.find((a)=>a.name===s.name).icon;
-
+                
                 var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
 
                 switch(s.count-1){
@@ -729,13 +734,13 @@ function Import(){
                     
                 </div>
             <div className='flex flex-row flex-wrap w-[100%]' >
-                <div className='mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%]' hidden={PieNums===undefined}>
+                <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''}`}>
                     <RelicData />
                 </div>
-                <div className='mt-3 w-1/4 max-[700px]:w-[50%]' hidden={PieNums===undefined}>
+                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''}`} >
                     <StandDetails />
                 </div>
-                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' hidden={statusMsg===undefined}
+                <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] ${(statusMsg===undefined)?'hidden':''}`} 
                     id="resultDetails">
                     <Result ExpRate={ExpRate} 
                             Rscore={Rscore} 

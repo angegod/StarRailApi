@@ -730,8 +730,8 @@ function Simulator(){
                 </div>
             </div>
             <div className='flex flex-row mb-3 flex-wrap'>
-                <div className={`w-[100%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-4`}
-                    id="historyData" hidden={(!historyData.current||historyData.current.length===0)}>
+                <div className={`w-[100%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-4 ${(!historyData.current||historyData.current.length===0)?'hidden':''}`}
+                    id="historyData" >
                     <div>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
@@ -739,10 +739,10 @@ function Simulator(){
                         <HistoryList />
                     </div>
                 </div>
-                <div className='mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%]' hidden={PieNums===undefined}>
+                <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''}`} >
                     <RelicData />
                 </div>
-                <div className='mt-3 w-1/4 max-[700px]:w-[50%]' hidden={PieNums===undefined}>
+                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''}`} >
                     <StandDetails />
                 </div>
                 <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' id="resultDetails">
