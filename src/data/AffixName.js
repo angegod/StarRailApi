@@ -77,7 +77,7 @@ let AffixName=[{
     percent:true
 },{
     fieldName:'HealRatioBase',
-    icon:'IconBreakUp',
+    icon:'IconHealRatio',
     type:'heal_rate',
     name:'治療加成',
     percent:true
