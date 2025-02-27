@@ -60,6 +60,8 @@ const characters = [
     { charID: 1317, name: "亂破", eng_name: "Rappa" },
     { charID: 1401, name: "大黑塔", eng_name: "The Herta" },
     { charID: 1402, name: "阿格萊雅", eng_name: "Aglaea" },
+    { charID: 1403, name: "緹寶", eng_name: "Tribbie" },
+    { charID: 1404, name: "萬敵", eng_name: "Mydei" },
     { charID: 8001, name: "開拓者(男)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8002, name: "開拓者(女)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8003, name: "開拓者(男)(存護)", eng_name: "Trailblazer (Preservation)" },
