@@ -418,7 +418,14 @@ function Import(){
 
         return(
             <select value={partsIndex} 
-                    onChange={(event)=>{setPartsIndex(event.target.value);setIsSaveAble(false);}}
+                    onChange={(event)=>{
+                        if(event.target.value==='undefined')
+                            setPartsIndex(undefined)
+                        else{
+                            setPartsIndex(event.target.value);setIsSaveAble(false);
+                        }
+
+                    }}
                     disabled={!isChangeAble} className='h-[25px] w-[150px] graySelect'>{options}</select>
         )
     }

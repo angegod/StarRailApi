@@ -221,7 +221,12 @@ function Simulator(){
 
         return(
             <select value={partsIndex} 
-                    onChange={(event)=>setPartsIndex(event.target.value)}
+                    onChange={(event)=>{
+                        if(event.target.value==='undefined')
+                            setPartsIndex(undefined)
+                        else
+                            setPartsIndex(event.target.value)
+                    }}
                     disabled={!isChangeAble}
                     className='w-[120px] graySelect'>{options}</select>
         )
@@ -244,7 +249,12 @@ function Simulator(){
                 });
 
                 return(<select  defaultValue={MainSelectOptions} 
-                                onChange={(event)=>setMainSelectOptions(event.target.value)}
+                                onChange={(event)=>{
+                                    if(event.target.value==='undefined')
+                                        setMainSelectOptions(undefined)
+                                    else
+                                        setMainSelectOptions(event.target.value)
+                                }}
                                 disabled={!isChangeAble}
                                 className='w-[150px] graySelect'>{options}</select>)
             }
@@ -254,7 +264,7 @@ function Simulator(){
     }
 
     const SubAffixSelect=({index})=>{
-        if(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'){
+        if(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined){
             let range=AffixList.find((s)=>s.id===parseInt(partsIndex)).sub;
             let options=[<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
 
@@ -745,7 +755,7 @@ function Simulator(){
                         </div>
                         <MainAffixSelect />
                     </div>
-                    <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined')?'':'hidden'} 
+                    <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined)?'':'hidden'} 
                             mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center max-[400px]:text-left`}>
                         <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center max-[400px]:text-left'>
                             <span className='text-white'>SubAffix 副屬性:</span>
