@@ -2,14 +2,14 @@ let AffixName=[{
     fieldName:'HPDelta',
     icon:'IconMaxHP',
     type:'hp',
-    name:'生命力',
+    name:'生命值',
     percent:false,
     range:[34,38,42]
 },{
     fieldName:'HPAddedRatio',
     icon:'IconMaxHP',
     type:'hp',
-    name:'生命力%數',
+    name:'生命值%數',
     percent:true,
     range:[3.45,3.89,4.32]
 },{
@@ -73,7 +73,7 @@ let AffixName=[{
     fieldName:'SPRatioBase',
     icon:'IconEnergyRecovery',
     type:'sp_rate',
-    name:'能量充能效率',
+    name:'能量恢復效率',
     percent:true
 },{
     fieldName:'HealRatioBase',

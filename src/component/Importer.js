@@ -12,7 +12,7 @@ import AffixList from '../data/AffixList';
 
 function Import(){
     //版本序號
-    const version="1.1";
+    const version="1.2";
 
     //玩家ID跟腳色ID
     const userID=useRef('');
@@ -190,9 +190,12 @@ function Import(){
         setStatusMsg('資料替換完畢!!');
         standDetails.current=data.stand;
 
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
+        //避免第一次顯示區塊 而導致滾動失常
+        requestAnimationFrame(()=>{
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
         });
     }
 
@@ -279,10 +282,12 @@ function Import(){
 
                 //將儲存按鈕設為可用
                 setIsSaveAble(true);
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: 'smooth'
-                });
+                requestAnimationFrame(()=>{
+                    window.scrollTo({
+                        top: document.body.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                })
             };
         }
         
@@ -345,6 +350,32 @@ function Import(){
 
     const CharSelect=()=>{
         let options=[];
+
+        const customStyles={
+            control: (provided) => ({
+                ...provided,
+                backgroundColor: 'inherit', // 繼承背景顏色
+                outline:'none',
+            }),
+            input: (provided) => ({
+                ...provided,
+                color: 'white', // 這裡設定 input 文字的顏色為白色
+                backgroundColor:'inherit'
+            }),
+            option: (provided, state) => ({
+                ...provided,
+                backgroundColor: state.isSelected
+                  ? 'darkgray'
+                  : state.isFocused
+                  ? 'gray'
+                  : 'rgb(36, 36, 36)',
+                color: state.isSelected ? 'white' : 'black'
+            }),
+            menu: (provided) => ({
+                ...provided,
+                backgroundColor: 'rgb(36, 36, 36)',
+            })
+        }
         
         characters.forEach((c)=>{
             options.push({
@@ -361,14 +392,15 @@ function Import(){
 
         const selectedOption = options.find((option) => option.value === charID);
         return(<Select options={options} 
-                    className='w-[170px]' 
+                    className='w-[200px]' 
                     onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
                     value={selectedOption} 
                     isDisabled={!isChangeAble}
+                    styles={customStyles}
                     getOptionLabel={(e) => (
                         <div style={{ display: "flex", alignItems: "center"  }}>
-                          <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
-                          {e.label}
+                            <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
+                            <span className='text-white'>{e.label}</span>
                         </div>
                     )}
                     filterOption={customFilterOption}/>)
@@ -387,7 +419,7 @@ function Import(){
         return(
             <select value={partsIndex} 
                     onChange={(event)=>{setPartsIndex(event.target.value);setIsSaveAble(false);}}
-                    disabled={!isChangeAble} className='h-[25px] w-[150px]'>{options}</select>
+                    disabled={!isChangeAble} className='h-[25px] w-[150px] graySelect'>{options}</select>
         )
     }
 
@@ -417,21 +449,27 @@ function Import(){
             let target=AffixList.find((a)=>a.id===parseInt(partsIndex));
             //合併所有選項 並且移除重複值
             let mergedArray = [...new Set([...target.main, ...target.sub])];
-            mergedArray=mergedArray.filter((item)=>item!=='生命力'&&item!=='攻擊力'&&item!=='防禦力')
+            mergedArray=mergedArray.filter((item)=>item!=='生命值'&&item!=='攻擊力'&&item!=='防禦力')
 
             let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
-            mergedArray.forEach((a,i)=>{
-                options.push(<option value={a} key={'Affix'+i} title={a} 
-                    className='w-[150px] text-ellipsis whitespace-nowrap'>{a}</option>)
+            //如果該標準已被選擇 會顯示勾選圖示於左側選項中
+            mergedArray.forEach((m,i)=>{
+                options.push(
+                    <option value={m} key={'Affix'+i} title={m} 
+                        className='w-[160px] whitespace-pre'>
+                            <span className='inline-block w-[20px]'>{(selfStand.find((s)=>s.name===m))?'\u2714 ':'\u2003'}</span>
+                            <span>{m}</span>
+                    </option>);
             });
 
             return(
                     <div className='flex flex-col'>
                         <div className='flex flex-row flex-wrap items-baseline'>
-                            <select value={selectAffix} 
+                            <select value={selectAffix}
+                                title='選擇標準' 
                                 onChange={(event)=>{setAffix(event.target.value)}}
-                                disabled={!isChangeAble} className='mr-1 h-[25px] w-[100px]'>{options}</select>
+                                disabled={!isChangeAble} className='mr-1 h-[25px] w-[120px] graySelect'>{options}</select>
                             <div className='max-[520px]:mt-1 ml-1'>
                                 <button className='processBtn px-1' onClick={addAffix} disabled={!isChangeAble}>添加</button>
                                 <button className='deleteBtn ml-2 px-1' onClick={clearAffix} disabled={!isChangeAble}>清空</button>
@@ -449,14 +487,24 @@ function Import(){
     const RelicData=()=>{
         if(relic!==undefined){
 
+            const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix.name).icon;
+
+            const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
+
             const list=[];
             relic.sub_affix.forEach((s)=>{
                 let markcolor="";
                 let isBold=(standDetails.current.find((st)=>st.name===s.name)!==undefined)?true:false;
                 
-                if(s.name==="生命值"){
-                    s.name="生命力";
+                if(s.name==="攻擊力"&&s.display.includes('%')){
+                    s.name="攻擊力%數";
                 }
+                else if(s.name==="防禦力"&&s.display.includes('%')){
+                    s.name="防禦力%數";
+                }else if(s.name==="生命值"&&s.display.includes('%')){
+                    s.name="生命值%數";
+                }
+
 
                 var IconName = AffixName.find((a)=>a.name===s.name).icon;
                 
@@ -490,7 +538,7 @@ function Import(){
                                 {s.count-1}
                             </span>
                         </div>
-                        <div className='w-[120px] flex flex-row'>
+                        <div className='w-[150px] flex flex-row'>
                             <div className='flex justify-center items-center'>
                                 <img src={imglink} alt='555' width={24} height={24}/>
                             </div>
@@ -515,11 +563,15 @@ function Import(){
                     </div>
                     <div className='mt-1'>
                         <span>主詞條</span><br/>
-                        <span className='text-white'>{relic.main_affix.name}:{relic.main_affix.display}</span>   
+                        <div className='flex flex-row'>
+                            {mainaffixImg}
+                            <span className='text-white'>{relic.main_affix.name}:{relic.main_affix.display}</span>
+                        </div>
+                           
                     </div>
                     <div className='mt-2'>
                         <span>副詞條</span>
-                        <div className='flex flex-col w-[180px]'>
+                        <div className='flex flex-col w-[190px]'>
                             {list}
                         </div>
                     </div>
@@ -532,19 +584,29 @@ function Import(){
 
     //顯示你所輸入的標準
     const ShowStand=()=>{
-        const list=selfStand.map((s,i)=><>
+        const list=selfStand.map((s,i)=>{
+            
+            var IconName = AffixName.find((a)=>a.name===s.name).icon;
+
+            var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
+            
+            
+            return(
             <div className='flex flex-row'>
-                <div className='flex justify-between w-[150px] mt-0.5 max-[800px]:w-[130px] mr-2'>
-                    <span className='whitespace-nowrap overflow-hidden w-[100px] text-ellipsis text-left'>{s.name}</span>
+                <div className='flex justify-between w-[170px] mt-0.5 max-[800px]:w-[130px] mr-2 max-[400px]:w-1/2'>
+                    <img src={imglink} alt="icon" width={24} height={24}/>
+                    <span className='whitespace-nowrap overflow-hidden  text-ellipsis text-left w-[100px]' title={s.name}>{s.name}</span>
                     <input type='number' min={0} max={1} 
-                        className='ml-2 text-center max-h-[30px] min-w-[40px]' defaultValue={selfStand[i].value}
+                        className='ml-2 text-center max-h-[30px] 
+                        min-w-[40px] bgInput' 
+                        defaultValue={selfStand[i].value}
                         title='最小值為0 最大為1'
                         onChange={(event)=>changeVal(i,event.target.value)}/>
                     
                 </div>
                 <button onClick={()=>removeAffix(i)} className='deleteBtn px-1 whitespace-nowrap' disabled={!isChangeAble}>移除</button>
-            </div>
-        </>)
+            </div>)
+        })
 
         function removeAffix(index){
             setSelfStand((arr)=>arr.filter((item,i)=>i!==index));
@@ -629,16 +691,17 @@ function Import(){
                     </div>
                 </div>
                 <div className='flex flex-col'>
-                    <div>
-                        <span className='text-white'>玩家UID:{data.userID}</span>
+                    <div className='flex flex-row [&>span]:text-white justify-start'>
+                        <span className='w-[70px]'>玩家UID:</span>
+                        <span className='pl-1'>{data.userID}</span>
                     </div>
-                    <div>
-                        <span className='text-white'>部位:{data.part}</span>
+                    <div className='flex flex-row [&>span]:text-white justify-start'>
+                        <span className='w-[70px]'>部位:</span>
+                        <span className='pl-1'>{data.part}</span>
                     </div>
-                    <div>
-                        <span className='text-white'>期望機率:
-                            <span style={{color:textColor}} className='pl-1 font-bold'>{(data.expRate*100).toFixed(1)}%</span>
-                        </span>
+                    <div className='flex flex-row [&>span]:text-white justify-start'>
+                        <span className='w-[70px]'>期望機率:</span>
+                        <span style={{color:textColor}} className='pl-1 font-bold'>{(data.expRate*100).toFixed(1)}%</span>
                     </div>
                     <div>
                         <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)}>檢視</button>
@@ -677,12 +740,14 @@ function Import(){
                 <div className='flex flex-col w-1/2 max-[800px]:w-[100%]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>玩家UID :</span></div>
-                        <input type='text' placeholder='HSR UID' className='h-[40px] max-w-[170px] rounded-md pl-2' 
+                        <input type='text' placeholder='HSR UID' 
+                                className='h-[40px] max-w-[170px] pl-2 
+                                        bg-inherit text-white outline-none border-b border-white' 
                                 id="userId"
                                 onChange={(e)=>userID.current=e.target.value}
                                 disabled={!isChangeAble}/>
                     </div>
-                    <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col'>
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                         </div>

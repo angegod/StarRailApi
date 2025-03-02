@@ -48,3 +48,33 @@ button:disabled{
     color: white;
     border-color: inherit;
 }
+
+select.graySelect{
+    background-color: inherit;
+    outline: none;
+    border-bottom: 1px white solid;
+    color: white;
+}
+
+select.graySelect option{
+    background-color: rgb(36, 36, 36);
+    color: white;
+}
+
+/*隱藏input number旁邊的調整按鈕*/
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/*bg-inherit text-white border-b border-b-white outline-none*/
+
+/*繼承背景顏色的input*/
+.bgInput{
+    background-color: theme('backgroundColor.inherit');
+    color: theme('colors.white');
+    border-bottom-color: theme('colors.white');
+    border-bottom-width: 1px;
+    outline: none;
+}
