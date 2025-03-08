@@ -12,10 +12,10 @@ const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
         
         return(
             <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
+                ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[95%] max-[400px]:min-w-0`}>
                 <div className='flex flex-col'>
                     <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
-                        <span className='text-white'>{statusMsg}</span>
+                        <span className='text-red-500 font-bold text-lg'>{statusMsg}</span>
                     </div>
                     <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
                         <span className='text-white'>遺器評級:

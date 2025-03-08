@@ -409,31 +409,31 @@ function Simulator(){
         let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
         return(<>
-            <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2'>
+            <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2 max-[400px]:w-[95%] max-[400px]:flex-nowrap'>
                 <div className='flex flex-col mr-3'>
                     <div>
-                        <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px]'/>
+                        <img src={BaseLink} alt='iconChar' className='w-[70px] min-w-[] rounded-[50px] max-[400px]:w-[50px]'/>
                     </div>
                     <div className='text-center'>
                         <span style={{color:data.rank.color}} className='font-bold text-xl'>{data.score}</span>
                     </div>
                 </div>
-                <div className='flex flex-col'>
-                    <div className='[&>span]:text-white flex justify-start'>
-                        <span className='w-[70px]'>部位:</span>
+                <div className='flex flex-col '>
+                    <div className='[&>span]:text-white flex justify-start [&>span]:max-[400px]:text-sm'>
+                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>部位:</span>
                         <span>{data.part}</span>
                     </div>
-                    <div className='[&>span]:text-white flex justify-start'>
-                        <span className='w-[70px]'>主詞條:</span>
+                    <div className='[&>span]:text-white flex justify-start [&>span]:max-[400px]:text-sm'>
+                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>主詞條:</span>
                         <span>{data.mainaffix}</span>
                     </div>
-                    <div className='[&>span]:text-white flex justify-start'>
-                        <span className='w-[70px]'>期望機率:</span>
+                    <div className='[&>span]:text-white flex justify-start [&>span]:max-[400px]:text-sm'>
+                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>期望機率:</span>
                         <span style={{color:textColor}} className='pl-1 font-bold'>{(data.expRate*100).toFixed(1)}%</span>
                     </div>
-                    <div>
-                        <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)}>檢視</button>
-                        <button className='deleteBtn px-1' onClick={()=>updateHistory(index)}>刪除</button>
+                    <div className='[&>button]:max-[400px]:text-sm'>
+                        <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
+                        <button className='deleteBtn px-1 ' onClick={()=>updateHistory(index)} disabled={!isChangeAble}>刪除</button>
                     </div>
                 </div>
             </div>
@@ -767,7 +767,7 @@ function Simulator(){
                             <SubAffixSelect index={3}/>
                         </div>
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`}>
+                    <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Affix 有效詞條:</span>
                         </div>
@@ -793,7 +793,7 @@ function Simulator(){
                 </div>
                 <div className='w-1/2 max-w-[400px] flex flex-col max-[800px]:w-[100%] max-[600px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
-                    <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
+                    <ul className='[&>li]:text-white list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
                         <li>此工具主要目的是給予一些想要重洗詞條的人參考</li>
                         <li>翻盤機率是指說該遺器透過重洗詞條道具後導致遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星遺器</li>
@@ -813,10 +813,10 @@ function Simulator(){
                         <HistoryList />
                     </div>
                 </div>
-                <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''}`} >
+                <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
                     <RelicData />
                 </div>
-                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''}`} >
+                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
                     <StandDetails />
                 </div>
                 <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' id="resultDetails">

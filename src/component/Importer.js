@@ -560,7 +560,7 @@ function Import(){
             
             return(
                 <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                    ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
+                    ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>
                     <div>
                         <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                     </div>
@@ -600,9 +600,9 @@ function Import(){
             
             return(
             <div className='flex flex-row'>
-                <div className='flex justify-between w-[170px] mt-0.5 max-[800px]:w-[130px] mr-2 max-[400px]:w-1/2'>
+                <div className='flex justify-between w-[170px] max-w-[300px] mt-0.5 max-[800px]:w-[130px] mr-2 max-[400px]:w-[100%]'>
                     <img src={imglink} alt="icon" width={24} height={24}/>
-                    <span className='whitespace-nowrap overflow-hidden  text-ellipsis text-left w-[100px]' title={s.name}>{s.name}</span>
+                    <span className='whitespace-nowrap overflow-hidden  text-ellipsis text-left w-[100px] ' title={s.name}>{s.name}</span>
                     <input type='number' min={0} max={1} 
                         className='ml-2 text-center max-h-[30px] 
                         min-w-[40px] bgInput' 
@@ -688,31 +688,31 @@ function Import(){
         let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
         return(
-            <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2'>
+            <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2 max-[400px]:w-[95%] max-[400px]:!flex-nowrap'>
                 <div className='flex flex-col mr-3'>
                     <div>
-                        <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px]'/>
+                        <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]'/>
                     </div>
                     <div className='text-center'>
-                        <span style={{color:data.rank.color}} className='font-bold text-xl'>{data.score}</span>
+                        <span style={{color:data.rank.color}} className='font-bold text-xl max-[400px]:text-lg'>{data.score}</span>
                     </div>
                 </div>
                 <div className='flex flex-col'>
-                    <div className='flex flex-row [&>span]:text-white justify-start'>
-                        <span className='w-[70px]'>玩家UID:</span>
+                    <div className='flex flex-row [&>span]:text-white justify-start '>
+                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>玩家UID:</span>
                         <span className='pl-1'>{data.userID}</span>
                     </div>
-                    <div className='flex flex-row [&>span]:text-white justify-start'>
-                        <span className='w-[70px]'>部位:</span>
+                    <div className='flex flex-row [&>span]:text-white justify-start [&>span]:max-[400px]:text-sm'>
+                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>部位:</span>
                         <span className='pl-1'>{data.part}</span>
                     </div>
-                    <div className='flex flex-row [&>span]:text-white justify-start'>
-                        <span className='w-[70px]'>期望機率:</span>
+                    <div className='flex flex-row [&>span]:text-white justify-start [&>span]:max-[400px]:text-sm'>
+                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>期望機率:</span>
                         <span style={{color:textColor}} className='pl-1 font-bold'>{(data.expRate*100).toFixed(1)}%</span>
                     </div>
-                    <div>
-                        <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)}>檢視</button>
-                        <button className='deleteBtn px-1' onClick={()=>updateHistory(index)}>刪除</button>
+                    <div className='[&>button]:max-[400px]:text-sm'>
+                        <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
+                        <button className='deleteBtn px-1' onClick={()=>updateHistory(index)} disabled={!isChangeAble}>刪除</button>
                     </div>
                 </div>
             </div>
@@ -754,7 +754,7 @@ function Import(){
                                 onChange={(e)=>userID.current=e.target.value}
                                 disabled={!isChangeAble}/>
                     </div>
-                    <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col'>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col'>
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                         </div>
@@ -764,7 +764,7 @@ function Import(){
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>Parts 部位:</span></div>
                         <PartSelect key={"partSelect"}/>   
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`} >
+                    <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`} >
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
                         </div>
@@ -784,7 +784,7 @@ function Import(){
                 </div>
                 <div className='w-1/2 max-w-[400px] flex flex-col max-[800px]:w-[100%] max-[600px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
-                    <ul className='[&>li]:text-white list-decimal [&>li]:ml-2'>
+                    <ul className='[&>li]:text-white list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
                         <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>
                         <li>翻盤機率是指該遺器透過重洗詞條道具後遺器分數變高的機率為何</li>
                         <li>目前遺器只支援計算五星強化至滿等遺器</li>
@@ -806,10 +806,10 @@ function Import(){
                     
                 </div>
             <div className='flex flex-row flex-wrap w-[100%]' >
-                <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''}`}>
+                <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`}>
                     <RelicData />
                 </div>
-                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''}`} >
+                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`} >
                     <StandDetails />
                 </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] ${(statusMsg===undefined)?'hidden':''}`} 
