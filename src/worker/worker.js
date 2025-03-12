@@ -21,11 +21,9 @@ onmessage = function (event) {
 
     //計算可能的強化組合
     let combination=findCombinations(enchanceCount,SubData.filter((s)=>!s.locked).length);
-    
-    //var charStandard=score.find((item)=>parseInt(Object.keys(item)[0])===parseInt(charID))[charID];
+
     let charStandard=calStand(event.data.standard);
     //分數誤差 目前先預設少半個有效詞條
-    //let deviation =0.5/calPartWeights(charStandard,partsIndex)*100;
 
     let coeEfficent=[];//當前遺器係數arr
     SubData.forEach((sub)=>{

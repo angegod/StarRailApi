@@ -365,7 +365,7 @@ function Simulator(){
 
             return(
                 <div className='flex flex-row my-0.5'>
-                    <div className='flex justify-between w-[170px] mt-0.5 max-[800px]:w-[150px] max-[400px]:w-1/2'>
+                    <div className='flex justify-between w-[170px] mt-0.5 max-[800px]:w-[150px] max-[400px]:w-[70%]'>
                         <img src={imglink} alt="icon" width={24} height={24}/>
                         <span className='whitespace-nowrap overflow-hidden text-ellipsis text-left w-[100px]'>{s.name}</span>
                         <input type='number' min={0} max={1} 
@@ -457,7 +457,6 @@ function Simulator(){
                 let markcolor="";
 
                 var IconName = AffixName.find((a)=>a.name===s.subaffix).icon;
-                console.log(IconName);
 
                 var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
                 switch(s.count){
@@ -736,7 +735,7 @@ function Simulator(){
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器重洗模擬器</h1>
             <div className='flex flex-row flex-wrap'>
-                <div className='flex flex-col mt-2 w-1/2 max-[800px]:w-[100%]'>
+                <div className='flex flex-col mt-2 w-3/5 max-[900px]:w-[100%]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col max-[400px]:items-start'>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Characters 腳色:</span>
@@ -791,7 +790,7 @@ function Simulator(){
                         
                     </div>
                 </div>
-                <div className='w-1/2 max-w-[400px] flex flex-col max-[800px]:w-[100%] max-[600px]:my-3'>
+                <div className='w-2/5 max-w-[400px] flex flex-col max-[900px]:w-[100%] max-[600px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
                         <li>此工具主要目的是給予一些想要重洗詞條的人參考</li>

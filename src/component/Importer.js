@@ -6,6 +6,7 @@ import { useState ,useRef,useCallback ,useMemo} from 'react';
 import '../css/simulator.css';
 import axios from 'axios';
 import Result from './Result';
+import Enchant from './Enchant';
 import { Helmet } from 'react-helmet';
 import {useLocation} from 'react-router-dom';
 import AffixList from '../data/AffixList';
@@ -40,7 +41,10 @@ function Import(){
 
     //自訂義標準
     const [selfStand,setSelfStand]=useState([]);
-    const standDetails=useRef([])
+    const standDetails=useRef([]);
+
+    //模擬強化相關數據
+    const [simulatorData,setSimulatorData]=useState({});
 
     //元件狀態
     const [isChangeAble,setIsChangeAble]=useState(true);
@@ -50,7 +54,6 @@ function Import(){
 
 
     useEffect(()=>{
-        //prefetchDNS("https://expressapi-o9du.onrender.com");
 
         //初始化歷史紀錄
         initHistory();
@@ -70,6 +73,7 @@ function Import(){
 
         if(history != null && history.length > 0){
             setHistoryData(prev=>prev !== history ? history : prev);
+            console.log(history);
             setStatusMsg('先前紀錄已匯入!!');
         }
             
@@ -187,6 +191,9 @@ function Import(){
         setPieNums(prev => prev !== data.pieData ? data.pieData : prev);
         setRelic(prev => prev !== data.relic ? data.relic : prev);
 
+        //清空模擬強化紀錄
+        setSimulatorData({});
+
         setStatusMsg('資料替換完畢!!');
         standDetails.current=data.stand;
 
@@ -215,7 +222,6 @@ function Import(){
     }
 
     function calscore(relic){
-        console.log(standDetails);
         let isCheck=true;
         //將獲得到遺器先儲存起來
         setRelic(relic);
@@ -288,6 +294,9 @@ function Import(){
                         behavior: 'smooth'
                     });
                 })
+
+                //清空強化紀錄
+                setSimulatorData({});
             };
         }
         
@@ -346,6 +355,84 @@ function Import(){
         
         localStorage.setItem('importData',JSON.stringify(oldHistory));
        
+    }
+
+    //模擬強化
+    function simulate(){
+        let isCheck=true;
+
+        //將運行結果丟到背景執行 跟模擬所有組合的worker分開
+        let worker=new Worker(new URL('../worker/worker2.js', import.meta.url));
+        let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
+        let SubData=[];
+
+        relic.sub_affix.forEach((s,i)=>{
+            let typeName=AffixName.find((a)=>a.fieldName===s.type);
+            let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
+            
+            //如果val是字串(百分比) 則將其去除 並轉換成整數
+            //val = typeof val === 'string' && val.includes('%') ? Number(val.replace('%', '')) : Number(val);
+            let data={
+                index:i, 
+                subaffix:typeName.name,
+                data:val, //詞條數值    
+                count:s.count-1//強化次數
+            }
+
+            SubData.push(data);
+        });
+
+        console.log(SubData);
+
+        //檢查標準是否合法
+        selfStand.forEach((s)=>{
+            if(s.value===''){
+                isCheck=false;
+                setStatusMsg('加權指數不可為空或其他非法型式');
+            }
+        });
+        
+        //如果篩選有速度詞條 需給予0.5誤差計算 
+        let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        SubData.forEach(s=>{
+            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+                deviation+=0.2;
+        })
+
+        //制定送出資料格式
+        let postData={
+            MainData:MainAffix.name,
+            SubData:SubData,
+            partsIndex:(relic.type===5)?relic.type=6:(relic.type===6)?relic.type=5:relic.type=relic.type,
+            standard:standDetails.current,
+            deviation:0.5
+        };
+        
+        if(isCheck){
+            worker.postMessage(postData);
+
+            // 接收 Worker 返回的訊息
+            worker.onmessage = function (event) {
+                setSimulatorData({
+                    oldData:{
+                        relicscore:Rscore,
+                        relicrank:Rrank,
+                        returnData:SubData
+                    },
+                    newData:event.data
+                });
+                requestAnimationFrame(()=>{
+                    window.scrollTo({
+                        top: document.getElementById('enchant').offsetTop,
+                        behavior: 'smooth'
+                    });
+                })
+                
+            };
+        }
+        
+        //將送出按鈕設為可用
+        setIsChangeAble(true);
     }
 
     const CharSelect=()=>{
@@ -582,6 +669,9 @@ function Import(){
                             {list}
                         </div>
                     </div>
+                    <div className='mt-3'>
+                        <button className='processBtn' onClick={simulate}   disabled={!isChangeAble}>重洗模擬</button>
+                    </div>
                 </div>
             )
         }else{
@@ -600,7 +690,7 @@ function Import(){
             
             return(
             <div className='flex flex-row'>
-                <div className='flex justify-between w-[170px] max-w-[300px] mt-0.5 max-[800px]:w-[130px] mr-2 max-[400px]:w-[100%]'>
+                <div className='flex justify-between w-[170px] max-w-[300px] mt-0.5 mr-2 max-[400px]:w-[70%]'>
                     <img src={imglink} alt="icon" width={24} height={24}/>
                     <span className='whitespace-nowrap overflow-hidden  text-ellipsis text-left w-[100px] ' title={s.name}>{s.name}</span>
                     <input type='number' min={0} max={1} 
@@ -744,7 +834,7 @@ function Import(){
             </Helmet>
             <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>
             <div className='flex flex-row flex-wrap '>
-                <div className='flex flex-col w-1/2 max-[800px]:w-[100%]'>
+                <div className='flex flex-col w-1/2 max-[900px]:w-[100%]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>玩家UID :</span></div>
                         <input type='text' placeholder='HSR UID' 
@@ -782,7 +872,7 @@ function Import(){
                     </div>
                     
                 </div>
-                <div className='w-1/2 max-w-[400px] flex flex-col max-[800px]:w-[100%] max-[600px]:my-3'>
+                <div className='w-1/2 max-w-[400px] flex flex-col max-[900px]:w-[100%] max-[600px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
                         <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>
@@ -797,14 +887,14 @@ function Import(){
             <div className={`${(historyData.length===0)?'hidden':''} flex-wrap max-[930px]:w-[100%] border-t-4
                 border-gray-600 p-2 my-4 `}
                     id="historyData">
-                    <div>
-                        <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
-                    </div>
-                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
-                        <PastPreviewList historyData={memoizedHistoryData} />
-                    </div>
-                    
+                <div>
+                    <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                 </div>
+                <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
+                    <PastPreviewList historyData={memoizedHistoryData} />
+                </div>
+                    
+            </div>
             <div className='flex flex-row flex-wrap w-[100%]' >
                 <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`}>
                     <RelicData />
@@ -821,6 +911,9 @@ function Import(){
                             PieNums={PieNums}/>
                 </div>
                 
+            </div>
+            <div className='w-[100%] border-gray-600 my-4' id='enchant'>
+                <Enchant getdata={simulatorData} standDetails={standDetails} />
             </div>
 
         </div>
