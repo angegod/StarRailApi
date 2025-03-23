@@ -6,13 +6,14 @@ import Select from 'react-select'
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Result from './Result';
+import Enchant from './Enchant';
 import '../css/simulator.css';
 import AffixName from '../data/AffixName';
 
 //遺器強化模擬器
 function Simulator(){
     //版本代號
-    const version="1.2";
+    const version="1.3";
 
     //部位選擇 跟主詞條選擇
     const [partsIndex,setPartsIndex]=useState(undefined);
@@ -31,6 +32,9 @@ function Simulator(){
 
     //自訂義標準
     const [selfStand,setSelfStand]=useState([]);
+
+    //模擬強化相關數據
+    const [simulatorData,setSimulatorData]=useState({});
 
     //找到的遺器
     const [relic,setRelic]=useState();
@@ -140,7 +144,10 @@ function Simulator(){
             setStatusMsg("沒有選擇任何腳色!!");
             return;
         }
-
+        
+        //將部位資料丟進遺器資料中
+        let savedRelic = relic;
+        savedRelic.type=parseInt(partsIndex);
 
         //儲存紀錄
         let data={
@@ -173,7 +180,6 @@ function Simulator(){
     //檢視過往紀錄
     function checkDetails(index){
         let data=historyData.current[index];
-        //console.log(data);
         setRank(data.rank);
         setExpRate(data.expRate);
         setRscore(data.score)
@@ -181,6 +187,9 @@ function Simulator(){
         setPieNums(data.pieData);
         standDetails.current=data.stand;
         setRelic(data.relic);
+
+        //清空模擬強化紀錄
+        setSimulatorData({});
 
         requestAnimationFrame(()=>{
             window.scrollTo({
@@ -190,7 +199,7 @@ function Simulator(){
         })
     }
 
-    //儲存遺器資訊
+    //整合並儲存遺器資訊
     function saveRelic(){
         let data={
             main_affix:MainSelectOptions,
@@ -204,6 +213,7 @@ function Simulator(){
                 s.display=s.data;
         })
         data.subaffix=SubData.current;
+        data.type = parseInt(partsIndex);
 
         setRelic(data);
     }
@@ -504,6 +514,12 @@ function Simulator(){
                         <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                     </div>
                     <div className='mt-1 flex flex-col'>
+                        <span>部位</span>
+                        <div className='flex flex-row'>
+                            <span className='text-white'>{partArr[relic.type-1]}</span>   
+                        </div>
+                    </div>
+                    <div className='mt-1 flex flex-col'>
                         <span>主詞條</span>
                         <div className='flex flex-row'>
                             {mainaffixImg}
@@ -515,6 +531,9 @@ function Simulator(){
                         <div className='flex flex-col w-[200px]'>
                             {list}
                         </div>
+                    </div>
+                    <div className='mt-3'>
+                        <button className='processBtn' onClick={simulate}   disabled={!isChangeAble}>重洗模擬</button>
                     </div>
                 </div>
             )
@@ -614,7 +633,82 @@ function Simulator(){
                     behavior: 'smooth'
                 });
             })
+
+            //清空強化紀錄
+            setSimulatorData({});
         };
+    }
+
+    //模擬強化
+    function simulate(){
+        let isCheck=true;
+        //將運行結果丟到背景執行 跟模擬所有組合的worker分開
+        let worker=new Worker(new URL('../worker/worker2.js', import.meta.url));
+        let MainAffix=AffixName.find((a)=>a.name===relic.main_affix);
+        let SubData=[];
+
+        relic.subaffix.forEach((s,i)=>{
+            let typeName=AffixName.find((a)=>a.name===s.subaffix);
+           
+            let data={
+                index:i, 
+                subaffix:typeName.name,
+                data:s.data, //詞條數值    
+                count:s.count//強化次數
+            }
+
+            SubData.push(data);
+        });
+
+        //檢查標準是否合法
+        selfStand.forEach((s)=>{
+            if(s.value===''){
+                isCheck=false;
+                setStatusMsg('加權指數不可為空或其他非法型式');
+            }
+        });
+        
+        //如果篩選有速度詞條 需給予0.5誤差計算 
+        let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        SubData.forEach(s=>{
+            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+                deviation+=0.2;
+        })
+
+        //制定送出資料格式
+        let postData={
+            MainData:MainAffix.name,
+            SubData:SubData,
+            partsIndex:relic.type,
+            standard:standDetails.current,
+            deviation:0.5
+        };
+        
+        if(isCheck){
+            worker.postMessage(postData);
+
+            // 接收 Worker 返回的訊息
+            worker.onmessage = function (event) {
+                setSimulatorData({
+                    oldData:{
+                        relicscore:Rscore,
+                        relicrank:Rrank,
+                        returnData:SubData
+                    },
+                    newData:event.data
+                });
+                requestAnimationFrame(()=>{
+                    window.scrollTo({
+                        top: document.getElementById('enchant').offsetTop,
+                        behavior: 'smooth'
+                    });
+                })
+                
+            };
+        }
+        
+        //將送出按鈕設為可用
+        setIsChangeAble(true);
     }
 
     //歷史紀錄清單
@@ -826,6 +920,9 @@ function Simulator(){
                             PieNums={PieNums}/>
                 </div>
                 
+            </div>
+            <div className='w-[100%] border-gray-600 my-4' id='enchant'>
+                <Enchant getdata={simulatorData} standDetails={standDetails} />
             </div>
         </div>
     

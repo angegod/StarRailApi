@@ -13,7 +13,7 @@ import AffixList from '../data/AffixList';
 
 function Import(){
     //版本序號
-    const version="1.2";
+    const version="1.3";
 
     //玩家ID跟腳色ID
     const userID=useRef('');
@@ -654,6 +654,12 @@ function Import(){
                     <div>
                         <span>套裝:</span><br/>
                         <span className='text-white'>{relic.set_name}</span>
+                    </div>
+                    <div className='mt-1 flex flex-col'>
+                        <span>部位</span>
+                        <div className='flex flex-row'>
+                            <span className='text-white'>{partArr[relic.type-1]}</span>   
+                        </div>
                     </div>
                     <div className='mt-1'>
                         <span>主詞條</span><br/>

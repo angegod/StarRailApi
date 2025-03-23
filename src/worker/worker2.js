@@ -2,15 +2,15 @@ import standard from '../data/standard';
 import weight from '../data/weight';
 import AffixName from '../data/AffixName';
 import {findCombinations,EnchanceAllCombinations} from '../data/combination';
-import { data } from 'react-router-dom';
 
 
+//模擬計算在用的
 onmessage = function (event) {
     //宣告變數
     let SubData=event.data.SubData;
     let partsIndex=parseInt(event.data.partsIndex);
     let MainAffix=AffixName.find((a)=>a.name===event.data.MainData);
-    let deviation=(event.data.deviation!==undefined)?event.data.deviation:0;
+    //let deviation=(event.data.deviation!==undefined)?event.data.deviation:0;
     
 
     //計算可用強化次數
@@ -40,9 +40,6 @@ onmessage = function (event) {
             locked:(sub.locked)?true:false
         });
     });
-
-    //將沒有被鎖住不可計算的詞條倒裝
-    //coeEfficent.sort((a,b)=>)
 
     let MainData=charStandard[MainAffix.type];
     let result = 0;

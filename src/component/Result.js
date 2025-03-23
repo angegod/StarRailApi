@@ -55,7 +55,8 @@ const Pie=React.memo(({PieNums})=>{
         return(<>
            <div className='w-[100%] flex flex-row flex-wrap'>
                 <div className='min-w-[300px]'>
-                    <PieChart series={[
+                    <PieChart  
+                    series={[
                         {
                             innerRadius: 20,
                             arcLabelMinAngle: 35,
@@ -66,7 +67,7 @@ const Pie=React.memo(({PieNums})=>{
                 </div>
                     <div className='flex flex-col w-2/5 text-center max-[500px]:w-[100%]'>
                         {PieNums.map((p)=>{
-                            if(p.value!=0)
+                            if(p.value!==0)
                                 return(
                                     <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[100px] [&>*]:max-[500px]:text-center'>
                                         <div style={{color:p.color}} className='w-[30px] text-right '>{`${p.tag}`}</div>

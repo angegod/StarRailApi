@@ -3,13 +3,11 @@ import { useState ,useRef} from 'react';
 import AffixName from '../data/AffixName';
 import '../css/enchant.css';
 
-
 //此物件為單次模擬隨機強化後的結果
 function Enchant({getdata,standDetails}){
     if(getdata.newData===undefined||getdata===undefined){
         return(<></>)
     }else{
-        
         return(
             <div className="w-[100%] border-gray-600 my-4 justify-center flex flex-col">
                 <div>
@@ -17,21 +15,18 @@ function Enchant({getdata,standDetails}){
                 </div>
                 <div className='flex flex-row flex-wrap  max-[600px]:!flex-col'>
                     <DataList data={getdata.oldData} title={'重洗前'} />
-                    <div className='flex my-auto w-[30px] moveAnimate 
-                        max-[600px]:w-1/2 max-[600px]:justify-center moveAnimate2'>
+                    <div className='flex my-auto w-[30px] moveAnimate moveAnimate2
+                        max-[600px]:w-1/2 max-[600px]:justify-center h-[30px]'>
                         <svg xmlns="http://www.w3.org/2000/svg" className='max-[600px]:hidden'
                             height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/></svg>
                         <svg xmlns="http://www.w3.org/2000/svg" className='min-[600px]:hidden'
                             height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-800v487L216-537l-56 57 320 320 320-320-56-57-224 224v-487h-80Z"/></svg>
                     </div>
-                    <DataList data={getdata.newData} title={'重洗後'} />
-                    
+                    <DataList data={getdata.newData} title={'重洗後'} />          
                 </div>
             </div>
         )
     }
-
-
 
     //強化前後的數據顯示
     function DataList({data,title}){
