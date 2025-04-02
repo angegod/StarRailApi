@@ -5,10 +5,15 @@ import { useState} from 'react';
 import Select from 'react-select'
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import Result from './Result';
-import Enchant from './Enchant';
 import '../css/simulator.css';
 import AffixName from '../data/AffixName';
+
+
+import Result from './Result';
+import Enchant from './Enchant';
+import StandDetails from './StandDetails';
+import {RelicData_simuldate as RelicData} from './RelicData';
+import { PastPreview_simulator as PastPreview } from './PastPreview';
 
 //遺器強化模擬器
 function Simulator(){
@@ -305,65 +310,7 @@ function Simulator(){
         }   
     }
 
-    //腳色選擇
-    const CharSelect=()=>{
-        let options=[];
-
-        const customStyles={
-            control: (provided) => ({
-                ...provided,
-                backgroundColor: 'inherit', // 更改背景顏色
-                outline:'none'
-            }),
-            input: (provided) => ({
-                ...provided,
-                color: 'white', // 這裡設定 input 文字的顏色為白色
-                backgroundColor:'inherit'
-            }),
-            option: (provided, state) => ({
-                ...provided,
-                backgroundColor: state.isSelected
-                  ? 'darkgray'
-                  : state.isFocused
-                  ? 'gray'
-                  : 'rgb(36, 36, 36)',
-                color: state.isSelected ? 'white' : 'black',
-                padding: 10,
-            }),
-            menu: (provided) => ({
-                ...provided,
-                backgroundColor: 'rgb(36, 36, 36)',
-            }),
-        }
-        
-        characters.forEach((c)=>{
-            options.push({
-                value: c.charID, 
-                label: c.name,
-                icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
-            })
-        })
-
-        //自訂義篩選
-        const customFilterOption = (option, inputValue) => {
-            return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
-        };
-        
-        const selectedOption = options.find((option) => option.value === charID);
-        return(<Select options={options} 
-                    className='w-[200px]' 
-                    onChange={(option)=>setCharID(option.value)}
-                    styles={customStyles}
-                    value={selectedOption} 
-                    isDisabled={!isChangeAble}
-                    getOptionLabel={(e) => (
-                        <div style={{ display: "flex", alignItems: "center"  }}>
-                            <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
-                            <span className='text-white'>{e.label}</span>
-                        </div>
-                    )}
-                    filterOption={customFilterOption}/>)
-    }
+    
 
     //顯示你所輸入的標準
     const ShowStand=()=>{
@@ -409,139 +356,7 @@ function Simulator(){
         )
     }
 
-    //簡易瀏覽
-    const PastPreview=({index})=>{
-        let data=historyData.current[index];
 
-        const hue = data.expRate * 120;
-        
-        const textColor =`hsl(${hue}, 100%, 50%)`;
-        let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
-
-        return(<>
-            <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2 max-[400px]:w-[95%] max-[400px]:flex-nowrap'>
-                <div className='flex flex-col mr-3'>
-                    <div>
-                        <img src={BaseLink} alt='iconChar' className='w-[70px] min-w-[] rounded-[50px] max-[400px]:w-[50px]'/>
-                    </div>
-                    <div className='text-center'>
-                        <span style={{color:data.rank.color}} className='font-bold text-xl'>{data.score}</span>
-                    </div>
-                </div>
-                <div className='flex flex-col '>
-                    <div className='[&>span]:text-white flex justify-start [&>span]:max-[400px]:text-sm'>
-                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>部位:</span>
-                        <span>{data.part}</span>
-                    </div>
-                    <div className='[&>span]:text-white flex justify-start [&>span]:max-[400px]:text-sm'>
-                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>主詞條:</span>
-                        <span>{data.mainaffix}</span>
-                    </div>
-                    <div className='[&>span]:text-white flex justify-start [&>span]:max-[400px]:text-sm'>
-                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>期望機率:</span>
-                        <span style={{color:textColor}} className='pl-1 font-bold'>{(data.expRate*100).toFixed(1)}%</span>
-                    </div>
-                    <div className='[&>button]:max-[400px]:text-sm'>
-                        <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
-                        <button className='deleteBtn px-1 ' onClick={()=>updateHistory(index)} disabled={!isChangeAble}>刪除</button>
-                    </div>
-                </div>
-            </div>
-        
-        </>)
-    };
-
-    //顯示儀器分數區間
-    const RelicData=()=>{
-        if(relic!==undefined){
-            
-            const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix).icon;
-
-            const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
-
-            const list=[];
-
-            relic.subaffix.forEach((s)=>{
-                let isBold=(standDetails.current.find((st)=>st.name===s.subaffix)!==undefined)?true:false;
-                
-                let markcolor="";
-
-                var IconName = AffixName.find((a)=>a.name===s.subaffix).icon;
-
-                var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
-                switch(s.count){
-                    case 0:
-                        markcolor='rgb(122, 122, 122)';
-                        break;
-                    case 1:
-                        markcolor='rgb(67, 143, 67)';
-                        break;
-                    case 2:
-                        markcolor='rgb(23, 93, 232)';
-                        break;
-                    case 3:
-                        markcolor='rgb(67, 17, 184)';
-                        break;
-                    case 4:
-                        markcolor='rgb(219, 171, 15)';
-                        break;
-                    default:
-                        break;
-                }
-                list.push(
-                    <div className='flex flex-row' key={'Data'+s.subaffix}>
-                        <div className='flex justify-center items-center'>
-                            <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
-                                flex justify-center items-center' style={{backgroundColor:markcolor}}>
-                                {s.count}
-                            </span>
-                        </div>
-                        <div className='w-[160px] flex flex-row'>
-                            <div className='flex justify-center items-center'>
-                                <img src={imglink} alt='555' width={24} height={24}/>
-                            </div>
-                            <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.subaffix}</span>
-                        </div>
-                        <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
-                    </div>    
-                )
-            })
-            
-            return(
-                <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                    ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
-                    <div>
-                        <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
-                    </div>
-                    <div className='mt-1 flex flex-col'>
-                        <span>部位</span>
-                        <div className='flex flex-row'>
-                            <span className='text-white'>{partArr[relic.type-1]}</span>   
-                        </div>
-                    </div>
-                    <div className='mt-1 flex flex-col'>
-                        <span>主詞條</span>
-                        <div className='flex flex-row'>
-                            {mainaffixImg}
-                            <span className='text-white'>{relic.main_affix}</span>   
-                        </div>
-                    </div>
-                    <div className='mt-2'>
-                        <span>副詞條</span>
-                        <div className='flex flex-col w-[200px]'>
-                            {list}
-                        </div>
-                    </div>
-                    <div className='mt-3'>
-                        <button className='processBtn' onClick={simulate}   disabled={!isChangeAble}>重洗模擬</button>
-                    </div>
-                </div>
-            )
-        }else{
-            return(<></>)
-        }
-    }
-    
     //計算遺器分數等細節
     function calScore(){
         //先驗證選擇是否有誤
@@ -711,18 +526,7 @@ function Simulator(){
         setIsChangeAble(true);
     }
 
-    //歷史紀錄清單
-    const HistoryList=()=>{
-        if(historyData.current){
-            return(
-                historyData.current.map((item,i)=>
-                    <PastPreview index={i} key={'historyData'+i}/>
-                )
-            )
-        }else{
-            return <></>
-        }
-    }
+    
 
     const StandardSelect=()=>{
         const [selectAffix,setAffix]=useState(undefined);
@@ -783,42 +587,6 @@ function Simulator(){
 
     }
 
-    //顯示你輸出的標準為何?
-    const StandDetails=()=>{
-    
-        if(standDetails.current!==undefined){
-            const list=standDetails.current.map((s,i)=>{
-                var IconName = AffixName.find((a)=>a.name===s.name).icon;
-
-                var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
-                
-                return(
-                    <div className='flex flex-row' key={'StandDetails'+i}>
-                        <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
-                            <div className='flex flex-row'>
-                                <img src={imglink} alt="icon" width={24} height={24}/>
-                                <span>{s.name}</span>
-                            </div>
-                            <span>{s.value}</span>
-                        </div>
-                    </div>
-                );
-            })
-
-            return(<>
-                <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                    max-[600px]:!min-w-[0px]`}>
-                    <div>
-                        <span className='text-red-600 text-lg font-bold'>標準加權</span>
-                    </div>
-                    <div>
-                        {list}
-                    </div>
-                </div>
-            
-            </>)
-        }
-    }
     
     return(<>
         <div className='w-4/5 mx-auto max-[600px]:w-[90%]'>
@@ -834,7 +602,10 @@ function Simulator(){
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Characters 腳色:</span>
                         </div>
-                        <CharSelect />
+                        <CharSelect charID={charID} 
+                                    setCharID={setCharID} 
+                                    setIsSaveAble={setIsSaveAble} 
+                                    isChangeAble={isChangeAble}/>
                     </div>
                     <div className={`my-1 ${(Number.isInteger(charID)&&charID!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col max-[400px]:items-start`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
@@ -903,14 +674,21 @@ function Simulator(){
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
                     <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
-                        <HistoryList />
+                        <HistoryList historyData={historyData.current}
+                                    updateHistory={updateHistory}
+                                    checkDetails={checkDetails}
+                                    isChangeAble={isChangeAble}/>
                     </div>
                 </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
-                    <RelicData />
+                    <RelicData  relic={relic}
+                                standDetails={standDetails}
+                                simulate={simulate}
+                                isChangeAble={isChangeAble}
+                                statusMsg={statusMsg}/>
                 </div>
                 <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
-                    <StandDetails />
+                    <StandDetails standDetails={standDetails.current}/>
                 </div>
                 <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' id="resultDetails">
                     <Result ExpRate={ExpRate} 
@@ -927,8 +705,82 @@ function Simulator(){
         </div>
     
     </>)
+}
 
+//歷史紀錄清單
+const HistoryList=({historyData,updateHistory,checkDetails,isChangeAble})=>{
+    if(historyData){
+        return(
+            historyData.map((item,i)=>
+                <PastPreview index={i} 
+                            data={item}    
+                            checkDetails={checkDetails}
+                            updateHistory={updateHistory}
+                            isChangeAble={isChangeAble}
+                            key={'historyData'+i}/>
+            )
+        )
+    }else{
+        return <></>
+    }
+}
 
+const CharSelect=({charID,setCharID,setIsSaveAble,isChangeAble})=>{
+    let options=[];
+
+    const customStyles={
+        control: (provided) => ({
+            ...provided,
+            backgroundColor: 'inherit', // 繼承背景顏色
+            outline:'none',
+        }),
+        input: (provided) => ({
+            ...provided,
+            color: 'white', // 這裡設定 input 文字的顏色為白色
+            backgroundColor:'inherit'
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected
+              ? 'darkgray'
+              : state.isFocused
+              ? 'gray'
+              : 'rgb(36, 36, 36)',
+            color: state.isSelected ? 'white' : 'black'
+        }),
+        menu: (provided) => ({
+            ...provided,
+            backgroundColor: 'rgb(36, 36, 36)',
+        })
+    }
+    
+    characters.forEach((c)=>{
+        options.push({
+            value: c.charID, 
+            label: c.name,
+            icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
+        })
+    })
+
+    //自訂義篩選
+    const customFilterOption = (option, inputValue) => {
+        return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
+    };
+
+    const selectedOption = options.find((option) => option.value === charID);
+    return(<Select options={options} 
+                className='w-[200px]' 
+                onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
+                value={selectedOption} 
+                isDisabled={!isChangeAble}
+                styles={customStyles}
+                getOptionLabel={(e) => (
+                    <div style={{ display: "flex", alignItems: "center"  }}>
+                        <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
+                        <span className='text-white'>{e.label}</span>
+                    </div>
+                )}
+                filterOption={customFilterOption}/>)
 }
 
 export default Simulator;

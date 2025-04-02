@@ -1,15 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useReducer ,useMemo } from 'react';
 import characters from '../data/characters';
 import Select from 'react-select';
 import AffixName from '../data/AffixName';
-import { useState ,useRef,useCallback ,useMemo} from 'react';
+import { useState ,useRef,useCallback } from 'react';
 import '../css/simulator.css';
 import axios from 'axios';
-import Result from './Result';
-import Enchant from './Enchant';
+
 import { Helmet } from 'react-helmet';
 import {useLocation} from 'react-router-dom';
 import AffixList from '../data/AffixList';
+
+import PastPreviewList from './PastPreviewList';
+import Result from './Result';
+import Enchant from './Enchant';
+import StandDetails from './StandDetails';
+import {RelicData} from './RelicData';
 
 function Import(){
     //版本序號
@@ -33,8 +38,33 @@ function Import(){
     const [Rscore,setRscore]=useState(undefined);
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [PieNums,setPieNums]=useState(undefined);
-    const [historyData,setHistoryData]=useState([]);
-    const memoizedHistoryData = useMemo(() => historyData, [JSON.stringify(historyData)]);
+    
+
+    // 定義 reducer
+    const reducer = (state, action) => {
+        switch (action.type) {
+            case "CREATE":
+                return { ...state, historyData: [...action.payload] }; // 合併狀態
+            case "ADD":
+                const newHistoryData = [...state.historyData]; // 創建新的陣列
+                //newHistoryData.push(action.payload); // 在新陣列上 push
+                console.log(newHistoryData);
+                return { ...state, historyData: newHistoryData }; // 回傳新的 state
+            case "LIMIT":
+                return { ...state, historyData: state.historyData.filter((item, i) => i !== 0) }; // 刪除第一項
+            case "DELETE":
+                return { ...state, historyData: state.historyData.filter((item, i) => i !== action.payload) }; // 刪除指定項
+            default:
+                return state;
+        }
+    };
+    
+    //歷史紀錄
+    const initialState = {
+        historyData: [] // 確保 historyData 預設為陣列
+    };
+    const [historyState,dispatchHistory]=useReducer(reducer, initialState );
+    const {historyData=[]} =historyState;
 
     //狀態訊息
     const [statusMsg,setStatusMsg]=useState(undefined);
@@ -57,7 +87,7 @@ function Import(){
 
         //初始化歷史紀錄
         initHistory();
-    },[location.pathname])
+    },[location.pathname]);
 
 
     function initHistory(){
@@ -72,9 +102,9 @@ function Import(){
         localStorage.setItem('importData',JSON.stringify(history));
 
         if(history != null && history.length > 0){
-            setHistoryData(prev=>prev !== history ? history : prev);
-            console.log(history);
+            dispatchHistory({ type: "CREATE", payload: history })
             setStatusMsg('先前紀錄已匯入!!');
+            console.log(history)
         }
             
     }
@@ -182,9 +212,9 @@ function Import(){
     }
 
     //檢視過往紀錄
-    function checkDetails(index){
+    const checkDetails=useCallback((index)=>{
         let data=historyData[index];
-       
+        
         setRank(prev => prev !== data.rank ? data.rank : prev);
         setExpRate(prev => prev !== data.expRate ? data.expRate : prev);
         setRscore(prev => prev !== data.score ? data.score : prev);
@@ -204,13 +234,14 @@ function Import(){
                 behavior: 'smooth'
             });
         });
-    }
+    },[historyData]);
 
     //刪除過往紀錄
-    function updateHistory(index){
+    const updateHistory=useCallback((index)=>{
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         let oldHistory=historyData;
-        setHistoryData((old)=>old.filter((item,i)=>i!==index));
+        //setHistoryData((old)=>old.filter((item,i)=>i!==index));
+        dispatchHistory({ type: "DELETE", payload: index })
 
         oldHistory=oldHistory.filter((item,i)=>i!==index);
         localStorage.setItem('importData',JSON.stringify(oldHistory));
@@ -219,7 +250,7 @@ function Import(){
         setTimeout(() => {
             setStatusMsg('成功刪除該紀錄!!');
         }, 0);
-    }
+    },[historyData]);
 
     function calscore(relic){
         let isCheck=true;
@@ -311,7 +342,8 @@ function Import(){
 
         //如果原本紀錄超過6個 要先刪除原有紀錄
         if(historyData.length>=6)
-            setHistoryData((old)=>old.filter((item,i)=>i!==0));
+            //setHistoryData((old)=>old.filter((item,i)=>i!==0));
+            dispatchHistory({ type: "LIMIT" })
 
         //如果當前沒有任何資料則不予匯入
         if(PieNums===undefined||ExpRate===undefined||Rrank===undefined||Rscore===undefined){
@@ -347,8 +379,9 @@ function Import(){
             stand:standDetails.current
         };
         let oldHistory=historyData;
-        //console.log(data);
-        setHistoryData((old)=>[...old,data]);
+        
+        dispatchHistory({ type: "ADD", payload: data })
+        console.log(historyData);
         setStatusMsg('已儲存');
         setIsSaveAble(false);
         oldHistory.push(data);
@@ -382,8 +415,6 @@ function Import(){
             SubData.push(data);
         });
 
-        console.log(SubData);
-
         //檢查標準是否合法
         selfStand.forEach((s)=>{
             if(s.value===''){
@@ -403,7 +434,7 @@ function Import(){
         let postData={
             MainData:MainAffix.name,
             SubData:SubData,
-            partsIndex:(relic.type===5)?relic.type=6:(relic.type===6)?relic.type=5:relic.type=relic.type,
+            partsIndex:(relic.type===5)?6:(relic.type===6)?5:relic.type,
             standard:standDetails.current,
             deviation:0.5
         };
@@ -435,63 +466,7 @@ function Import(){
         setIsChangeAble(true);
     }
 
-    const CharSelect=()=>{
-        let options=[];
-
-        const customStyles={
-            control: (provided) => ({
-                ...provided,
-                backgroundColor: 'inherit', // 繼承背景顏色
-                outline:'none',
-            }),
-            input: (provided) => ({
-                ...provided,
-                color: 'white', // 這裡設定 input 文字的顏色為白色
-                backgroundColor:'inherit'
-            }),
-            option: (provided, state) => ({
-                ...provided,
-                backgroundColor: state.isSelected
-                  ? 'darkgray'
-                  : state.isFocused
-                  ? 'gray'
-                  : 'rgb(36, 36, 36)',
-                color: state.isSelected ? 'white' : 'black'
-            }),
-            menu: (provided) => ({
-                ...provided,
-                backgroundColor: 'rgb(36, 36, 36)',
-            })
-        }
-        
-        characters.forEach((c)=>{
-            options.push({
-                value: c.charID, 
-                label: c.name,
-                icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
-            })
-        })
-
-        //自訂義篩選
-        const customFilterOption = (option, inputValue) => {
-            return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
-        };
-
-        const selectedOption = options.find((option) => option.value === charID);
-        return(<Select options={options} 
-                    className='w-[200px]' 
-                    onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
-                    value={selectedOption} 
-                    isDisabled={!isChangeAble}
-                    styles={customStyles}
-                    getOptionLabel={(e) => (
-                        <div style={{ display: "flex", alignItems: "center"  }}>
-                            <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
-                            <span className='text-white'>{e.label}</span>
-                        </div>
-                    )}
-                    filterOption={customFilterOption}/>)
-    }
+    
 
     //部位選擇器
     const PartSelect=()=>{
@@ -577,113 +552,7 @@ function Import(){
 
     }
 
-    //顯示儀器分數區間
-    const RelicData=()=>{
-        if(relic!==undefined){
-
-            const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix.name).icon;
-
-            const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
-
-            const list=[];
-            relic.sub_affix.forEach((s)=>{
-                let markcolor="";
-                let isBold=(standDetails.current.find((st)=>st.name===s.name)!==undefined)?true:false;
-                
-                if(s.name==="攻擊力"&&s.display.includes('%')){
-                    s.name="攻擊力%數";
-                }
-                else if(s.name==="防禦力"&&s.display.includes('%')){
-                    s.name="防禦力%數";
-                }else if(s.name==="生命值"&&s.display.includes('%')){
-                    s.name="生命值%數";
-                }
-
-
-                var IconName = AffixName.find((a)=>a.name===s.name).icon;
-                
-                var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
-
-                switch(s.count-1){
-                    case 0:
-                        markcolor='rgb(122, 122, 122)';
-                        break;
-                    case 1:
-                        markcolor='rgb(67, 143, 67)';
-                        break;
-                    case 2:
-                        markcolor='rgb(23, 93, 232)';
-                        break;
-                    case 3:
-                        markcolor='rgb(67, 17, 184)';
-                        break;
-                    case 4:
-                        markcolor='rgb(219, 171, 15)';
-                        break;
-                    default:
-                        break;
-                }
-
-                list.push(
-                    <div className='flex flex-row' key={'Subaffix_'+s.name}>
-                        <div className='flex justify-center items-center'>
-                            <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
-                                flex justify-center items-center' style={{backgroundColor:markcolor}}>
-                                {s.count-1}
-                            </span>
-                        </div>
-                        <div className='w-[150px] flex flex-row'>
-                            <div className='flex justify-center items-center'>
-                                <img src={imglink} alt='555' width={24} height={24}/>
-                            </div>
-                            <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.name}</span>
-                        </div>
-                        <span className='flex w-[70px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
-                    </div>
-                    
-                )
-            })
-            
-            
-            return(
-                <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                    ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>
-                    <div>
-                        <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
-                    </div>
-                    <div>
-                        <span>套裝:</span><br/>
-                        <span className='text-white'>{relic.set_name}</span>
-                    </div>
-                    <div className='mt-1 flex flex-col'>
-                        <span>部位</span>
-                        <div className='flex flex-row'>
-                            <span className='text-white'>{partArr[relic.type-1]}</span>   
-                        </div>
-                    </div>
-                    <div className='mt-1'>
-                        <span>主詞條</span><br/>
-                        <div className='flex flex-row'>
-                            {mainaffixImg}
-                            <span className='text-white'>{relic.main_affix.name}:{relic.main_affix.display}</span>
-                        </div>
-                           
-                    </div>
-                    <div className='mt-2'>
-                        <span>副詞條</span>
-                        <div className='flex flex-col w-[190px]'>
-                            {list}
-                        </div>
-                    </div>
-                    <div className='mt-3'>
-                        <button className='processBtn' onClick={simulate}   disabled={!isChangeAble}>重洗模擬</button>
-                    </div>
-                </div>
-            )
-        }else{
-            return(<></>)
-        }
-    }
+    
 
     //顯示你所輸入的標準
     const ShowStand=()=>{
@@ -734,103 +603,7 @@ function Import(){
         </>)
     }
     
-    //顯示你輸出的標準為何?
-    const StandDetails=()=>{
-        if(standDetails.current!==undefined){
-            const list=standDetails.current.map((s)=>{
-                var IconName = AffixName.find((a)=>a.name===s.name).icon;
-
-                var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
-                
-                
-                return(
-                    <div className='flex flex-row' key={'StandDetails_'+s.name}>
-                        <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
-                            <div className='flex flex-row'>
-                                <img src={imglink} alt="icon" width={24} height={24}/>
-                                <span>{s.name}</span>
-                            </div>
-                            <span>{s.value}</span>
-                        </div>
-                    </div>
-                )
-            })
-
-            return(<>
-                <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                    max-[600px]:!min-w-[0px]`}>
-                    <div>
-                        <span className='text-red-600 text-lg font-bold'>標準加權</span>
-                    </div>
-                    <div>
-                        {list}
-                    </div>
-                </div>
-            
-            </>)
-        }
-    }
-
-    //簡易瀏覽
-    const PastPreview=React.memo(({index})=>{
-        let data=memoizedHistoryData[index];
-
-        //let isBold=(standDetails.current.find((st)=>st.name===data.name)!==undefined)?true:false;
-        const hue = data.expRate * 120;
-        
-        const textColor =`hsl(${hue}, 100%, 50%)`;
-       
-
-        let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
-
-        return(
-            <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2 max-[400px]:w-[95%] max-[400px]:!flex-nowrap'>
-                <div className='flex flex-col mr-3'>
-                    <div>
-                        <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]'/>
-                    </div>
-                    <div className='text-center'>
-                        <span style={{color:data.rank.color}} className='font-bold text-xl max-[400px]:text-lg'>{data.score}</span>
-                    </div>
-                </div>
-                <div className='flex flex-col'>
-                    <div className='flex flex-row [&>span]:text-white justify-start '>
-                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>玩家UID:</span>
-                        <span className='pl-1'>{data.userID}</span>
-                    </div>
-                    <div className='flex flex-row [&>span]:text-white justify-start [&>span]:max-[400px]:text-sm'>
-                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>部位:</span>
-                        <span className='pl-1'>{data.part}</span>
-                    </div>
-                    <div className='flex flex-row [&>span]:text-white justify-start [&>span]:max-[400px]:text-sm'>
-                        <span className='w-[70px] max-[400px]:w-[60px] break-keep'>期望機率:</span>
-                        <span style={{color:textColor}} className='pl-1 font-bold'>{(data.expRate*100).toFixed(1)}%</span>
-                    </div>
-                    <div className='[&>button]:max-[400px]:text-sm'>
-                        <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
-                        <button className='deleteBtn px-1' onClick={()=>updateHistory(index)} disabled={!isChangeAble}>刪除</button>
-                    </div>
-                </div>
-            </div>
-        
-        )
-    },(prev,next)=>{
-        return prev.index === next.index; // 只有 value1 改變才重新渲染
-    });
-
-    const PastPreviewList = React.memo(({ historyData }) => {
     
-        // 使用 useCallback 確保每個 index 不會因為 map 重新執行而變動
-        const renderItem = useCallback((item, i) => (
-            <PastPreview index={i} key={'history' + i} />
-        ), [historyData]);
-    
-        return <>{historyData.map(renderItem)}</>;
-    }, (prev, next) => {
-        return JSON.stringify(prev.historyData) === JSON.stringify(next.historyData); // 只有 historyData 改變才重新渲染
-    });
-    
-
     return(<>
         <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
              <Helmet>
@@ -854,7 +627,11 @@ function Import(){
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                         </div>
-                        <CharSelect />
+                        <CharSelect isChangeAble={isChangeAble} 
+                                    setChar={setCharID} 
+                                    setIsSaveAble={setIsSaveAble}
+                                    charID={charID}
+                                    setCharID={setCharID}/>
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`}>
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>Parts 部位:</span></div>
@@ -891,22 +668,28 @@ function Import(){
                 </div>
             </div>
             <div className={`${(historyData.length===0)?'hidden':''} flex-wrap max-[930px]:w-[100%] border-t-4
-                border-gray-600 p-2 my-4 `}
-                    id="historyData">
+                border-gray-600 p-2 my-4 `}>
                 <div>
                     <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                 </div>
                 <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
-                    <PastPreviewList historyData={memoizedHistoryData} />
+                    <PastPreviewList historyData={historyData} 
+                                    isChangeAble={isChangeAble} 
+                                    updateHistory={updateHistory}
+                                    checkDetails={checkDetails} />
                 </div>
                     
             </div>
             <div className='flex flex-row flex-wrap w-[100%]' >
                 <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`}>
-                    <RelicData />
+                    <RelicData  relic={relic}
+                                standDetails={standDetails}
+                                simulate={simulate}
+                                isChangeAble={isChangeAble}
+                                statusMsg={statusMsg}/>
                 </div>
                 <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`} >
-                    <StandDetails />
+                    <StandDetails standDetails={standDetails.current}/>
                 </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] ${(statusMsg===undefined)?'hidden':''}`} 
                     id="resultDetails">
@@ -924,6 +707,65 @@ function Import(){
 
         </div>
     </>)
+}
+
+
+const CharSelect=({charID,setCharID,setIsSaveAble,isChangeAble})=>{
+    let options=[];
+
+    const customStyles={
+        control: (provided) => ({
+            ...provided,
+            backgroundColor: 'inherit', // 繼承背景顏色
+            outline:'none',
+        }),
+        input: (provided) => ({
+            ...provided,
+            color: 'white', // 這裡設定 input 文字的顏色為白色
+            backgroundColor:'inherit'
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected
+              ? 'darkgray'
+              : state.isFocused
+              ? 'gray'
+              : 'rgb(36, 36, 36)',
+            color: state.isSelected ? 'white' : 'black'
+        }),
+        menu: (provided) => ({
+            ...provided,
+            backgroundColor: 'rgb(36, 36, 36)',
+        })
+    }
+    
+    characters.forEach((c)=>{
+        options.push({
+            value: c.charID, 
+            label: c.name,
+            icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
+        })
+    })
+
+    //自訂義篩選
+    const customFilterOption = (option, inputValue) => {
+        return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
+    };
+
+    const selectedOption = options.find((option) => option.value === charID);
+    return(<Select options={options} 
+                className='w-[200px]' 
+                onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
+                value={selectedOption} 
+                isDisabled={!isChangeAble}
+                styles={customStyles}
+                getOptionLabel={(e) => (
+                    <div style={{ display: "flex", alignItems: "center"  }}>
+                        <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
+                        <span className='text-white'>{e.label}</span>
+                    </div>
+                )}
+                filterOption={customFilterOption}/>)
 }
 
 export default Import;

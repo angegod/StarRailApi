@@ -1,47 +1,46 @@
-import React from 'react';
+import React,{useMemo} from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 
-const Result=React.memo(({ExpRate,Rrank,PieNums,statusMsg,Rscore})=>{
+const Result = React.memo(({ ExpRate, Rrank, PieNums, statusMsg, Rscore }) => {
+    const hue = ExpRate * 120;
+    const bgColor =`hsl(${hue}, 100%, 50%)`;
+    const renderContent = useMemo(() => {
+        if (ExpRate !== undefined && Rrank !== undefined && PieNums !== undefined && Rscore !== undefined) {
+            return (
+                <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
+                    ${(statusMsg !== undefined) ? '' : 'hidden'} max-[500px]:w-[330px] max-[400px]:w-[95%] max-[400px]:min-w-0`}>
+                    <div className='flex flex-col'>
+                        <div className={`${(statusMsg !== undefined) ? '' : 'hidden'} mt-2`}>
+                            <span className='text-red-500 font-bold text-lg'>{statusMsg}</span>
+                        </div>
+                        <div className={`${(ExpRate !== undefined) ? '' : 'hidden'} mt-2`}>
+                            <span className='text-white'>遺器評級:
+                                <span style={{ color: Rrank.color }} className='pl-2'>{Rrank.rank} &nbsp; {Rscore}/100 </span>
+                            </span>
+                        </div>
+                        <div className={`${(ExpRate !== undefined) ? '' : 'hidden'} mt-2`}>
+                            <span className={`text-white`}>重洗詞條翻盤機率:
+                                <label style={{ color: bgColor, marginLeft: '4px' }} className='font-bold'>{`${(ExpRate * 100).toFixed(1)}%`}</label>
+                            </span>
+                        </div>
+                    </div>
+                    <div className='max-w-[500px] flex flex-row mt-2'>
+                        <Pie PieNums={PieNums} />
+                    </div>
+                </div>
+            );
+        } else {
+            return (
+                <div className={`w-[100%] mb-5 border-t-4 border-gray-600 max-[500px]:w-[100%] my-2 pt-2 ${(statusMsg !== undefined) ? '' : 'hidden'}`}>
+                    <div><span className='text-white'>{statusMsg}</span></div>
+                </div>
+            );
+        }
+    }, [ExpRate, Rrank, PieNums, statusMsg, Rscore, bgColor]);
 
-    if(ExpRate!==undefined&&Rrank!==undefined&&PieNums!==undefined&&Rscore!==undefined){
-        
-        
-        const hue = ExpRate * 120;
-        
-        const bgColor =`hsl(${hue}, 100%, 50%)`;
-        
-        return(
-            <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[95%] max-[400px]:min-w-0`}>
-                <div className='flex flex-col'>
-                    <div className={`${(statusMsg!==undefined)?'':'hidden'} mt-2`}>
-                        <span className='text-red-500 font-bold text-lg'>{statusMsg}</span>
-                    </div>
-                    <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
-                        <span className='text-white'>遺器評級:
-                            <span style={{color:Rrank.color}} className='pl-2'>{Rrank.rank} &nbsp; {Rscore}/100 </span>
-                        </span>
-                    </div>
-                    <div className={`${(ExpRate!==undefined)?'':'hidden'} mt-2`}>
-                        <span className={`text-white`}>重洗詞條翻盤機率:
-                            <label style={{ color: bgColor,marginLeft:'4px' }} className='font-bold'>{`${(ExpRate*100).toFixed(1)}%`}</label>
-                        </span>
-                    </div>
-                </div>
-                <div className='max-w-[500px] flex flex-row mt-2'>
-                    <Pie PieNums={PieNums}/>
-                </div>
-            </div>
-        )
-    }else{
-        return(
-            <div className={`w-[100%] mb-5 border-t-4 border-gray-600 
-                max-[500px]:w-[100%] my-2 pt-2 ${(statusMsg!==undefined)?'':'hidden'}`}>
-                <div><span className='text-white'>{statusMsg}</span></div>
-            </div>
-        )
-    }    
+    return renderContent;
 });
+
 
 //圓餅圖
 const Pie=React.memo(({PieNums})=>{
@@ -52,7 +51,7 @@ const Pie=React.memo(({PieNums})=>{
             slotProps: { legend: { hidden: true } },
         };
 
-        return(<>
+        return(
            <div className='w-[100%] flex flex-row flex-wrap'>
                 <div className='min-w-[300px]'>
                     <PieChart  
@@ -76,8 +75,9 @@ const Pie=React.memo(({PieNums})=>{
                                 )
                         })}
                     </div>
+               
            </div>
-        </>);
+        );
 
     }else{
         return(<></>)
