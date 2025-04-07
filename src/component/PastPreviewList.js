@@ -1,16 +1,16 @@
-import React, { Component,useCallback,useMemo } from 'react';
+import React, { Component,useCallback,useContext,useMemo } from 'react';
 import {PastPreview} from './PastPreview';
 
-const PastPreviewList=React.memo(({historyData,updateHistory,checkDetails,isChangeAble})=>{
+const PastPreviewList=React.memo(({context})=>{
+    const {historyData}=useContext(context);
+
     if(historyData.length!==0){
         const renderList=historyData.map((item,i)=>{
             return(
-                <PastPreview    data={item}
-                    index={i}
-                    updateHistory={updateHistory}
-                    checkDetails={checkDetails}
-                    isChangeAble={isChangeAble} 
-                    key={'history' + i} />
+                <PastPreview    index={i}
+                                data={item}
+                                context={context}
+                                key={'history' + i} />
             )
         })
         

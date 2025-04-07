@@ -1,19 +1,20 @@
 import AffixList from '../data/AffixList';
 import characters from '../data/characters';
-import React, { useEffect, useRef } from 'react';
-import { useState} from 'react';
-import Select from 'react-select'
+import React, { createContext, useContext, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import '../css/simulator.css';
 import AffixName from '../data/AffixName';
 
-
 import Result from './Result';
 import Enchant from './Enchant';
-import StandDetails from './StandDetails';
-import {RelicData_simuldate as RelicData} from './RelicData';
+import { StandDetails ,ShowStand } from './StandDetails';
+import { RelicData_simuldate as RelicData} from './RelicData';
 import { PastPreview_simulator as PastPreview } from './PastPreview';
+import { CharSelect,PartSelect,StandardSelect,MainAffixSelect,SubAffixSelect } from './Select';
+
+const SimulatorContext = createContext();
 
 //遺器強化模擬器
 function Simulator(){
@@ -45,7 +46,6 @@ function Simulator(){
     const [relic,setRelic]=useState();
 
     //歷史紀錄
-    //const [historyData,setHistoryData]=useState([]);
     const historyData=useRef([]);
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
     
@@ -93,19 +93,6 @@ function Simulator(){
             historyData.current=history;
             setStatusMsg('先前紀錄已匯入!!');
         }
-    }
-
-
-    function updateSubAffix(val,index){
-        SubData.current.find((s,i)=>i===parseInt(index)).subaffix=val;
-    }
-
-    function updateSubData(val,index){
-        SubData.current.find((s,i)=>i===parseInt(index)).data=Number(val);
-    }
-
-    function updateSubCount(val,index){
-        SubData.current.find((s,i)=>i===parseInt(index)).count=Number(val);
     }
 
     //刪除過往紀錄
@@ -223,138 +210,7 @@ function Simulator(){
         setRelic(data);
     }
 
-    //部位選擇器
-    const PartSelect=()=>{
-        
-        let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
-
-        partArr.forEach((a,i)=>{
-            options.push(
-                <option value={i+1} key={'Parts'+i} >{a}</option>       
-            )
-        })
-
-        return(
-            <select value={partsIndex} 
-                    onChange={(event)=>{
-                        if(event.target.value==='undefined')
-                            setPartsIndex(undefined)
-                        else
-                            setPartsIndex(event.target.value)
-                    }}
-                    disabled={!isChangeAble}
-                    className='w-[120px] graySelect'>{options}</select>
-        )
-    }
-
-    const MainAffixSelect=()=>{
-        if(Number.isInteger(parseInt(partsIndex))&&partsIndex!==undefined){
-            let range=AffixList.find((s)=>s.id===(parseInt(partsIndex))).main;
-            
-            //如果只有固定一個主屬性的情況下
-            if(range.length===1){
-                setMainSelectOptions(range[0]);
-                return(<span className='text-white'>{MainSelectOptions}</span>)
-            }else{
-                //如果超過一個的情況下
-                let options=[<option value={'undefined'} key={"MainAfffixUndefined"}>請選擇</option>];
-
-                range.forEach((s,i)=>{
-                    options.push(<option value={s} key={'Mainaffix'+i}>{s}</option>)
-                });
-
-                return(<select  defaultValue={MainSelectOptions} 
-                                onChange={(event)=>{
-                                    if(event.target.value==='undefined')
-                                        setMainSelectOptions(undefined)
-                                    else
-                                        setMainSelectOptions(event.target.value)
-                                }}
-                                disabled={!isChangeAble}
-                                className='w-[150px] graySelect'>{options}</select>)
-            }
-        }else{
-            return(<></>)
-        }
-    }
-
-    const SubAffixSelect=({index})=>{
-        if(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined){
-            let range=AffixList.find((s)=>s.id===parseInt(partsIndex)).sub;
-            let options=[<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
-
-            range.forEach((s,i)=>{
-                options.push(<option value={s} key={`Subaffix${i}`}>{s}</option>)
-            });
-            
-
-            return(<div className='my-1' key={'SubAffixSelect'}>
-                <select defaultValue={SubData.current[index].subaffix} 
-                        onChange={(event)=>updateSubAffix(event.target.value,index)} 
-                        className='graySelect'
-                        disabled={!isChangeAble}>
-                            {options}
-
-                </select>
-                <input type='number' defaultValue={SubData.current[index].data}
-                        onChange={(event)=>updateSubData(event.target.value,index)}
-                        className='ml-2 max-w-[50px] bgInput text-center' 
-                        disabled={!isChangeAble} min={0} title='詞條數值'/>
-                <input type='number' defaultValue={SubData.current[index].count}
-                        onChange={(event)=>updateSubCount(event.target.value,index)}
-                        className='ml-2 text-center bgInput' disabled={!isChangeAble}
-                        min={0} max={5} title='強化次數'/>
-                </div>)
-        }else{
-            return(<></>)
-        }   
-    }
-
     
-
-    //顯示你所輸入的標準
-    const ShowStand=()=>{
-        const list=selfStand.map((s,i)=>{
-
-            var IconName = AffixName.find((a)=>a.name===s.name).icon;
-
-            var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
-
-            return(
-                <div className='flex flex-row my-0.5'>
-                    <div className='flex justify-between w-[170px] mt-0.5 max-[800px]:w-[150px] max-[400px]:w-[70%]'>
-                        <img src={imglink} alt="icon" width={24} height={24}/>
-                        <span className='whitespace-nowrap overflow-hidden text-ellipsis text-left w-[100px]'>{s.name}</span>
-                        <input type='number' min={0} max={1} 
-                            className='ml-2 text-center min-w-[40px] bgInput' defaultValue={selfStand[i].value}
-                            title='最小值為0 最大為1'
-                            onChange={(event)=>changeVal(i,event.target.value)}
-                            disabled={!isChangeAble}/>
-                        
-                    </div>
-                    <button onClick={()=>removeAffix(i)} className='deleteBtn ml-2 px-1' disabled={!isChangeAble}>移除</button>
-                </div>
-            )
-
-        })
-
-        function removeAffix(index){
-            setSelfStand((arr)=>arr.filter((item,i)=>i!==index));
-        }
-
-        function changeVal(index,val){
-            let stand=selfStand;
-            selfStand[index].value=val;
-
-            setSelfStand(stand);
-        }
-
-        return(
-            <div className='flex flex-col'>
-                {list}
-            </div>
-        )
-    }
 
 
     //計算遺器分數等細節
@@ -484,11 +340,11 @@ function Simulator(){
         });
         
         //如果篩選有速度詞條 需給予0.5誤差計算 
-        let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        /*let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
         SubData.forEach(s=>{
             if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
                 deviation+=0.2;
-        })
+        })*/
 
         //制定送出資料格式
         let postData={
@@ -526,69 +382,33 @@ function Simulator(){
         setIsChangeAble(true);
     }
 
-    
 
-    const StandardSelect=()=>{
-        const [selectAffix,setAffix]=useState(undefined);
-        
-        //添加標準 目前設定先不超過六個有效 且不重複
-        function addAffix(){
-            if(selectAffix===undefined)
-                return;
-            let newItem={
-                name:selectAffix,
-                value:1
-            }
+    let SimulatorStatus = {
+        charID:charID,
+        standDetails:standDetails.current,
+        partArr:partArr,
+        historyData:historyData.current,
+        isChangeAble:isChangeAble,
+        selfStand:selfStand,
+        partsIndex:partsIndex,
+        MainSelectOptions:MainSelectOptions,
+        SubData:SubData,
 
-            if(selfStand.length<6&&!(selfStand.findIndex((item)=>item.name===selectAffix)>=0))
-                setSelfStand((old)=>[...old,newItem]);
-        }
 
-        //清除所有加權
-        function clearAffix(){
-            setSelfStand([]);
-        }
+        updateHistory:updateHistory,
+        checkDetails:checkDetails,
 
-        if(partsIndex!==undefined){
-            //依據所選部位 給出不同的選澤
-            let target=AffixList.find((a)=>a.id===parseInt(partsIndex));
-            //合併所有選項 並且移除重複值
-            let mergedArray = [...new Set([...target.main, ...target.sub])];
-            mergedArray=mergedArray.filter((item)=>item!=='生命值'&&item!=='攻擊力'&&item!=='防禦力')
-
-            
-            let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
-
-            //如果該標準已被選擇 會顯示勾選圖示於左側選項中
-            mergedArray.forEach((a,i)=>{
-                options.push(
-                    <option value={a} key={'Affix'+i} >
-                         <span className='inline-block w-[20px]'>{(selfStand.find((s)=>s.name===a))?'\u2714 ':'\u2003'}</span>
-                         <span>{a}</span>                   
-                    </option>       
-                )
-            });
-
-            return(
-                <div className='flex flex-row flex-wrap items-center'>
-                    <select value={selectAffix} 
-                        onChange={(event)=>{setAffix(event.target.value)}}
-                        disabled={!isChangeAble} className='mr-1 h-[25px] graySelect'>{options}</select>
-                    <div className='max-[520px]:mt-1'>
-                        <button className='processBtn px-1' onClick={addAffix} disabled={!isChangeAble}>添加</button>
-                        <button className='deleteBtn ml-1 px-1' onClick={clearAffix} disabled={!isChangeAble}>清空</button>
-                    </div>
-                </div>
-                
-            )
-        }else{
-            return(<></>)
-        }
-
+        setCharID:setCharID,
+        setIsChangeAble:setIsChangeAble,
+        setIsSaveAble:setIsSaveAble,
+        setSelfStand:setSelfStand,
+        setPartsIndex:setPartsIndex,
+        setMainSelectOptions:setMainSelectOptions,
+        setStatusMsg:setStatusMsg
     }
-
     
-    return(<>
+    return(
+    <SimulatorContext.Provider value={SimulatorStatus}>
         <div className='w-4/5 mx-auto max-[600px]:w-[90%]'>
             <Helmet>
                 <title>崩鐵--遺器重洗模擬器</title>
@@ -602,22 +422,19 @@ function Simulator(){
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Characters 腳色:</span>
                         </div>
-                        <CharSelect charID={charID} 
-                                    setCharID={setCharID} 
-                                    setIsSaveAble={setIsSaveAble} 
-                                    isChangeAble={isChangeAble}/>
+                        <CharSelect context={SimulatorContext}/>
                     </div>
                     <div className={`my-1 ${(Number.isInteger(charID)&&charID!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col max-[400px]:items-start`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Parts 部位:</span>
                         </div>
-                        <PartSelect />   
+                        <PartSelect context={SimulatorContext}/>   
                     </div>
                     <div className={`my-1 ${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:items-start max-[400px]:!flex-col`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>MainAffix 主屬性:</span>
                         </div>
-                        <MainAffixSelect />
+                        <MainAffixSelect context={SimulatorContext}/>
                     </div>
                     <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined)?'':'hidden'} 
                             mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center max-[400px]:text-left`}>
@@ -625,23 +442,23 @@ function Simulator(){
                             <span className='text-white'>SubAffix 副屬性:</span>
                         </div>
                         <div className='flex flex-col'>
-                            <SubAffixSelect index={0}/>
-                            <SubAffixSelect index={1}/>
-                            <SubAffixSelect index={2}/>
-                            <SubAffixSelect index={3}/>
+                            <SubAffixSelect index={0} context={SimulatorContext}/>
+                            <SubAffixSelect index={1} context={SimulatorContext}/>
+                            <SubAffixSelect index={2} context={SimulatorContext}/>
+                            <SubAffixSelect index={3} context={SimulatorContext}/>
                         </div>
                     </div>
                     <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Affix 有效詞條:</span>
                         </div>
-                        <StandardSelect />
+                        <StandardSelect context={SimulatorContext}/>
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`} >
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Params 參數:</span>
                         </div>
-                        <ShowStand />
+                        <ShowStand context={SimulatorContext}/>
                     </div>
                     <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px]  
                                 flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
@@ -674,10 +491,7 @@ function Simulator(){
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     </div>
                     <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
-                        <HistoryList historyData={historyData.current}
-                                    updateHistory={updateHistory}
-                                    checkDetails={checkDetails}
-                                    isChangeAble={isChangeAble}/>
+                        <HistoryList context={SimulatorContext}/>
                     </div>
                 </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
@@ -688,7 +502,7 @@ function Simulator(){
                                 statusMsg={statusMsg}/>
                 </div>
                 <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
-                    <StandDetails standDetails={standDetails.current}/>
+                    <StandDetails context={SimulatorContext}/>
                 </div>
                 <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' id="resultDetails">
                     <Result ExpRate={ExpRate} 
@@ -703,20 +517,18 @@ function Simulator(){
                 <Enchant getdata={simulatorData} standDetails={standDetails} />
             </div>
         </div>
-    
-    </>)
+    </SimulatorContext.Provider>)
 }
 
 //歷史紀錄清單
-const HistoryList=({historyData,updateHistory,checkDetails,isChangeAble})=>{
+const HistoryList=({context})=>{
+    const {historyData} = useContext(context)
     if(historyData){
         return(
             historyData.map((item,i)=>
                 <PastPreview index={i} 
                             data={item}    
-                            checkDetails={checkDetails}
-                            updateHistory={updateHistory}
-                            isChangeAble={isChangeAble}
+                            context={context}
                             key={'historyData'+i}/>
             )
         )
@@ -725,63 +537,7 @@ const HistoryList=({historyData,updateHistory,checkDetails,isChangeAble})=>{
     }
 }
 
-const CharSelect=({charID,setCharID,setIsSaveAble,isChangeAble})=>{
-    let options=[];
 
-    const customStyles={
-        control: (provided) => ({
-            ...provided,
-            backgroundColor: 'inherit', // 繼承背景顏色
-            outline:'none',
-        }),
-        input: (provided) => ({
-            ...provided,
-            color: 'white', // 這裡設定 input 文字的顏色為白色
-            backgroundColor:'inherit'
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected
-              ? 'darkgray'
-              : state.isFocused
-              ? 'gray'
-              : 'rgb(36, 36, 36)',
-            color: state.isSelected ? 'white' : 'black'
-        }),
-        menu: (provided) => ({
-            ...provided,
-            backgroundColor: 'rgb(36, 36, 36)',
-        })
-    }
-    
-    characters.forEach((c)=>{
-        options.push({
-            value: c.charID, 
-            label: c.name,
-            icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
-        })
-    })
-
-    //自訂義篩選
-    const customFilterOption = (option, inputValue) => {
-        return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
-    };
-
-    const selectedOption = options.find((option) => option.value === charID);
-    return(<Select options={options} 
-                className='w-[200px]' 
-                onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
-                value={selectedOption} 
-                isDisabled={!isChangeAble}
-                styles={customStyles}
-                getOptionLabel={(e) => (
-                    <div style={{ display: "flex", alignItems: "center"  }}>
-                        <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
-                        <span className='text-white'>{e.label}</span>
-                    </div>
-                )}
-                filterOption={customFilterOption}/>)
-}
 
 export default Simulator;
 

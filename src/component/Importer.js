@@ -1,6 +1,5 @@
-import React, { useEffect, useReducer ,useMemo } from 'react';
+import React, { useEffect, useReducer , createContext } from 'react';
 import characters from '../data/characters';
-import Select from 'react-select';
 import AffixName from '../data/AffixName';
 import { useState ,useRef,useCallback } from 'react';
 import '../css/simulator.css';
@@ -8,15 +7,18 @@ import axios from 'axios';
 
 import { Helmet } from 'react-helmet';
 import {useLocation} from 'react-router-dom';
-import AffixList from '../data/AffixList';
 
 import PastPreviewList from './PastPreviewList';
 import Result from './Result';
 import Enchant from './Enchant';
-import StandDetails from './StandDetails';
-import {RelicData} from './RelicData';
+import { StandDetails, ShowStand } from './StandDetails';
+import { RelicData } from './RelicData';
+import { PartSelect, StandardSelect,   CharSelect } from './Select';
 
-function Import(){
+//Importer的context狀態
+const ImporterContext = createContext();
+
+function Importer(){
     //版本序號
     const version="1.3";
 
@@ -82,9 +84,8 @@ function Import(){
     
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
 
-
+    
     useEffect(()=>{
-
         //初始化歷史紀錄
         initHistory();
     },[location.pathname]);
@@ -464,147 +465,35 @@ function Import(){
         
         //將送出按鈕設為可用
         setIsChangeAble(true);
-    }
+    }    
 
     
-
-    //部位選擇器
-    const PartSelect=()=>{
-        let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
-
-        partArr.forEach((a,i)=>{
-            options.push(
-                <option value={i+1} key={`PartSelect${i}`} >{a}</option>       
-            )
-        })
-
-        return(
-            <select value={partsIndex} 
-                    onChange={(event)=>{
-                        if(event.target.value==='undefined')
-                            setPartsIndex(undefined)
-                        else{
-                            setPartsIndex(event.target.value);setIsSaveAble(false);
-                        }
-
-                    }}
-                    disabled={!isChangeAble} className='h-[25px] w-[150px] graySelect'>{options}</select>
-        )
-    }
-
-    //自訂義有效詞條種類
-    const StandardSelect=()=>{
-        const [selectAffix,setAffix]=useState(undefined);
-        
-        //添加標準 目前設定先不超過六個有效 且不重複
-        function addAffix(){
-            //如果為預設選項則不予選擇
-            if(selectAffix===undefined)
-                return;
-            let newItem={
-                name:selectAffix,
-                value:1
-            }
-            if(selfStand.length<6&&!(selfStand.findIndex((item)=>item.name===selectAffix)>=0))
-                setSelfStand((old)=>[...old,newItem]);
-        }
-
-        function clearAffix(){
-            setSelfStand([]);
-        }
-
-        if(partsIndex!==undefined){
-            //依據所選部位 給出不同的選澤
-            let target=AffixList.find((a)=>a.id===parseInt(partsIndex));
-            //合併所有選項 並且移除重複值
-            let mergedArray = [...new Set([...target.main, ...target.sub])];
-            mergedArray=mergedArray.filter((item)=>item!=='生命值'&&item!=='攻擊力'&&item!=='防禦力')
-
-            let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
-
-            //如果該標準已被選擇 會顯示勾選圖示於左側選項中
-            mergedArray.forEach((m,i)=>{
-                options.push(
-                    <option value={m} key={'Affix'+i} title={m} 
-                        className='w-[160px] whitespace-pre'>
-                            <span className='inline-block w-[20px]'>{(selfStand.find((s)=>s.name===m))?'\u2714 ':'\u2003'}</span>
-                            <span>{m}</span>
-                    </option>);
-            });
-
-            return(
-                    <div className='flex flex-col'>
-                        <div className='flex flex-row flex-wrap items-baseline'>
-                            <select value={selectAffix}
-                                title='選擇標準' 
-                                onChange={(event)=>{setAffix(event.target.value)}}
-                                disabled={!isChangeAble} className='mr-1 h-[25px] w-[120px] graySelect'>{options}</select>
-                            <div className='max-[520px]:mt-1 ml-1'>
-                                <button className='processBtn px-1' onClick={addAffix} disabled={!isChangeAble}>添加</button>
-                                <button className='deleteBtn ml-2 px-1' onClick={clearAffix} disabled={!isChangeAble}>清空</button>
-                            </div>
-                        </div>
-                    </div>
-            )
-        }else{
-            return(<></>)
-        }
-
-    }
-
     
+    //共用context狀態
+    let ImporterStatus={
+        //數值資料
+        charID:charID,
+        selfStand:selfStand,
+        partsIndex:partsIndex,
+        standDetails:standDetails.current,
+        partArr:partArr,
+        historyData:historyData,
+        isChangeAble:isChangeAble,
 
-    //顯示你所輸入的標準
-    const ShowStand=()=>{
-        const list=selfStand.map((s,i)=>{
-            
-            var IconName = AffixName.find((a)=>a.name===s.name).icon;
+        //方法
+        updateHistory:updateHistory,
+        checkDetails:checkDetails,
 
-            var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
-            
-            
-            return(
-            <div className='flex flex-row'>
-                <div className='flex justify-between w-[170px] max-w-[300px] mt-0.5 mr-2 max-[400px]:w-[70%]'>
-                    <img src={imglink} alt="icon" width={24} height={24}/>
-                    <span className='whitespace-nowrap overflow-hidden  text-ellipsis text-left w-[100px] ' title={s.name}>{s.name}</span>
-                    <input type='number' min={0} max={1} 
-                        className='ml-2 text-center max-h-[30px] 
-                        min-w-[40px] bgInput' 
-                        defaultValue={selfStand[i].value}
-                        title='最小值為0 最大為1'
-                        onChange={(event)=>changeVal(i,event.target.value)}/>
-                    
-                </div>
-                <button onClick={()=>removeAffix(i)} className='deleteBtn px-1 whitespace-nowrap' disabled={!isChangeAble}>移除</button>
-            </div>)
-        })
-
-        function removeAffix(index){
-            setSelfStand((arr)=>arr.filter((item,i)=>i!==index));
-        }
-
-        function changeVal(index,val){
-            if(val>1||val<0){
-                val=1;
-                setStatusMsg('加權指數不可高於1或低於0!')
-            }
-
-            let stand=selfStand;
-            selfStand[index].value=val;
-
-            setSelfStand(stand);
-        }
-
-        return(<>
-            <div className='flex flex-col'>
-                {list}
-            </div>
-        </>)
+        //state管理
+        setCharID:setCharID,
+        setSelfStand:setSelfStand,
+        setIsSaveAble:setIsSaveAble,
+        setPartsIndex:setPartsIndex,
+        setStatusMsg:setStatusMsg
     }
     
-    
-    return(<>
+    return(
+    <ImporterContext.Provider value={ImporterStatus}>
         <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
              <Helmet>
                 <title>崩鐵--遺器重洗匯入</title>
@@ -627,27 +516,23 @@ function Import(){
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                         </div>
-                        <CharSelect isChangeAble={isChangeAble} 
-                                    setChar={setCharID} 
-                                    setIsSaveAble={setIsSaveAble}
-                                    charID={charID}
-                                    setCharID={setCharID}/>
+                        <CharSelect context={ImporterContext} />
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`}>
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>Parts 部位:</span></div>
-                        <PartSelect key={"partSelect"}/>   
+                        <PartSelect context={ImporterContext} key={"partSelect"}/>   
                     </div>
                     <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`} >
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
                         </div>
-                        <StandardSelect />
+                        <StandardSelect context={ImporterContext}/>
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`}>
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white'>Params 參數:</span>
                         </div>
-                        <ShowStand />
+                        <ShowStand context={ImporterContext}/>
                     </div>
                     <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px] max-[400px]:justify-start'>
                         <button className='processBtn' onClick={getRecord}  disabled={!isChangeAble}>開始匹配</button>
@@ -673,10 +558,7 @@ function Import(){
                     <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                 </div>
                 <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
-                    <PastPreviewList historyData={historyData} 
-                                    isChangeAble={isChangeAble} 
-                                    updateHistory={updateHistory}
-                                    checkDetails={checkDetails} />
+                    <PastPreviewList context={ImporterContext} />
                 </div>
                     
             </div>
@@ -689,7 +571,7 @@ function Import(){
                                 statusMsg={statusMsg}/>
                 </div>
                 <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`} >
-                    <StandDetails standDetails={standDetails.current}/>
+                    <StandDetails context={ImporterContext}/>
                 </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] ${(statusMsg===undefined)?'hidden':''}`} 
                     id="resultDetails">
@@ -706,66 +588,10 @@ function Import(){
             </div>
 
         </div>
-    </>)
+    </ImporterContext.Provider>)
 }
 
 
-const CharSelect=({charID,setCharID,setIsSaveAble,isChangeAble})=>{
-    let options=[];
 
-    const customStyles={
-        control: (provided) => ({
-            ...provided,
-            backgroundColor: 'inherit', // 繼承背景顏色
-            outline:'none',
-        }),
-        input: (provided) => ({
-            ...provided,
-            color: 'white', // 這裡設定 input 文字的顏色為白色
-            backgroundColor:'inherit'
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected
-              ? 'darkgray'
-              : state.isFocused
-              ? 'gray'
-              : 'rgb(36, 36, 36)',
-            color: state.isSelected ? 'white' : 'black'
-        }),
-        menu: (provided) => ({
-            ...provided,
-            backgroundColor: 'rgb(36, 36, 36)',
-        })
-    }
-    
-    characters.forEach((c)=>{
-        options.push({
-            value: c.charID, 
-            label: c.name,
-            icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
-        })
-    })
 
-    //自訂義篩選
-    const customFilterOption = (option, inputValue) => {
-        return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
-    };
-
-    const selectedOption = options.find((option) => option.value === charID);
-    return(<Select options={options} 
-                className='w-[200px]' 
-                onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
-                value={selectedOption} 
-                isDisabled={!isChangeAble}
-                styles={customStyles}
-                getOptionLabel={(e) => (
-                    <div style={{ display: "flex", alignItems: "center"  }}>
-                        <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
-                        <span className='text-white'>{e.label}</span>
-                    </div>
-                )}
-                filterOption={customFilterOption}/>)
-}
-
-export default Import;
+export default Importer;

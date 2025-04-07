@@ -1,10 +1,10 @@
-import React, { useEffect,useMemo } from 'react';
+import React, { useContext } from 'react';
 import '../css/simulator.css';
 
 
 //簡易瀏覽
-const PastPreview=React.memo(({data,index,checkDetails,updateHistory,isChangeAble})=>{
-    
+const PastPreview=React.memo(({index,data,context})=>{
+    const {checkDetails,updateHistory,isChangeAble} = useContext(context);
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
     const BaseLink =  `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
@@ -47,8 +47,8 @@ const PastPreview=React.memo(({data,index,checkDetails,updateHistory,isChangeAbl
 
 
 //簡易瀏覽_模擬器版本
-const PastPreview_simulator=React.memo(({data,index,checkDetails,updateHistory,isChangeAble})=>{
-
+const PastPreview_simulator=React.memo(({data,index,context})=>{
+    const {checkDetails,updateHistory,isChangeAble} = useContext(context);
     const hue = data.expRate * 120;
     
     const textColor =`hsl(${hue}, 100%, 50%)`;

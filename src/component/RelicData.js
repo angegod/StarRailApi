@@ -85,7 +85,7 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
                 <div className='mt-1 flex flex-col'>
                     <span>部位</span>
                     <div className='flex flex-row'>
-                        <span className='text-white'>{partArr[relic.type-1]}</span>   
+                        <span className='text-white'>{(relic.type===5)?partArr[5]:(relic.type===6)?partArr[4]:partArr[relic.type-1]}</span>   
                     </div>
                 </div>
                 <div className='mt-1'>
