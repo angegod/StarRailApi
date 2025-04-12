@@ -10,9 +10,12 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
 
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix.name).icon;
 
-        const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
+        const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} 
+            width={24} height={24} />
 
         const list=[];
+        const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
+
         relic.sub_affix.forEach((s)=>{
             let markcolor="";
             let isBold=(standDetails.current.find((st)=>st.name===s.name)!==undefined)?true:false;
@@ -30,6 +33,7 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
             var IconName = AffixName.find((a)=>a.name===s.name).icon;
             
             var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
+            
 
             switch(s.count-1){
                 case 0:
@@ -46,6 +50,9 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
                     break;
                 case 4:
                     markcolor='rgb(219, 171, 15)';
+                    break;
+                case 5:
+                    markcolor='#FF55FF';
                     break;
                 default:
                     break;
@@ -80,7 +87,10 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
                 </div>
                 <div>
                     <span>套裝:</span><br/>
-                    <span className='text-white'>{relic.set_name}</span>
+                    <div className='flex flex-row'>
+                        <img src={reliclink} width={24} height={24} alt={relic.set_id}/>
+                        <span className='text-white'>{relic.set_name}</span>
+                    </div>
                 </div>
                 <div className='mt-1 flex flex-col'>
                     <span>部位</span>
@@ -91,8 +101,11 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
                 <div className='mt-1'>
                     <span>主詞條</span><br/>
                     <div className='flex flex-row'>
-                        {mainaffixImg}
-                        <span className='text-white'>{relic.main_affix.name}:{relic.main_affix.display}</span>
+                        <div className='flex flex-row max-w-[140px]'>
+                            {mainaffixImg}
+                            <span className='text-white whitespace-nowrap overflow-hidden text-ellipsis'>{relic.main_affix.name}</span>
+                        </div>
+                        <span>:{relic.main_affix.display}</span>
                     </div>
                        
                 </div>
@@ -103,7 +116,7 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
                     </div>
                 </div>
                 <div className='mt-3'>
-                    <button className='processBtn' onClick={simulate}   disabled={!isChangeAble}>重洗模擬</button>
+                    <button className='processBtn' onClick={simulate} disabled={!isChangeAble}>重洗模擬</button>
                 </div>
             </div>
         )
@@ -119,6 +132,7 @@ const RelicData_simuldate=React.memo(({relic,standDetails,simulate,statusMsg,isC
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix).icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
+        const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
 
         const list=[];
 

@@ -479,10 +479,12 @@ function Importer(){
         partArr:partArr,
         historyData:historyData,
         isChangeAble:isChangeAble,
+        simulatorData:simulatorData,
 
         //方法
         updateHistory:updateHistory,
         checkDetails:checkDetails,
+        simulate:simulate,
 
         //state管理
         setCharID:setCharID,
@@ -584,7 +586,7 @@ function Importer(){
                 
             </div>
             <div className='w-[100%] border-gray-600 my-4' id='enchant'>
-                <Enchant getdata={simulatorData} standDetails={standDetails} />
+                <Enchant context={ImporterContext} />
             </div>
 
         </div>

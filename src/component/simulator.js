@@ -393,10 +393,12 @@ function Simulator(){
         partsIndex:partsIndex,
         MainSelectOptions:MainSelectOptions,
         SubData:SubData,
+        simulatorData:simulatorData,
 
 
         updateHistory:updateHistory,
         checkDetails:checkDetails,
+        simulate:simulate,
 
         setCharID:setCharID,
         setIsChangeAble:setIsChangeAble,
@@ -514,7 +516,7 @@ function Simulator(){
                 
             </div>
             <div className='w-[100%] border-gray-600 my-4' id='enchant'>
-                <Enchant getdata={simulatorData} standDetails={standDetails} />
+                <Enchant context={SimulatorContext} />
             </div>
         </div>
     </SimulatorContext.Provider>)

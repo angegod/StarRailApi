@@ -16,7 +16,7 @@ const StandDetails=React.memo(({context})=>{
                     <div className='flex justify-between w-[15vw] min-w-[150px] mt-0.5'>
                         <div className='flex flex-row'>
                             <img src={imglink} alt="icon" width={24} height={24}/>
-                            <span>{s.name}</span>
+                            <span className='whitespace-nowrap overflow-hidden text-ellipsis'>{s.name}</span>
                         </div>
                         <span>{s.value}</span>
                     </div>
