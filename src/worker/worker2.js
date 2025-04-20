@@ -156,7 +156,6 @@ onmessage = function (event) {
                 relicrank=stand;
 
         });
-
         this.postMessage({
             relicscore:Number(result.toFixed(1)),//遺器分數
             relicrank:relicrank,//遺器區間

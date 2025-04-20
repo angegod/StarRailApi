@@ -8,7 +8,6 @@ import '../css/simulator.css';
 import AffixName from '../data/AffixName';
 
 import Result from './Result';
-import Enchant from './Enchant';
 import { StandDetails ,ShowStand } from './StandDetails';
 import { RelicData_simuldate as RelicData} from './RelicData';
 import { PastPreview_simulator as PastPreview } from './PastPreview';
@@ -394,6 +393,9 @@ function Simulator(){
         MainSelectOptions:MainSelectOptions,
         SubData:SubData,
         simulatorData:simulatorData,
+        Rrank:Rrank,
+        Rscore:Rscore,
+        relic:relic,
 
 
         updateHistory:updateHistory,
@@ -496,27 +498,22 @@ function Simulator(){
                         <HistoryList context={SimulatorContext}/>
                     </div>
                 </div>
-                <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
-                    <RelicData  relic={relic}
-                                standDetails={standDetails}
-                                simulate={simulate}
-                                isChangeAble={isChangeAble}
-                                statusMsg={statusMsg}/>
-                </div>
-                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
-                    <StandDetails context={SimulatorContext}/>
-                </div>
-                <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' id="resultDetails">
-                    <Result ExpRate={ExpRate} 
-                            Rscore={Rscore} 
-                            statusMsg={statusMsg} 
-                            Rrank={Rrank} 
-                            PieNums={PieNums}/>
+                <div className='border-t-4 border-gray-600 w-[100%] flex flex-row'>
+                    <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
+                        <RelicData  context={SimulatorContext} mode={'Simulator'}/>
+                    </div>
+                    <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
+                        <StandDetails context={SimulatorContext}/>
+                    </div>
+                    <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' id="resultDetails">
+                        <Result ExpRate={ExpRate} 
+                                Rscore={Rscore} 
+                                statusMsg={statusMsg} 
+                                Rrank={Rrank} 
+                                PieNums={PieNums}/>
+                    </div>
                 </div>
                 
-            </div>
-            <div className='w-[100%] border-gray-600 my-4' id='enchant'>
-                <Enchant context={SimulatorContext} />
             </div>
         </div>
     </SimulatorContext.Provider>)

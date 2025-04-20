@@ -7,10 +7,9 @@ const Result = React.memo(({ ExpRate, Rrank, PieNums, statusMsg, Rscore }) => {
     const renderContent = useMemo(() => {
         if (ExpRate !== undefined && Rrank !== undefined && PieNums !== undefined && Rscore !== undefined) {
             return (
-                <div className={`w-[100%] min-w-[400px] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                    ${(statusMsg !== undefined) ? '' : 'hidden'} max-[500px]:w-[330px] max-[400px]:w-[95%] max-[400px]:min-w-0`}>
+                <div className={`w-[100%] min-w-[400px] mb-5 my-1 ${(statusMsg !== undefined) ? '' : 'hidden'} max-[500px]:w-[330px] max-[400px]:w-[95%] max-[400px]:min-w-0`}>
                     <div className='flex flex-col'>
-                        <div className={`${(statusMsg !== undefined) ? '' : 'hidden'} mt-2`}>
+                        <div className={`${(statusMsg !== undefined) ? '' : 'hidden'}`}>
                             <span className='text-red-500 font-bold text-lg'>{statusMsg}</span>
                         </div>
                         <div className={`${(ExpRate !== undefined) ? '' : 'hidden'} mt-2`}>
@@ -31,7 +30,7 @@ const Result = React.memo(({ ExpRate, Rrank, PieNums, statusMsg, Rscore }) => {
             );
         } else {
             return (
-                <div className={`w-[100%] mb-5 border-t-4 border-gray-600 max-[500px]:w-[100%] my-2 pt-2 ${(statusMsg !== undefined) ? '' : 'hidden'}`}>
+                <div className={`w-[100%] mb-5 max-[500px]:w-[100%] my-1 ${(statusMsg !== undefined) ? '' : 'hidden'}`}>
                     <div><span className='text-white'>{statusMsg}</span></div>
                 </div>
             );

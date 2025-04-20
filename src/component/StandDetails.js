@@ -25,8 +25,7 @@ const StandDetails=React.memo(({context})=>{
         })
 
         return(<>
-            <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                max-[600px]:!min-w-[0px]`}>
+            <div className={`w-[100%] mb-5  my-1 max-[600px]:!min-w-[0px]`}>
                 <div>
                     <span className='text-red-600 text-lg font-bold'>標準加權</span>
                 </div>

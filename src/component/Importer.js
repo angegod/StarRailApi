@@ -481,6 +481,10 @@ function Importer(){
         isChangeAble:isChangeAble,
         simulatorData:simulatorData,
 
+        //RelicData
+        relic:relic,
+        Rscore:Rscore,
+        Rrank:Rrank,
         //方法
         updateHistory:updateHistory,
         checkDetails:checkDetails,
@@ -566,11 +570,7 @@ function Importer(){
             </div>
             <div className='flex flex-row flex-wrap w-[100%]' >
                 <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`}>
-                    <RelicData  relic={relic}
-                                standDetails={standDetails}
-                                simulate={simulate}
-                                isChangeAble={isChangeAble}
-                                statusMsg={statusMsg}/>
+                    <RelicData  context={ImporterContext} mode={'Importer'}/>
                 </div>
                 <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`} >
                     <StandDetails context={ImporterContext}/>
@@ -585,10 +585,6 @@ function Importer(){
                 </div>
                 
             </div>
-            <div className='w-[100%] border-gray-600 my-4' id='enchant'>
-                <Enchant context={ImporterContext} />
-            </div>
-
         </div>
     </ImporterContext.Provider>)
 }

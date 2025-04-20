@@ -1,13 +1,26 @@
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import AffixName from '../data/AffixName';
+import { useNavigate } from 'react-router-dom';
 
 //顯示儀器分數區間
-const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble})=>{
-
+const RelicData=React.memo(({context,mode})=>{
+    const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(context)
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
-    
-    if(relic!==undefined){
+    const navigate = useNavigate();
+    //導航至模擬強化頁面
+    function navEnchant(){
+        let sendData={
+            relic:relic,
+            Rrank:Rrank,
+            Rscore:Rscore,
+            standDetails:standDetails,
+            mode:mode
+        }
 
+        navigate('../enchant',{state:sendData});
+    }
+
+    if(relic!==undefined){
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix.name).icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} 
@@ -18,7 +31,7 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
 
         relic.sub_affix.forEach((s)=>{
             let markcolor="";
-            let isBold=(standDetails.current.find((st)=>st.name===s.name)!==undefined)?true:false;
+            let isBold=(standDetails.find((st)=>st.name===s.name)!==undefined)?true:false;
             
             if(s.name==="攻擊力"&&s.display.includes('%')){
                 s.name="攻擊力%數";
@@ -81,7 +94,7 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
         
         return(
             <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>
+                ${(relic!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>
                 <div>
                     <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                 </div>
@@ -116,7 +129,7 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
                     </div>
                 </div>
                 <div className='mt-3'>
-                    <button className='processBtn' onClick={simulate} disabled={!isChangeAble}>重洗模擬</button>
+                    <button className='processBtn' onClick={navEnchant} disabled={!isChangeAble}>重洗模擬</button>
                 </div>
             </div>
         )
@@ -125,19 +138,33 @@ const RelicData=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble}
     }
 });
 
-const RelicData_simuldate=React.memo(({relic,standDetails,simulate,statusMsg,isChangeAble})=>{
+const RelicData_simuldate=React.memo(({context})=>{
+    const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(context);
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
+    const navigate = useNavigate();
+    //導航至模擬強化頁面
+    function navEnchant(){
+        let sendData={
+            relic:relic,
+            Rrank:Rrank,
+            Rscore:Rscore,
+            standDetails:standDetails,
+            mode:'Simulator'
+        }
+
+        navigate('../enchant',{state:sendData});
+    }
+
     if(relic!==undefined){
-            
+
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix).icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
-        const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
 
         const list=[];
 
         relic.subaffix.forEach((s)=>{
-            let isBold=(standDetails.current.find((st)=>st.name===s.subaffix)!==undefined)?true:false;
+            let isBold=(standDetails.find((st)=>st.name===s.subaffix)!==undefined)?true:false;
             
             let markcolor="";
 
@@ -183,8 +210,7 @@ const RelicData_simuldate=React.memo(({relic,standDetails,simulate,statusMsg,isC
         })
         
         return(
-            <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                ${(statusMsg!==undefined)?'':'hidden'} max-[500px]:min-w-[330px]`}>
+            <div className={`w-[100%] mb-5 my-1 max-[500px]:min-w-[330px]`}>
                 <div>
                     <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                 </div>
@@ -208,7 +234,7 @@ const RelicData_simuldate=React.memo(({relic,standDetails,simulate,statusMsg,isC
                     </div>
                 </div>
                 <div className='mt-3'>
-                    <button className='processBtn' onClick={simulate}   disabled={!isChangeAble}>重洗模擬</button>
+                    <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
                 </div>
             </div>
         )

@@ -2,6 +2,7 @@ import React from 'react';
 import {Routes, Route,Link } from 'react-router-dom'
 import Simulator from './simulator.js';
 import Importer from './Importer.js';
+import Enchant from './Enchant.js';
 
 function Menu(){
     let list=[{
@@ -33,6 +34,7 @@ function Menu(){
         <Routes>
             <Route path="/" index element={<Simulator />} />
             <Route path='/import' element={<Importer />} />
+            <Route path='/enchant' element={<Enchant />} />
         </Routes>
     </>)
 }
