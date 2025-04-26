@@ -3,36 +3,112 @@ import AffixName from '../data/AffixName';
 import { useState } from 'react';
 import '../css/enchant.css';
 import { useLocation } from 'react-router-dom';
-import { jsx } from '@emotion/react';
 import { StandDetails } from './StandDetails';
-import { barElementClasses } from '@mui/x-charts';
+import { Helmet } from 'react-helmet';
 import { RelicData, RelicData_simuldate } from './RelicData';
+import { PieChart } from '@mui/x-charts/PieChart';
+import { BarLabel } from '@mui/x-charts';
 
 
 const EnchantContext = createContext();
 
 //此物件為單次模擬隨機強化後的結果
 const Enchant=React.memo(()=>{
-    //const {simulatorData,standDetails,simulate,isChangeAble} =useContext(context);
 
     const location = useLocation();
     const data = location.state;
     const {relic,standDetails,Rscore,Rrank,mode}=data || {};
     
-    const relicBackUp =useRef({});
+    const relicBackUp =useRef(null);
     const [isChangeAble,setIsChangeAble]=useState(true);
     //模擬強化相關數據
     const [simulatorData,setSimulatorData]=useState({oldData:null,newData:null});
-
+    const [statics,setStatics]=useState(undefined);
     //強化次數
     const [count,setCount]=useState(0);
 
+    const scoreStand=[
+        {rank:'S+',stand:85,color:'rgb(239, 68, 68)',tag:'S+'},
+        {rank:'S',stand:70,color:'rgb(239, 68, 68)',tag:'S'},
+        {rank:'A',stand:50,color:'rgb(234, 179, 8)',tag:'A'},
+        {rank:'B',stand:35,color:'rgb(234, 88 , 12)',tag:'B'},
+        {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},
+        {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
+    ];
+
     //進入頁面初始化自動執行一次
     useEffect(()=>{
-        relicBackUp.current=JSON.parse(JSON.stringify(relic));
-
+        initStatics();
         execute();
     },[])
+
+    useEffect(()=>{
+        //初始紀錄
+        if(relicBackUp.current === null){
+            relicBackUp.current=simulatorData.oldData;
+            console.log(relicBackUp.current);
+        }
+
+        //新增強化紀錄
+        addStatics();
+    },[simulatorData])
+
+
+    //初始化統計數據
+    function initStatics(){
+        let arr = [];
+        scoreStand.forEach((s)=>{
+            arr.push({
+                label:s.rank,
+                value:0,
+                color:s.color,
+                tag:s.rank
+            })
+        });
+
+        setStatics(arr);
+    }
+
+    //增加統計數據
+    function addStatics(){
+        if(simulatorData.newData!==null){
+            //如果數據統計尚未初始化
+            if(statics === undefined){
+                let arr=[];
+                let data={
+                    label:simulatorData.newData.relicrank.rank,
+                    value:1,
+                    color:scoreStand.find((s)=>s.tag === simulatorData.newData.relicrank.rank).color,
+                    tag:simulatorData.newData.relicrank.rank
+                }
+                arr.push(data);
+                setStatics(arr);
+                return;
+            }
+
+            //讀取既有統計
+            let oldStatics = statics;
+            let targetStatics = oldStatics.find((s)=>s.label === simulatorData.newData.relicrank.rank);
+            
+            if (targetStatics === null || targetStatics === undefined) {
+                let data = {
+                    label: simulatorData.newData.relicrank.rank,
+                    value: 1,
+                    color: scoreStand.find((s) => s.tag === simulatorData.newData.relicrank.rank).color,
+                    tag: simulatorData.newData.relicrank.rank
+                };
+                setStatics((old) => [...old, data]); // 新陣列，觸發 re-render
+            } else {
+                setStatics((old) =>
+                    old.map((item) =>
+                        item.tag === simulatorData.newData.relicrank.rank
+                            ? { ...item, value: item.value + 1 }
+                            : item
+                    )
+                );
+            }
+        }
+    }
 
     //模擬強化--Importer
     function simulate(){
@@ -83,7 +159,7 @@ const Enchant=React.memo(()=>{
             SubData:SubData,
             partsIndex:(relic.type===5)?6:(relic.type===6)?5:relic.type,
             standard:standDetails,
-            deviation:0.5
+            deviation:0
         };
 
         if(isCheck){
@@ -91,7 +167,7 @@ const Enchant=React.memo(()=>{
             console.log(simulatorData);
             // 接收 Worker 返回的訊息
             worker.onmessage = function (event) {
-
+                console.log(event.data);
                 setSimulatorData({
                     oldData:{
                         relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
@@ -206,7 +282,10 @@ const Enchant=React.memo(()=>{
         setCount(0);
 
         //還原至一開始記錄
-        setSimulatorData({oldData:null,newData:null});
+        setSimulatorData({oldData:relicBackUp.current,newData:null});
+
+        //還原強化紀錄
+        initStatics();
     }
 
     const ResultSection=(simulatorData.newData!==undefined&&simulatorData.oldData!==undefined)?(
@@ -222,6 +301,9 @@ const Enchant=React.memo(()=>{
         </div>
     ):(<></>);
 
+
+
+
     const EnchantStatus ={
         relic:relic,
         Rrank:Rrank,
@@ -233,23 +315,42 @@ const Enchant=React.memo(()=>{
     
     return(
         <EnchantContext.Provider value={EnchantStatus}>
+            <Helmet>
+                <title>崩鐵--模擬重洗</title>
+                <meta name="description" content="崩鐵--遺器重洗" />
+            </Helmet>
             <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
-                <div className="w-[100%] border-gray-600 my-4 justify-center flex flex-col">
-                    <div className='flex flex-row'>
-                        <span className='text-red-600 text-lg font-bold'>模擬強化 BETA</span>
-                        <button className='processBtn ml-2' onClick={()=>execute()} >再洗一次</button>
-                        <button className='processBtn ml-2' onClick={()=>changeToNew()}>套用新強化</button>
-                        <button className='processBtn ml-2' onClick={()=>reInit()}>還原至初始</button>
+                <div className="w-[100%] border-gray-600 my-4 justify-center flex flex-row flex-wrap max-[900px]:flex-col">
+                    <div className='flex flex-row flex-wrap w-1/2 max-[900px]:w-[100%]'>
+                        <div className='flex flex-row w-1/2 max-[900px]:w-1/2 max-[400px]:w-[100%]'>
+                            {(mode==="Importer")?
+                                <RelicData context={EnchantContext} />:
+                                <RelicData_simuldate context={EnchantContext} />}
+                            
+                        </div>
+                        <div className='w-1/2 max-[900px]:w-1/2 max-[400px]:w-[100%]'>
+                            <StandDetails context={EnchantContext}/>
+                        </div>
                     </div>
-                    <div className='my-2'>
-                        <span>目前重洗次數:<span className='text-white ml-1'>{count}</span></span>
+                    <div className='w-1/2 max-[900px]:w-[100%]'>
+                        <div className='flex flex-row'>
+                            <span className='text-red-600 text-lg font-bold'>模擬強化 BETA</span>
+                            <button className='processBtn ml-2' onClick={()=>execute()} >再洗一次</button>
+                            <button className='processBtn ml-2' onClick={()=>changeToNew()}>套用新強化</button>
+                            <button className='processBtn ml-2' onClick={()=>reInit()}>還原至初始</button>
+                        </div>
+                        <div className='my-2'>
+                            <span>目前重洗次數:<span className='text-white ml-1'>{count}</span></span>
+                        </div>
+                        <div>
+                            {ResultSection}
+                        </div>
+                        <div>
+                            <Pie PieNums={statics}/> 
+                        </div>
                     </div>
-                    <div className='flex flex-row'>
-                        {(mode==="Importer")?<RelicData context={EnchantContext} />:<RelicData_simuldate context={EnchantContext} />}
-                        <StandDetails context={EnchantContext}/>
-                    </div>
-                    {ResultSection}
                 </div>
+               
             </div>
         </EnchantContext.Provider>
     )
@@ -336,6 +437,48 @@ const DataList=React.memo(({standDetails,data,title})=>{
     
     
     
+});
+
+const Pie=React.memo(({PieNums})=>{
+    console.log(PieNums);
+    if(PieNums!==undefined){
+        const pieParams = {
+            height: 200,
+            margin: 0,
+            slotProps: { legend: { hidden: true } },
+        };
+
+        return(
+           <div className='w-[100%] flex flex-row flex-wrap'>
+                <div className='min-w-[300px]'>
+                    <PieChart  
+                    series={[
+                        {
+                            innerRadius: 20,
+                            arcLabelMinAngle: 35,
+                            arcLabel: (item) => `${item.value}%`,
+                            data: PieNums,
+                        }
+                    ]}  {...pieParams} />
+                </div>
+                    <div className='flex flex-col w-2/5 text-center max-[500px]:w-[100%]'>
+                        {PieNums.map((p)=>{
+                            if(p.value!==0)
+                                return(
+                                    <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[100px] [&>*]:max-[500px]:text-center'>
+                                        <div style={{color:p.color}} className='w-[30px] text-right '>{`${p.tag}`}</div>
+                                        <div style={{color:p.color}} className='w-[30px] ml-2'>{`${p.value}`}</div>
+                                    </div>
+                                )
+                        })}
+                    </div>
+               
+           </div>
+        );
+
+    }else{
+        return(<></>)
+    }
 });
 
 export default Enchant;

@@ -211,7 +211,6 @@ function Simulator(){
 
     
 
-
     //計算遺器分數等細節
     function calScore(){
         //先驗證選擇是否有誤
@@ -313,7 +312,7 @@ function Simulator(){
     function simulate(){
         let isCheck=true;
         //將運行結果丟到背景執行 跟模擬所有組合的worker分開
-        let worker=new Worker(new URL('../worker/worker2.js', import.meta.url));
+        let worker=new Worker(new URL('../worker/worker.js', import.meta.url));
         let MainAffix=AffixName.find((a)=>a.name===relic.main_affix);
         let SubData=[];
 
@@ -464,16 +463,14 @@ function Simulator(){
                         </div>
                         <ShowStand context={SimulatorContext}/>
                     </div>
-                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px]  
-                                flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
-                            <div className='flex flex-row mt-1'>
-                                <button className='processBtn mr-2 whitespace-nowrap' 
-                                    onClick={calScore} 
-                                    disabled={!processBtn}>計算分數</button>
-                                <button className='processBtn mr-2 whitespace-nowrap' 
-                                onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
-                            </div>
-                        
+                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
+                        <div className='flex flex-row mt-1'>
+                            <button className='processBtn mr-2 whitespace-nowrap' 
+                                onClick={calScore} 
+                                disabled={!processBtn}>計算分數</button>
+                            <button className='processBtn mr-2 whitespace-nowrap' 
+                            onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
+                        </div>
                     </div>
                 </div>
                 <div className='w-2/5 max-w-[400px] flex flex-col max-[900px]:w-[100%] max-[600px]:my-3'>
@@ -500,7 +497,7 @@ function Simulator(){
                 </div>
                 <div className='border-t-4 border-gray-600 w-[100%] flex flex-row'>
                     <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
-                        <RelicData  context={SimulatorContext} mode={'Simulator'}/>
+                        <RelicData  context={SimulatorContext} mode={'Simulator'} button={true}/>
                     </div>
                     <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
                         <StandDetails context={SimulatorContext}/>

@@ -3,7 +3,7 @@ import AffixName from '../data/AffixName';
 import { useNavigate } from 'react-router-dom';
 
 //顯示儀器分數區間
-const RelicData=React.memo(({context,mode})=>{
+const RelicData=React.memo(({context,mode,button})=>{
     const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(context)
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
     const navigate = useNavigate();
@@ -16,7 +16,7 @@ const RelicData=React.memo(({context,mode})=>{
             standDetails:standDetails,
             mode:mode
         }
-
+        console.log(sendData);
         navigate('../enchant',{state:sendData});
     }
 
@@ -93,8 +93,7 @@ const RelicData=React.memo(({context,mode})=>{
         
         
         return(
-            <div className={`w-[100%] mb-5 border-t-4 border-gray-600 my-2 pt-2 
-                ${(relic!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>
+            <div className={`w-[100%] mb-5 my-1 ${(relic!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>
                 <div>
                     <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                 </div>
@@ -128,9 +127,10 @@ const RelicData=React.memo(({context,mode})=>{
                         {list}
                     </div>
                 </div>
-                <div className='mt-3'>
-                    <button className='processBtn' onClick={navEnchant} disabled={!isChangeAble}>重洗模擬</button>
-                </div>
+                {(button)?
+                    <div className='mt-3'>
+                        <button className='processBtn' onClick={navEnchant} disabled={!isChangeAble}>重洗模擬</button>
+                    </div>:<></>}
             </div>
         )
     }else{
@@ -138,7 +138,7 @@ const RelicData=React.memo(({context,mode})=>{
     }
 });
 
-const RelicData_simuldate=React.memo(({context})=>{
+const RelicData_simuldate=React.memo(({context,mode,button})=>{
     const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(context);
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
     const navigate = useNavigate();
@@ -149,14 +149,13 @@ const RelicData_simuldate=React.memo(({context})=>{
             Rrank:Rrank,
             Rscore:Rscore,
             standDetails:standDetails,
-            mode:'Simulator'
+            mode:mode
         }
 
         navigate('../enchant',{state:sendData});
     }
 
     if(relic!==undefined){
-
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix).icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
@@ -233,9 +232,9 @@ const RelicData_simuldate=React.memo(({context})=>{
                         {list}
                     </div>
                 </div>
-                <div className='mt-3'>
+                {(button)?<div className='mt-3'>
                     <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
-                </div>
+                </div>:<></>}
             </div>
         )
     }else{

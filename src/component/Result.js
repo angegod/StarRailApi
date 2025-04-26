@@ -43,6 +43,7 @@ const Result = React.memo(({ ExpRate, Rrank, PieNums, statusMsg, Rscore }) => {
 
 //圓餅圖
 const Pie=React.memo(({PieNums})=>{
+    console.log(PieNums);
     if(PieNums!==undefined){
         const pieParams = {
             height: 200,

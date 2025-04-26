@@ -396,7 +396,7 @@ function Importer(){
         let isCheck=true;
 
         //將運行結果丟到背景執行 跟模擬所有組合的worker分開
-        let worker=new Worker(new URL('../worker/worker2.js', import.meta.url));
+        let worker=new Worker(new URL('../worker/worker.js', import.meta.url));
         let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
         let SubData=[];
 
@@ -570,7 +570,7 @@ function Importer(){
             </div>
             <div className='flex flex-row flex-wrap w-[100%]' >
                 <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`}>
-                    <RelicData  context={ImporterContext} mode={'Importer'}/>
+                    <RelicData  context={ImporterContext} mode={'Importer'} button={true}/>
                 </div>
                 <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`} >
                     <StandDetails context={ImporterContext}/>
