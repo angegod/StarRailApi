@@ -38,7 +38,17 @@ const Enchant=React.memo(()=>{
 
     //進入頁面初始化自動執行一次
     useEffect(()=>{
+        //回到畫面最上方
+        requestAnimationFrame(()=>{
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        })
+
+        //初始化紀錄
         initStatics();
+        //依照執行模式執行對應模擬
         execute();
     },[])
 
@@ -157,7 +167,7 @@ const Enchant=React.memo(()=>{
         let postData={
             MainData:MainAffix.name,
             SubData:SubData,
-            partsIndex:(relic.type===5)?6:(relic.type===6)?5:relic.type,
+            partsIndex:relic.type,
             standard:standDetails,
             deviation:0
         };
@@ -167,11 +177,11 @@ const Enchant=React.memo(()=>{
             console.log(simulatorData);
             // 接收 Worker 返回的訊息
             worker.onmessage = function (event) {
-                console.log(event.data);
+                console.log(simulatorData.oldData===null);
                 setSimulatorData({
                     oldData:{
                         relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
-                        relicrank:(simulatorData.newData===null)?Rrank:simulatorData.oldData.relicrank,
+                        relicrank:(simulatorData.oldData===null)?Rrank:simulatorData.oldData.relicrank.rank,
                         returnData:SubData
                     },
                     newData:event.data
@@ -241,7 +251,7 @@ const Enchant=React.memo(()=>{
                 setSimulatorData({
                     oldData:{
                         relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
-                        relicrank:(simulatorData.newData===null)?Rrank:simulatorData.oldData.relicrank,
+                        relicrank:(simulatorData.oldDataData===null)?Rrank:simulatorData.oldData.relicrank,
                         returnData:SubData
                     },
                     newData:event.data
@@ -334,7 +344,7 @@ const Enchant=React.memo(()=>{
                     </div>
                     <div className='w-1/2 max-[900px]:w-[100%]'>
                         <div className='flex flex-row'>
-                            <span className='text-red-600 text-lg font-bold'>模擬強化 BETA</span>
+                            <span className='text-red-600 text-lg font-bold'>模擬強化</span>
                             <button className='processBtn ml-2' onClick={()=>execute()} >再洗一次</button>
                             <button className='processBtn ml-2' onClick={()=>changeToNew()}>套用新強化</button>
                             <button className='processBtn ml-2' onClick={()=>reInit()}>還原至初始</button>
@@ -440,7 +450,6 @@ const DataList=React.memo(({standDetails,data,title})=>{
 });
 
 const Pie=React.memo(({PieNums})=>{
-    console.log(PieNums);
     if(PieNums!==undefined){
         const pieParams = {
             height: 200,

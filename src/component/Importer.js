@@ -21,6 +21,7 @@ const ImporterContext = createContext();
 function Importer(){
     //版本序號
     const version="1.3";
+    const maxHistoryLength = 6;
 
     //玩家ID跟腳色ID
     const userID=useRef('');
@@ -82,7 +83,7 @@ function Importer(){
     const [isChangeAble,setIsChangeAble]=useState(true);
     const [isSaveAble,setIsSaveAble]=useState(false);
     
-    const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
+    const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
 
     
     useEffect(()=>{
@@ -135,18 +136,13 @@ function Importer(){
 
 
         //如果是連結繩或位面球 則代號交換
-        let realPart=partsIndex;
-        if(Number(partsIndex)===5)
-            realPart=6;
-        else if(Number(partsIndex)===6)
-            realPart=5;
         
         let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/relic/get`:`https://expressapi-o9du.onrender.com/relic/get`;
         
         let sendData={
             uid:userID.current,
             charID:charID,            
-            partsIndex:realPart
+            partsIndex:partsIndex
         }
         //送出之前先清空一次資料
         setIsSaveAble(false);
@@ -342,8 +338,7 @@ function Importer(){
         let selectChar=characters.find((c)=>c.charID===charID);
 
         //如果原本紀錄超過6個 要先刪除原有紀錄
-        if(historyData.length>=6)
-            //setHistoryData((old)=>old.filter((item,i)=>i!==0));
+        if(historyData.length>=maxHistoryLength)
             dispatchHistory({ type: "LIMIT" })
 
         //如果當前沒有任何資料則不予匯入
@@ -404,8 +399,6 @@ function Importer(){
             let typeName=AffixName.find((a)=>a.fieldName===s.type);
             let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
             
-            //如果val是字串(百分比) 則將其去除 並轉換成整數
-            //val = typeof val === 'string' && val.includes('%') ? Number(val.replace('%', '')) : Number(val);
             let data={
                 index:i, 
                 subaffix:typeName.name,
@@ -435,7 +428,7 @@ function Importer(){
         let postData={
             MainData:MainAffix.name,
             SubData:SubData,
-            partsIndex:(relic.type===5)?6:(relic.type===6)?5:relic.type,
+            partsIndex:relic.type,
             standard:standDetails.current,
             deviation:0.5
         };
@@ -568,7 +561,7 @@ function Importer(){
                 </div>
                     
             </div>
-            <div className='flex flex-row flex-wrap w-[100%]' >
+            <div className='flex flex-row flex-wrap w-[100%] border-t-4 border-gray-600' >
                 <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`}>
                     <RelicData  context={ImporterContext} mode={'Importer'} button={true}/>
                 </div>

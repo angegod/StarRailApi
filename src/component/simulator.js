@@ -20,6 +20,8 @@ function Simulator(){
     //版本代號
     const version="1.3";
 
+    const maxHistoryLength = 6;
+
     //部位選擇 跟主詞條選擇
     const [partsIndex,setPartsIndex]=useState(undefined);
     const [MainSelectOptions,setMainSelectOptions]=useState();
@@ -88,7 +90,6 @@ function Simulator(){
         if(history!=null&&history.length>0){
             history=history.filter((h)=>h.version===version);
             localStorage.setItem('HistoryData',JSON.stringify(history));
-            //setHistoryData(prev=>prev != history ? history : prev);
             historyData.current=history;
             setStatusMsg('先前紀錄已匯入!!');
         }
@@ -122,7 +123,7 @@ function Simulator(){
         //如果目前則沒有紀錄 則初始化
         if(!historyData.current)
             historyData.current=[];
-        else if(historyData.current.length>=6)//如果原本紀錄超過6個 要先刪除原有紀錄
+        else if(historyData.current.length>=maxHistoryLength)//如果原本紀錄超過6個 要先刪除原有紀錄
             historyData.current=historyData.current.filter((item,i)=>i!==0);
         
         //如果當前沒有任何資料則不予匯入
