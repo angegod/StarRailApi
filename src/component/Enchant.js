@@ -58,7 +58,7 @@ const Enchant=React.memo(()=>{
             relicBackUp.current=simulatorData.oldData;
             console.log(relicBackUp.current);
         }
-
+        console.log(simulatorData);
         //新增強化紀錄
         addStatics();
     },[simulatorData])
@@ -146,7 +146,6 @@ const Enchant=React.memo(()=>{
         }else{
             SubData = simulatorData.oldData.returnData;
         }
-        console.log(SubData);
         
 
         //檢查標準是否合法
@@ -181,7 +180,7 @@ const Enchant=React.memo(()=>{
                 setSimulatorData({
                     oldData:{
                         relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
-                        relicrank:(simulatorData.oldData===null)?Rrank:simulatorData.oldData.relicrank.rank,
+                        relicrank:(simulatorData.oldData===null)?Rrank:simulatorData.oldData.relicrank,
                         returnData:SubData
                     },
                     newData:event.data
@@ -476,7 +475,7 @@ const Pie=React.memo(({PieNums})=>{
                                 return(
                                     <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[100px] [&>*]:max-[500px]:text-center'>
                                         <div style={{color:p.color}} className='w-[30px] text-right '>{`${p.tag}`}</div>
-                                        <div style={{color:p.color}} className='w-[30px] ml-2'>{`${p.value}`}</div>
+                                        <div style={{color:p.color}} className='w-[30px] ml-2'>{`${p.value}次`}</div>
                                     </div>
                                 )
                         })}

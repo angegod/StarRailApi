@@ -61,6 +61,7 @@ const SubAffixSelect=React.memo(({index,context})=>{
             options.push(<option value={s} key={`Subaffix${i}`}>{s}</option>)
         });
         
+        
 
         return(<div className='my-1' key={'SubAffixSelect'}>
             <select defaultValue={SubData.current[index].subaffix} 
@@ -94,7 +95,8 @@ const PartSelect=React.memo(({context})=>{
         options.push(
             <option value={i+1} key={`PartSelect${i}`} >{a}</option>       
         )
-    })
+    });
+
 
     return(
         <select value={partsIndex} 
@@ -206,13 +208,15 @@ const CharSelect=React.memo(({context})=>{
         options.push({
             value: c.charID, 
             label: c.name,
+            engLabel:c.eng_name,
             icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
         })
     })
 
     //自訂義篩選
     const customFilterOption = (option, inputValue) => {
-        return option.data.label.toLowerCase().includes(inputValue.toLowerCase());
+        const lowerInput = inputValue.toLowerCase();
+        return option.data.label.toLowerCase().includes(lowerInput) || option.data.engLabel.toLowerCase().includes(lowerInput);
     };
 
     const selectedOption = options.find((option) => option.value === charID);
@@ -231,4 +235,28 @@ const CharSelect=React.memo(({context})=>{
                 filterOption={customFilterOption}/>)
 });
 
-export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect}
+//遺器選擇
+const RelicSelect=React.memo(({context})=>{
+    const {RelicDataArr,relicIndex,setRelicIndex}=useContext(context);
+    if(RelicDataArr.length !==0){
+        let list = RelicDataArr.map((r,i)=>{
+            const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/${r.relic.icon}`;
+    
+            return(
+                <div className={`min-w-[50px] rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} onClick={()=>setRelicIndex(i)}>
+                    <img src={reliclink} alt='relic' width={50} height={50}/>
+                </div>
+            )
+        })
+    
+        return(
+            <div className='w-4/5 flex flex-row flex-wrap my-2 max-[900px]:w-[100%]'>
+                {list}
+            </div>
+        )
+    }else{
+        return(<></>)
+    }
+})
+
+export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect,RelicSelect}

@@ -13,14 +13,14 @@ import Result from './Result';
 import Enchant from './Enchant';
 import { StandDetails, ShowStand } from './StandDetails';
 import { RelicData } from './RelicData';
-import { PartSelect, StandardSelect,   CharSelect } from './Select';
+import { PartSelect, StandardSelect,   CharSelect ,RelicSelect } from './Select';
 
 //Importer的context狀態
 const ImporterContext = createContext();
 
 function Importer(){
     //版本序號
-    const version="1.3";
+    const version="1.4";
     const maxHistoryLength = 6;
 
     //玩家ID跟腳色ID
@@ -28,10 +28,11 @@ function Importer(){
     const [charID,setCharID]=useState(undefined);
 
     //部位代碼
-    const [partsIndex,setPartsIndex]=useState(undefined);
+    const partsIndex=7;
 
-    //找到的遺器
+    //找到的遺器陣列以及目前檢視索引，預設為0
     const [relic,setRelic]=useState();
+    const [relicIndex,setRelicIndex] = useState(0);
     
     //router相關
     const location = useLocation();
@@ -41,6 +42,9 @@ function Importer(){
     const [Rscore,setRscore]=useState(undefined);
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [PieNums,setPieNums]=useState(undefined);
+
+    //找到所有遺器後計算的所有數據，包含期望值、分數等
+    const [RelicDataArr,setRelicDataArr]=useState([]);
     
 
     // 定義 reducer
@@ -85,11 +89,48 @@ function Importer(){
     
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
 
+    const scoreStand=[
+        {rank:'S+',stand:85,color:'rgb(239, 68, 68)',tag:'S+'},
+        {rank:'S',stand:70,color:'rgb(239, 68, 68)',tag:'S'},
+        {rank:'A',stand:50,color:'rgb(234, 179, 8)',tag:'A'},
+        {rank:'B',stand:35,color:'rgb(234, 88 , 12)',tag:'B'},
+        {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},
+        {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
+    ];
+
     
     useEffect(()=>{
         //初始化歷史紀錄
         initHistory();
     },[location.pathname]);
+
+    //當遺器資料更新時
+    useEffect(()=>{
+        if(RelicDataArr.length !==0){
+            console.log(RelicDataArr);
+            //顯示第一個儀器
+            setRelic(RelicDataArr[relicIndex].relic)
+            setExpRate(RelicDataArr[relicIndex].ExpRate);
+            setRscore(RelicDataArr[relicIndex].Rscore)
+            setStatusMsg('計算完畢!!');
+            setPieNums(RelicDataArr[relicIndex].PieNums);
+            setRank(RelicDataArr[relicIndex].Rank);
+
+            standDetails.current=RelicDataArr[relicIndex].standDetails;
+
+            //還原至初始狀態
+            setIsSaveAble(true);
+            setSimulatorData({});
+            setIsChangeAble(true);
+
+            requestAnimationFrame(()=>{
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            })
+        }
+    },[RelicDataArr,relicIndex])
 
 
     function initHistory(){
@@ -129,10 +170,10 @@ function Importer(){
         }
 
         //部位選擇相關防呆
-        if(!partsIndex||partsIndex>6||partsIndex<0){
+        /*if(!partsIndex||partsIndex>6||partsIndex<0){
             setStatusMsg('部位沒有選擇成功!!');
             return;
-        }
+        }*/
 
 
         //如果是連結繩或位面球 則代號交換
@@ -142,7 +183,7 @@ function Importer(){
         let sendData={
             uid:userID.current,
             charID:charID,            
-            partsIndex:partsIndex
+            partsIndex:7
         }
         //送出之前先清空一次資料
         setIsSaveAble(false);
@@ -174,11 +215,16 @@ function Importer(){
                     setStatusMsg('該遺器非五星遺器，請選擇部位為五星強化滿等之遺器');
                     setIsChangeAble(true);
                     break;
+                case 804:
+                    setStatusMsg('該腳色並未穿著五星遺器！！');
+                    setIsChangeAble(true);
+                    break;
                 case 810:
                     alert('溝通次數太過於頻繁 請稍後再試!!');
                     break;
                 default:
-                    calscore(response.data);
+                    //calscore(response.data);
+                    process(response.data);
                     break;
             }
 
@@ -196,8 +242,26 @@ function Importer(){
             
             setIsChangeAble(true);
         })
+    }
 
-    
+    async function process(relicArr){
+        let temparr = []
+
+        //檢查加權標準
+        selfStand.forEach((s)=>{
+            if(s.value===''){
+                setStatusMsg('加權指數不可為空或其他非法型式');
+                return;
+            }
+        });
+
+        for (const r of relicArr) {
+            const ExpData = await calscore(r);  // 等這個做完
+            temparr.push(ExpData);
+        }
+        console.log(temparr);
+        setRelicDataArr(temparr);
+       
     }
 
     function clearData(){
@@ -212,17 +276,13 @@ function Importer(){
     const checkDetails=useCallback((index)=>{
         let data=historyData[index];
         
-        setRank(prev => prev !== data.rank ? data.rank : prev);
-        setExpRate(prev => prev !== data.expRate ? data.expRate : prev);
-        setRscore(prev => prev !== data.score ? data.score : prev);
-        setPieNums(prev => prev !== data.pieData ? data.pieData : prev);
-        setRelic(prev => prev !== data.relic ? data.relic : prev);
-
+        setRelicDataArr(data.dataArr);
+        setRelicIndex(0);
+        
         //清空模擬強化紀錄
         setSimulatorData({});
 
         setStatusMsg('資料替換完畢!!');
-        standDetails.current=data.stand;
 
         //避免第一次顯示區塊 而導致滾動失常
         requestAnimationFrame(()=>{
@@ -250,91 +310,72 @@ function Importer(){
     },[historyData]);
 
     function calscore(relic){
-        let isCheck=true;
-        //將獲得到遺器先儲存起來
-        setRelic(relic);
+        return new Promise((resolve)=>{
+            let isCheck=true;
+            //將獲得到遺器先儲存起來
 
-        //將運行結果丟到背景執行
-        let worker=new Worker(new URL('../worker/worker.js', import.meta.url));
-        let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
-        let SubData=[];
+            //將運行結果丟到背景執行
+            let worker=new Worker(new URL('../worker/worker.js', import.meta.url));
+            let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
+            let SubData=[];
 
-        relic.sub_affix.forEach((s,i)=>{
-            let typeName=AffixName.find((a)=>a.fieldName===s.type);
-            let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
+            relic.sub_affix.forEach((s,i)=>{
+                let typeName=AffixName.find((a)=>a.fieldName===s.type);
+                let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
+                
+                let data={
+                    index:i, 
+                    subaffix:typeName.name,
+                    data:val, //詞條數值    
+                    count:s.count-1//強化次數
+                }
+
+                SubData.push(data);
+            });
             
-            let data={
-                index:i, 
-                subaffix:typeName.name,
-                data:val, //詞條數值    
-                count:s.count-1//強化次數
-            }
+            //如果篩選有速度詞條 需給予0.5誤差計算 
+            let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+            SubData.forEach(s=>{
+                if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+                    deviation+=0.2;
+            })
 
-            SubData.push(data);
-        });
-
-        //檢查標準是否合法
-        selfStand.forEach((s)=>{
-            if(s.value===''){
-                isCheck=false;
-                setStatusMsg('加權指數不可為空或其他非法型式');
-            }
-                
-        });
-        
-        //如果篩選有速度詞條 需給予0.5誤差計算 
-        let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
-        SubData.forEach(s=>{
-            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
-                deviation+=0.2;
-        })
-
-        //制定送出資料格式
-        let postData={
-            charID:charID,
-            MainData:MainAffix.name,
-            SubData:SubData,
-            partsIndex:partsIndex,
-            standard:selfStand,
-            deviation:0.5
-        };
-        
-        if(isCheck){
-            setStatusMsg('數據計算處理中......');
-            worker.postMessage(postData);
-
-            // 接收 Worker 返回的訊息
-            worker.onmessage = function (event) {
-                
-                //輸入相關數據
-                setExpRate(event.data.expRate);
-                setRscore(event.data.relicscore)
-                setStatusMsg('計算完畢!!');
-                setPieNums(event.data.returnData);
-                setRank(event.data.relicrank);
-                standDetails.current=selfStand;
-
-                //將儲存按鈕設為可用
-                setIsSaveAble(true);
-                requestAnimationFrame(()=>{
-                    window.scrollTo({
-                        top: document.body.scrollHeight,
-                        behavior: 'smooth'
-                    });
-                })
-
-                //清空強化紀錄
-                setSimulatorData({});
+            //制定送出資料格式
+            let postData={
+                charID:charID,
+                MainData:MainAffix.name,
+                SubData:SubData,
+                partsIndex:relic.type,
+                standard:selfStand,
+                deviation:0.5
             };
-        }
+            
+            if(isCheck){
+                setStatusMsg('數據計算處理中......');
+                worker.postMessage(postData);
+
+                // 接收 Worker 返回的訊息
+                worker.onmessage = function (event) {
+                    let returnData = {
+                        relic:relic,
+                        ExpRate:event.data.expRate,
+                        Rscore:event.data.relicscore,
+                        PieNums:event.data.returnData,
+                        Rank:event.data.relicrank,
+                        standDetails:selfStand
+                    }
+
+                    resolve(returnData);
+                };
+            }
+        })
         
         //將送出按鈕設為可用
-        setIsChangeAble(true);
+        //setIsChangeAble(true);
     }
 
     //儲存紀錄
     function saveRecord(){
-        let partName=partArr[partsIndex-1];
         let selectChar=characters.find((c)=>c.charID===charID);
 
         //如果原本紀錄超過6個 要先刪除原有紀錄
@@ -342,7 +383,7 @@ function Importer(){
             dispatchHistory({ type: "LIMIT" })
 
         //如果當前沒有任何資料則不予匯入
-        if(PieNums===undefined||ExpRate===undefined||Rrank===undefined||Rscore===undefined){
+        if(RelicDataArr.length === 0){
             setStatusMsg("當前沒有任何數據，不予儲存!!");
             return;
         }
@@ -357,27 +398,39 @@ function Importer(){
             return;
         }
 
-
+        //計算平均分數與平均機率
+        let sum = 0;
+        let sum2 = 0;
+        RelicDataArr.forEach((r)=>{
+            sum +=Number(r.Rscore);
+            sum2 += r.ExpRate;
+        });
+        let avgScore = Number(parseFloat(sum/RelicDataArr.length).toFixed(1));
         let calDate=new Date();
+        let avgRank = undefined;
+        let avgRate = Number((sum2*100/RelicDataArr.length).toFixed(1));
         
+        scoreStand.forEach((stand)=>{
+            //接著去找尋這個分數所屬的區間
+            if(stand.stand<=avgScore&&avgRank===undefined)
+                avgRank=stand;
+        })
+
+
         //儲存紀錄
         let data={
             version:version,
             calDate:calDate.toISOString().split('T')[0],
             userID:userID.current,
             char:selectChar,
-            part:partName,
-            expRate:ExpRate,
-            score:Rscore,
-            rank:Rrank,
-            pieData:PieNums,
-            relic:relic,
-            stand:standDetails.current
+            dataArr:RelicDataArr,
+            avgScore:avgScore,
+            avgRank:avgRank,
+            avgRate:avgRate
         };
         let oldHistory=historyData;
         
         dispatchHistory({ type: "ADD", payload: data })
-        console.log(historyData);
         setStatusMsg('已儲存');
         setIsSaveAble(false);
         oldHistory.push(data);
@@ -473,7 +526,9 @@ function Importer(){
         historyData:historyData,
         isChangeAble:isChangeAble,
         simulatorData:simulatorData,
-
+        RelicDataArr:RelicDataArr,
+        relicIndex:relicIndex,
+        
         //RelicData
         relic:relic,
         Rscore:Rscore,
@@ -487,8 +542,8 @@ function Importer(){
         setCharID:setCharID,
         setSelfStand:setSelfStand,
         setIsSaveAble:setIsSaveAble,
-        setPartsIndex:setPartsIndex,
-        setStatusMsg:setStatusMsg
+        setStatusMsg:setStatusMsg,
+        setRelicIndex:setRelicIndex
     }
     
     return(
@@ -517,10 +572,6 @@ function Importer(){
                         </div>
                         <CharSelect context={ImporterContext} />
                     </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`}>
-                        <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>Parts 部位:</span></div>
-                        <PartSelect context={ImporterContext} key={"partSelect"}/>   
-                    </div>
                     <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`} >
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
@@ -542,9 +593,9 @@ function Importer(){
                 <div className='w-1/2 max-w-[400px] flex flex-col max-[900px]:w-[100%] max-[600px]:my-3'>
                     <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
                     <ul className='[&>li]:text-white list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
-                        <li>此工具會根據放在展示框的腳色做遺器數據分析，讓玩家可以比較方便查看自己的腳色數據</li>
+                        <li>此工具會根據玩家放在展示框的8個腳色身上的遺器做數據分析</li>
                         <li>翻盤機率是指該遺器透過重洗詞條道具後遺器分數變高的機率為何</li>
-                        <li>目前遺器只支援計算五星強化至滿等遺器</li>
+                        <li>目前該工具只支援計算五星強化至滿等遺器</li>
                         <li>此工具相關數據仍有更改的可能，敬請見諒!</li>
                         <li>操作說明可以參考
                         <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a></li>
@@ -562,6 +613,9 @@ function Importer(){
                     
             </div>
             <div className='flex flex-row flex-wrap w-[100%] border-t-4 border-gray-600' >
+                <div className={`w-[100%] ${(PieNums===undefined)?'hidden':''}`}>
+                    <RelicSelect context={ImporterContext} />
+                </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`}>
                     <RelicData  context={ImporterContext} mode={'Importer'} button={true}/>
                 </div>
