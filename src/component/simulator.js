@@ -12,6 +12,7 @@ import { StandDetails ,ShowStand } from './StandDetails';
 import { RelicData_simuldate as RelicData} from './RelicData';
 import { PastPreview_simulator as PastPreview } from './PastPreview';
 import { CharSelect,PartSelect,StandardSelect,MainAffixSelect,SubAffixSelect } from './Select';
+import { Tooltip } from 'react-tooltip'
 
 const SimulatorContext = createContext();
 
@@ -426,37 +427,63 @@ function Simulator(){
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Characters 腳色:</span>
                         </div>
-                        <CharSelect context={SimulatorContext}/>
+                        <div className='flex flex-row items-center'>
+                            <CharSelect context={SimulatorContext}/>
+                            <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
+                                <span className='text-white'>?</span>
+                            </div>
+                        </div>
                     </div>
                     <div className={`my-1 ${(Number.isInteger(charID)&&charID!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col max-[400px]:items-start`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Parts 部位:</span>
                         </div>
-                        <PartSelect context={SimulatorContext}/>   
+                        <div className='flex flex-row items-center'>
+                            <PartSelect context={SimulatorContext}/>
+                            <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="PartSelectHint">
+                                <span className='text-white'>?</span>
+                            </div>   
+                        </div>
                     </div>
                     <div className={`my-1 ${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:items-start max-[400px]:!flex-col`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>MainAffix 主屬性:</span>
                         </div>
-                        <MainAffixSelect context={SimulatorContext}/>
+                        <div className='flex flex-row items-center'>
+                            <MainAffixSelect context={SimulatorContext}/>
+                            <div className={`hintIcon ml-1 overflow-visible ${(parseInt(partsIndex)!==1&&(parseInt(partsIndex)!==2)?'':'hidden')}`} data-tooltip-id="MainAffixHint">
+                                <span className='text-white'>?</span>
+                            </div>
+                        </div>
                     </div>
                     <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined)?'':'hidden'} 
                             mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center max-[400px]:text-left`}>
                         <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center max-[400px]:text-left'>
                             <span className='text-white'>SubAffix 副屬性:</span>
                         </div>
-                        <div className='flex flex-col'>
-                            <SubAffixSelect index={0} context={SimulatorContext}/>
-                            <SubAffixSelect index={1} context={SimulatorContext}/>
-                            <SubAffixSelect index={2} context={SimulatorContext}/>
-                            <SubAffixSelect index={3} context={SimulatorContext}/>
+                        <div className='flex flex-row items-start'>
+                            <div className='flex flex-col'>
+                                <SubAffixSelect index={0} context={SimulatorContext}/>
+                                <SubAffixSelect index={1} context={SimulatorContext}/>
+                                <SubAffixSelect index={2} context={SimulatorContext}/>
+                                <SubAffixSelect index={3} context={SimulatorContext}/>
+                            </div>
+                            <div className='hintIcon ml-1 mt-1 overflow-visible'data-tooltip-id="SubAffixHint">
+                                <span className='text-white'>?</span>
+                            </div>  
                         </div>
                     </div>
                     <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`}>
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Affix 有效詞條:</span>
                         </div>
-                        <StandardSelect context={SimulatorContext}/>
+                        <div className='flex flex-row items-center'>
+                            <StandardSelect context={SimulatorContext}/>
+                            <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="StandardHint">
+                                <span className='text-white'>?</span>
+                            </div>
+                        </div>
+                        
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`} >
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
@@ -489,8 +516,12 @@ function Simulator(){
             <div className='flex flex-row mb-3 flex-wrap'>
                 <div className={`w-[100%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-4 ${(!historyData.current||historyData.current.length===0)?'hidden':''}`}
                     id="historyData" >
-                    <div>
+                    <div className='flex flex-row items-center'>
                         <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
+                        <div className='hintIcon ml-2 overflow-visible'
+                            data-tooltip-id="HistoryHint">
+                            <span className='text-white'>?</span>
+                        </div>
                     </div>
                     <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
                         <HistoryList context={SimulatorContext}/>
@@ -513,6 +544,92 @@ function Simulator(){
                 </div>
                 
             </div>
+        </div>
+        <div>
+            <Tooltip id="CharHint"  
+                    place="right-start" 
+                    render={()=>
+                        <div className='flex flex-col'>
+                            <span className='text-white'>選擇指定腳色，可以使用中文或英文關鍵字</span>
+                            <span className='text-white'>例如:Jingliu&rarr;鏡流</span>
+                        </div>
+                    }/>
+            <Tooltip id="PartSelectHint"  
+                    place="right-start" 
+                    render={()=>
+                        <div className='flex flex-col max-w-[230px]'>
+                            <span className='text-white'>選擇遺器部位</span>
+                            <span className='text-white'>"主詞條"跟"副詞條"區塊中會自動帶入該部位詞條種類</span>
+                        </div>
+                    }/>
+            <Tooltip id="MainAffixHint"  
+                    place="right-start" 
+                    render={()=>
+                        <div className='flex flex-col max-w-[230px] '>
+                            <span className='text-white'>選擇遺器的主詞條</span>
+                        </div>
+                    }/>
+            <Tooltip id="SubAffixHint"  
+                    place="right-start" 
+                    render={()=>
+                        <div className='flex flex-col max-w-[230px] '>
+                            <div className='[&>span]:text-white flex flex-col'>
+                                <span>根據遺器現有狀況</span>
+                                <span>依序輸入詞條種類、詞條數值、強化次數</span>
+                                <span className='!text-yellow-500'>詞條數值不用輸入%</span>
+                                <span className='!text-yellow-500'>如果該詞條沒有被強化過，則強化次數打上0即可</span>
+                            </div>
+                            <div className='mt-2 [&>span]:text-white flex flex-col'>
+                                <span>例如:今天有一個詞條為</span>
+                                <span className='!text-green-500'>暴擊傷害 13.4% 2</span>
+                                <span>那麼只要key上</span>
+                                <span className='!text-green-500'>暴擊傷害 13.4 2</span>
+                            </div>
+                            <div className='mt-2 [&>span]:text-red-500'>
+                                <span>注意事項:</span>
+                                <span>1.副詞條彼此間不能重複</span>
+                                <span>2.主詞條跟副詞條不可重複</span>
+                            </div>
+                        </div>
+                    }/>
+            <Tooltip id="StandardHint" 
+                    place="right-start"
+                    render={()=>
+                        <div className='flex flex-col max-w-[230px]'>
+                            <span className='text-white'>根據個人需求</span>
+                            <span className='text-yellow-400'>選擇不重複的詞條種類(包含主詞條)</span>
+                            <span className='!text-red-500'>"有效詞條"選擇最多保有6個。</span>
+                        </div>
+                    }/>
+            <Tooltip id="HistoryHint"  
+                place="right-bottom"
+                render={()=>
+                    <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                        <span>"檢視"可以查看曾經查詢出來的資訊</span>
+                        <span>"刪除"則會刪除該筆紀錄</span>
+                        <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
+                        <span className='!text-yellow-500'>如果在已有六筆資料的情況在新增，則會從最舊的紀錄覆蓋掉</span>
+                    </div>
+                }/>
+            <Tooltip id="RelicDataHint"  
+                place="right-start"
+                render={()=>
+                    <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                        <div>
+                            <span className='text-white'>下方會顯示出該遺器的</span>
+                        </div>
+                        <ul>
+                            <li>1.所屬套裝</li>
+                            <li>2.主屬性</li>
+                            <li>3.副屬性</li>
+                            <li>4.副屬性數值</li>
+                            <li>5.副屬性強化次數</li>
+                        </ul>
+                        <div className='mt-2'>
+                            <span className='text-white'>此外下方有個重洗模擬按鈕，此功能將會帶入這個遺器的資訊進行重洗模擬</span>
+                        </div>
+                    </div>
+                }/>
         </div>
     </SimulatorContext.Provider>)
 }

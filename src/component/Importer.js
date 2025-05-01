@@ -4,16 +4,16 @@ import AffixName from '../data/AffixName';
 import { useState ,useRef,useCallback } from 'react';
 import '../css/simulator.css';
 import axios from 'axios';
+import { Tooltip } from 'react-tooltip'
 
 import { Helmet } from 'react-helmet';
 import {useLocation} from 'react-router-dom';
 
 import PastPreviewList from './PastPreviewList';
 import Result from './Result';
-import Enchant from './Enchant';
 import { StandDetails, ShowStand } from './StandDetails';
 import { RelicData } from './RelicData';
-import { PartSelect, StandardSelect,   CharSelect ,RelicSelect } from './Select';
+import { StandardSelect,   CharSelect ,RelicSelect } from './Select';
 
 //Importer的context狀態
 const ImporterContext = createContext();
@@ -566,17 +566,27 @@ function Importer(){
                                 onChange={(e)=>userID.current=e.target.value}
                                 disabled={!isChangeAble}/>
                     </div>
-                    <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col'>
+                    <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col items-center'>
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
+                        </div>                       
+                        <div className='flex flex-row items-baseline'>
+                            <CharSelect context={ImporterContext} />
+                            <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
+                                <span className='text-white'>?</span>
+                            </div>
                         </div>
-                        <CharSelect context={ImporterContext} />
                     </div>
-                    <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`} >
+                    <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
                         </div>
-                        <StandardSelect context={ImporterContext}/>
+                        <div className='flex flex-row items-baseline'>
+                            <StandardSelect context={ImporterContext}/>
+                            <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="StandardHint">
+                                <span className='text-white'>?</span>
+                            </div>
+                        </div>
                     </div>
                     <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`}>
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
@@ -602,10 +612,13 @@ function Importer(){
                     </ul>
                 </div>
             </div>
-            <div className={`${(historyData.length===0)?'hidden':''} flex-wrap max-[930px]:w-[100%] border-t-4
-                border-gray-600 p-2 my-4 `}>
-                <div>
+            <div className={`${(historyData.length===0)?'hidden':''} flex-wrap max-[930px]:w-[100%] border-t-4border-gray-600 p-2 my-4 `}>
+                <div className='flex flex-row items-baseline'>
                     <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
+                    <div className='hintIcon ml-2 overflow-visible'
+                        data-tooltip-id="HistoryHint">
+                        <span className='text-white'>?</span>
+                    </div>
                 </div>
                 <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
                     <PastPreviewList context={ImporterContext} />
@@ -633,6 +646,64 @@ function Importer(){
                 
             </div>
         </div>
+        <div>
+            <Tooltip id="CharHint"  
+                    place="right-start" 
+                    render={()=>
+                        <div className='flex flex-col'>
+                            <span className='text-white'>選擇指定腳色，可以使用中文或英文關鍵字</span>
+                            <span className='text-white'>例如:Jingliu&rarr;鏡流</span>
+                        </div>
+                    }/>
+            <Tooltip id="StandardHint" 
+                    place="top-start"
+                    render={()=>
+                        <div className='flex flex-col'>
+                            <span className='text-white'>根據個人需求</span>
+                            <span className='text-yellow-400'>選擇不重複的詞條種類(包含主詞條)</span>
+                            <span className='!text-red-500'>"有效詞條"選擇最多保有6個。</span>
+                        </div>
+                    }/>
+            <Tooltip id="HistoryHint"  
+                    place="top-start"
+                    render={()=>
+                        <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                            <span>"檢視"可以查看曾經查詢出來的資訊</span>
+                            <span>"刪除"則會刪除該筆紀錄</span>
+                            <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
+                            <span className='!text-yellow-500'>如果在已有六筆資料的情況在新增，則會從最舊的紀錄覆蓋掉</span>
+                        </div>
+                    }/>
+            <Tooltip id="RelicSelectHint"  
+                    place="top-start"
+                    render={()=>
+                        <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                            <span>下方會顯示出該腳色符合條件的所有遺器</span>
+                            <span>點選遺器即可查看個別資訊</span>
+                            <span className='!text-red-600 font-bold'>僅顯示符合條件的五星滿等遺器遺器</span>
+                        </div>
+                    }/>
+            <Tooltip id="RelicDataHint"  
+                    place="right-start"
+                    render={()=>
+                        <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                            <div>
+                                <span className='text-white'>下方會顯示出該遺器的</span>
+                            </div>
+                            <ul>
+                                <li>1.所屬套裝</li>
+                                <li>2.主屬性及其數值</li>
+                                <li>3.副屬性及其數值</li>
+                                <li>4.個別副屬性強化次數</li>
+                            </ul>
+                            <div className='mt-2'>
+                                <span className='text-white'>此外下方有個重洗模擬按鈕，此功能將會帶入這個遺器的資訊進行重洗模擬</span>
+                            </div>
+                        </div>
+                    }/>
+        </div>
+        
+        
     </ImporterContext.Provider>)
 }
 
