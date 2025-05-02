@@ -671,7 +671,7 @@ function Importer(){
                             <span>"檢視"可以查看曾經查詢出來的資訊</span>
                             <span>"刪除"則會刪除該筆紀錄</span>
                             <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
-                            <span className='!text-yellow-500'>如果在已有六筆資料的情況在新增，則會從最舊的紀錄覆蓋掉</span>
+                            <span className='!text-yellow-500'>如果在已有6筆資料的情況再新增，則會從最舊的紀錄開始覆蓋掉</span>
                         </div>
                     }/>
             <Tooltip id="RelicSelectHint"  
