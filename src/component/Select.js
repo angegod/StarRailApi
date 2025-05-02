@@ -242,9 +242,9 @@ const RelicSelect=React.memo(({context})=>{
             const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/${r.relic.icon}`;
     
             return(
-                <div className={`rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] 
-                        max-[400px]:w-[45px] max-[400px]:h-[45px] max-[400px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
-                                onClick={()=>setRelicIndex(i)}>
+                <div className={`rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] max-[400px]:w-[45px] max-[400px]:h-[45px] max-[400px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
+                    key={'RelicSelect'+i}
+                    onClick={()=>setRelicIndex(i)}>
                     <img src={reliclink} alt='relic' width={50} height={50}/>
                 </div>
             )

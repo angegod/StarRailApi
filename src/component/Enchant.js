@@ -56,9 +56,7 @@ const Enchant=React.memo(()=>{
         //初始紀錄
         if(relicBackUp.current === null){
             relicBackUp.current=simulatorData.oldData;
-            console.log(relicBackUp.current);
         }
-        console.log(simulatorData);
         //新增強化紀錄
         addStatics();
     },[simulatorData])
@@ -173,10 +171,8 @@ const Enchant=React.memo(()=>{
 
         if(isCheck){
             worker.postMessage(postData);
-            console.log(simulatorData);
             // 接收 Worker 返回的訊息
             worker.onmessage = function (event) {
-                console.log(simulatorData.oldData===null);
                 setSimulatorData({
                     oldData:{
                         relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
@@ -247,10 +243,11 @@ const Enchant=React.memo(()=>{
 
             // 接收 Worker 返回的訊息
             worker.onmessage = function (event) {
+
                 setSimulatorData({
                     oldData:{
                         relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
-                        relicrank:(simulatorData.oldDataData===null)?Rrank:simulatorData.oldData.relicrank,
+                        relicrank:(simulatorData.oldData===null)?Rrank:simulatorData.oldData.relicrank,
                         returnData:SubData
                     },
                     newData:event.data
@@ -452,7 +449,7 @@ const Pie=React.memo(({PieNums})=>{
     if(PieNums!==undefined){
         const pieParams = {
             height: 200,
-            margin: 0,
+            margin:{ top: 10, right: 0, bottom: 0, left: -100 },
             slotProps: { legend: { hidden: true } },
         };
 
@@ -469,16 +466,21 @@ const Pie=React.memo(({PieNums})=>{
                         }
                     ]}  {...pieParams} />
                 </div>
-                    <div className='flex flex-col w-2/5 text-center max-[500px]:w-[100%]'>
-                        {PieNums.map((p)=>{
+                    <div className={`flex flex-col w-2/5 max-[500px]:w-[100%] mt-2 ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
+                        <div>
+                            <span className='text-amber-700 font-bold text-lg'>模擬次數</span>
+                        </div>
+                        <div className='text-center'>
+                        {PieNums.map((p,i)=>{
                             if(p.value!==0)
                                 return(
-                                    <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[100px] [&>*]:max-[500px]:text-center'>
-                                        <div style={{color:p.color}} className='w-[30px] text-right '>{`${p.tag}`}</div>
-                                        <div style={{color:p.color}} className='w-[30px] ml-2'>{`${p.value}次`}</div>
+                                    <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[100px] [&>*]:max-[500px]:text-center' key={'pieNums'+i}>
+                                        <div style={{color:p.color}} className='w-[30px] text-left '>{`${p.tag}`}</div>
+                                        <div style={{color:p.color}} className='w-[70px] text-right'>{`${p.value}次`}</div>
                                     </div>
                                 )
                         })}
+                        </div>
                     </div>
                
            </div>

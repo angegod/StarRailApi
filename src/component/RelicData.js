@@ -1,6 +1,7 @@
 import React, { Component, useContext } from 'react';
 import AffixName from '../data/AffixName';
 import { useNavigate } from 'react-router-dom';
+import { Tooltip } from 'react-tooltip';
 
 //顯示儀器分數區間
 const RelicData=React.memo(({context,mode,button})=>{
@@ -96,13 +97,12 @@ const RelicData=React.memo(({context,mode,button})=>{
             <div className={`w-[100%] mb-5 my-1 ${(relic!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>
                 <div className='flex flex-row items-center'>
                     <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
-                    <div className='hintIcon ml-2 overflow-visible'
-                        data-tooltip-id="RelicDataHint">
+                    <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="RelicDataHint">
                         <span className='text-white'>?</span>
                     </div>
                 </div>
                 <div>
-                    <span>套裝:</span><br/>
+                    <span>套裝</span><br/>
                     <div className='flex flex-row'>
                         <img src={reliclink} width={24} height={24} alt={relic.set_id}/>
                         <span className='text-white'>{relic.set_name}</span>
@@ -135,6 +135,24 @@ const RelicData=React.memo(({context,mode,button})=>{
                     <div className='mt-3'>
                         <button className='processBtn' onClick={navEnchant} disabled={!isChangeAble}>重洗模擬</button>
                     </div>:<></>}
+                <Tooltip id="RelicDataHint"  
+                        place="right-start"
+                        render={()=>
+                            <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                                <div>
+                                    <span className='text-white'>下方會顯示出該遺器的</span>
+                                </div>
+                                <ul>
+                                    <li>1.所屬套裝</li>
+                                    <li>2.主屬性及其數值</li>
+                                    <li>3.副屬性及其數值</li>
+                                    <li>4.個別副屬性強化次數</li>
+                                </ul>
+                                <div className='mt-2'>
+                                    <span className='text-white'>此外下方有個重洗模擬按鈕，此功能將會帶入這個遺器的資訊進行重洗模擬</span>
+                                </div>
+                            </div>
+                        }/>
             </div>
         )
     }else{

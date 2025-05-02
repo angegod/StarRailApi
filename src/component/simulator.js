@@ -49,7 +49,7 @@ function Simulator(){
 
     //歷史紀錄
     const historyData=useRef([]);
-    const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
+    const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
     
     //是否可以儲存(防呆用)、是否可以立馬變更
     const [isSaveAble,setIsSaveAble]=useState(false);
@@ -219,7 +219,7 @@ function Simulator(){
         //副詞條是否有空值?
         //副詞條是否有跟主詞條重複?
         let errors=false;
-
+        console.log(SubData.current);
         SubData.current.some((s,i)=>{
             if(s.subaffix===MainSelectOptions){
                 alert(`第${i+1}個詞條選擇\n副詞條不可選擇與主詞條相同的詞條\n請再重新選擇!!`);
@@ -585,7 +585,7 @@ function Simulator(){
                                 <span>那麼只要key上</span>
                                 <span className='!text-green-500'>暴擊傷害 13.4 2</span>
                             </div>
-                            <div className='mt-2 [&>span]:text-red-500'>
+                            <div className='mt-2 [&>span]:text-red-500 flex flex-col'>
                                 <span>注意事項:</span>
                                 <span>1.副詞條彼此間不能重複</span>
                                 <span>2.主詞條跟副詞條不可重複</span>

@@ -570,7 +570,7 @@ function Importer(){
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                         </div>                       
-                        <div className='flex flex-row items-baseline'>
+                        <div className='flex flex-row items-center'>
                             <CharSelect context={ImporterContext} />
                             <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
                                 <span className='text-white'>?</span>
@@ -581,7 +581,7 @@ function Importer(){
                         <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
                         </div>
-                        <div className='flex flex-row items-baseline'>
+                        <div className='flex flex-row items-center'>
                             <StandardSelect context={ImporterContext}/>
                             <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="StandardHint">
                                 <span className='text-white'>?</span>
@@ -612,7 +612,7 @@ function Importer(){
                     </ul>
                 </div>
             </div>
-            <div className={`${(historyData.length===0)?'hidden':''} flex-wrap max-[930px]:w-[100%] border-t-4border-gray-600 p-2 my-4 `}>
+            <div className={`${(historyData.length===0)?'hidden':''} flex-wrap max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-4 `}>
                 <div className='flex flex-row items-baseline'>
                     <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -683,27 +683,9 @@ function Importer(){
                             <span className='!text-red-600 font-bold'>僅顯示符合條件的五星滿等遺器遺器</span>
                         </div>
                     }/>
-            <Tooltip id="RelicDataHint"  
-                    place="right-start"
-                    render={()=>
-                        <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
-                            <div>
-                                <span className='text-white'>下方會顯示出該遺器的</span>
-                            </div>
-                            <ul>
-                                <li>1.所屬套裝</li>
-                                <li>2.主屬性及其數值</li>
-                                <li>3.副屬性及其數值</li>
-                                <li>4.個別副屬性強化次數</li>
-                            </ul>
-                            <div className='mt-2'>
-                                <span className='text-white'>此外下方有個重洗模擬按鈕，此功能將會帶入這個遺器的資訊進行重洗模擬</span>
-                            </div>
-                        </div>
-                    }/>
+            
         </div>
-        
-        
+            
     </ImporterContext.Provider>)
 }
 
