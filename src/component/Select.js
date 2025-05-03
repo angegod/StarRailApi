@@ -158,7 +158,8 @@ const StandardSelect=React.memo(({context})=>{
                     <div className='flex flex-row flex-wrap items-baseline'>
                         <select value={selectAffix}
                             onChange={(event)=>{setAffix(event.target.value)}}
-                            disabled={!isChangeAble} className='mr-1 h-[25px] w-[120px] graySelect'>{options}</select>
+                            disabled={!isChangeAble} className='mr-1 h-[25px] w-[120px] graySelect'
+                            >{options}</select>
                         <div className='max-[520px]:mt-1 ml-1'>
                             <button className='processBtn px-1' onClick={addAffix} disabled={!isChangeAble}>添加</button>
                             <button className='deleteBtn ml-2 px-1' onClick={clearAffix} disabled={!isChangeAble}>清空</button>

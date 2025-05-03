@@ -162,7 +162,7 @@ const RelicData=React.memo(({context,mode,button})=>{
 
 const RelicData_simuldate=React.memo(({context,mode,button})=>{
     const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(context);
-    const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
+    const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
     const navigate = useNavigate();
     //導航至模擬強化頁面
     function navEnchant(){
