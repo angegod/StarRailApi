@@ -112,74 +112,27 @@ const PartSelect=React.memo(({context})=>{
     )
 });
 
-
-
 //自訂義有效詞條種類
-const StandardSelect2=React.memo(({context})=>{
+const StandardSelect=React.memo(({context})=>{
     const [selectAffix,setAffix]=useState(undefined);
     const {partsIndex,selfStand,setSelfStand,isChangeAble}=useContext(context);
     
-    //監聽selectAffix
-    useEffect(()=>{
-        console.log(selectAffix);
-        if(selectAffix!==undefined){
-            let newItemArr = selectAffix.map((s)=>{
-                return {
-                    name:s,
-                    value:1
-                }
-            });
-            setSelfStand(newItemArr);
+    //添加標準 目前設定先不超過六個有效 且不重複
+    function addAffix(){
+        //如果為預設選項則不予選擇
+        if(selectAffix===undefined)
+            return;
+        let newItem={
+            name:selectAffix,
+            value:1
         }
-            
-    },[selectAffix])
+        if(selfStand.length<6&&!(selfStand.findIndex((item)=>item.name===selectAffix)>=0))
+            setSelfStand((old)=>[...old,newItem]);
+    }
 
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-            backgroundColor: 'inherit',
-            outline: 'none',
-            borderColor: 'white', // 可自訂邊框色
-            color: 'white',
-        }),
-        input: (provided) => ({
-            ...provided,
-            color: 'white',
-            backgroundColor: 'inherit'
-        }),
-        singleValue: (provided) => ({
-            ...provided,
-            color: 'white'
-        }),
-        multiValueLabel: (provided) => ({
-            ...provided,
-            color: 'white',
-            width: '100px', // ✅ 統一寬度，可視需求調整
-            display: 'inline-block',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-        }),
-        multiValue: (provided) => ({
-            ...provided,
-            backgroundColor: '#555' // 多選的 tag 背景
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected
-                ? '#555' // 被選中的背景
-                : state.isFocused
-                ? '#444' // hover 時的背景
-                : 'rgb(36, 36, 36)', // 預設背景
-            color: 'white',
-            cursor: 'pointer',
-        }),
-        menu: (provided) => ({
-            ...provided,
-            backgroundColor: 'rgb(36, 36, 36)',
-        }),
-    };
-      
+    function clearAffix(){
+        setSelfStand([]);
+    }
 
     if(partsIndex!==undefined){
         //依據所選部位 給出不同的選澤
@@ -188,20 +141,32 @@ const StandardSelect2=React.memo(({context})=>{
         let mergedArray = [...new Set([...target.main, ...target.sub])];
         mergedArray=mergedArray.filter((item)=>item!=='生命值'&&item!=='攻擊力'&&item!=='防禦力')
 
-        let options = mergedArray.map((affix)=>{
-            return {
-                value:affix,
-                label:affix
-            }
+        let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
+
+        //如果該標準已被選擇 會顯示勾選圖示於左側選項中
+        mergedArray.forEach((m,i)=>{
+            options.push(
+                <option value={m} key={'Affix'+i} title={m} 
+                    className='w-[160px] whitespace-pre'>
+                        <span className='inline-block w-[20px]'>{(selfStand.find((s)=>s.name===m))?'\u2714 ':'\u2003'}</span>
+                        <span>{m}</span>
+                </option>);
         });
 
-
-        return(<Select isMulti
-                       options={options}
-                       styles={customStyles}
-                       placeholder="請選擇"
-                       onChange={(selected) => {setAffix(selected.map(opt => opt.value));}}
-                        />)
+        return(
+                <div className='flex flex-col'>
+                    <div className='flex flex-row flex-wrap items-baseline'>
+                        <select value={selectAffix}
+                            onChange={(event)=>{setAffix(event.target.value)}}
+                            disabled={!isChangeAble} className='mr-1 h-[25px] w-[120px] graySelect'
+                            >{options}</select>
+                        <div className='max-[520px]:mt-1 ml-1'>
+                            <button className='processBtn px-1' onClick={addAffix} disabled={!isChangeAble}>添加</button>
+                            <button className='deleteBtn ml-2 px-1' onClick={clearAffix} disabled={!isChangeAble}>清空</button>
+                        </div>
+                    </div>
+                </div>
+        )
     }else{
         return(<></>)
     }
@@ -308,4 +273,4 @@ const RelicSelect=React.memo(({context})=>{
 
 
 
-export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect,RelicSelect}
+export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect,RelicSelect,StandardSelect2}
