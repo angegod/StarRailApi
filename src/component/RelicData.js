@@ -127,7 +127,7 @@ const RelicData=React.memo(({context,mode,button})=>{
                 </div>
                 <div className='mt-2'>
                     <span>副詞條</span>
-                    <div className='flex flex-col w-[190px]'>
+                    <div className='flex flex-col w-[80vw]'>
                         {list}
                     </div>
                 </div>
@@ -231,7 +231,7 @@ const RelicData_simuldate=React.memo(({context,mode,button})=>{
         })
         
         return(
-            <div className={`w-[100%] mb-5 my-1 max-[500px]:min-w-[330px]`}>
+            <div className={`w-[100%] mb-5 my-1 max-[500px]:min-w-[330px] max-[400px]:w-[100%] max-[400px]:min-w-[0px]`}>
                 <div className='flex flex-row items-center'>
                     <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -254,7 +254,7 @@ const RelicData_simuldate=React.memo(({context,mode,button})=>{
                 </div>
                 <div className='mt-2'>
                     <span>副詞條</span>
-                    <div className='flex flex-col w-[200px]'>
+                    <div className='flex flex-col w-[80vw]'>
                         {list}
                     </div>
                 </div>

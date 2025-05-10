@@ -13,7 +13,7 @@ import PastPreviewList from './PastPreviewList';
 import Result from './Result';
 import { StandDetails, ShowStand } from './StandDetails';
 import { RelicData } from './RelicData';
-import { StandardSelect,   CharSelect ,RelicSelect } from './Select';
+import { StandardSelect,   CharSelect ,RelicSelect} from './Select';
 
 //Importer的context狀態
 const ImporterContext = createContext();
@@ -438,81 +438,6 @@ function Importer(){
         localStorage.setItem('importData',JSON.stringify(oldHistory));
        
     }
-
-    //模擬強化
-    function simulate(){
-        let isCheck=true;
-
-        //將運行結果丟到背景執行 跟模擬所有組合的worker分開
-        let worker=new Worker(new URL('../worker/worker.js', import.meta.url));
-        let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
-        let SubData=[];
-
-        relic.sub_affix.forEach((s,i)=>{
-            let typeName=AffixName.find((a)=>a.fieldName===s.type);
-            let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
-            
-            let data={
-                index:i, 
-                subaffix:typeName.name,
-                data:val, //詞條數值    
-                count:s.count-1//強化次數
-            }
-
-            SubData.push(data);
-        });
-
-        //檢查標準是否合法
-        selfStand.forEach((s)=>{
-            if(s.value===''){
-                isCheck=false;
-                setStatusMsg('加權指數不可為空或其他非法型式');
-            }
-        });
-        
-        //如果篩選有速度詞條 需給予0.5誤差計算 
-        let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
-        SubData.forEach(s=>{
-            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
-                deviation+=0.2;
-        })
-
-        //制定送出資料格式
-        let postData={
-            MainData:MainAffix.name,
-            SubData:SubData,
-            partsIndex:relic.type,
-            standard:standDetails.current,
-            deviation:0.5
-        };
-        
-        if(isCheck){
-            worker.postMessage(postData);
-
-            // 接收 Worker 返回的訊息
-            worker.onmessage = function (event) {
-                setSimulatorData({
-                    oldData:{
-                        relicscore:Rscore,
-                        relicrank:Rrank,
-                        returnData:SubData
-                    },
-                    newData:event.data
-                });
-                requestAnimationFrame(()=>{
-                    window.scrollTo({
-                        top: document.getElementById('enchant').offsetTop,
-                        behavior: 'smooth'
-                    });
-                })
-                
-            };
-        }
-        
-        //將送出按鈕設為可用
-        setIsChangeAble(true);
-    }    
-
     
     
     //共用context狀態
@@ -536,7 +461,6 @@ function Importer(){
         //方法
         updateHistory:updateHistory,
         checkDetails:checkDetails,
-        simulate:simulate,
 
         //state管理
         setCharID:setCharID,
@@ -595,8 +519,8 @@ function Importer(){
                         <ShowStand context={ImporterContext}/>
                     </div>
                     <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px] max-[400px]:justify-start'>
-                        <button className='processBtn' onClick={getRecord}  disabled={!isChangeAble}>開始匹配</button>
-                        <button className='processBtn' onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
+                        <button className='processBtn' onClick={()=>getRecord()}  disabled={!isChangeAble}>開始匹配</button>
+                        <button className='processBtn' onClick={()=>saveRecord()} disabled={!isSaveAble}>儲存紀錄</button>
                     </div>
                     
                 </div>
@@ -629,13 +553,13 @@ function Importer(){
                 <div className={`w-[100%] ${(PieNums===undefined)?'hidden':''}`}>
                     <RelicSelect context={ImporterContext} />
                 </div>
-                <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`}>
+                <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`}>
                     <RelicData  context={ImporterContext} mode={'Importer'} button={true}/>
                 </div>
-                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[90%]`} >
+                <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                     <StandDetails context={ImporterContext}/>
                 </div>
-                <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] ${(statusMsg===undefined)?'hidden':''}`} 
+                <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] ${(statusMsg===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} 
                     id="resultDetails">
                     <Result ExpRate={ExpRate} 
                             Rscore={Rscore} 

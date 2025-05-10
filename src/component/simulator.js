@@ -494,10 +494,10 @@ function Simulator(){
                     <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
                         <div className='flex flex-row mt-1'>
                             <button className='processBtn mr-2 whitespace-nowrap' 
-                                onClick={calScore} 
+                                onClick={()=>calScore()} 
                                 disabled={!processBtn}>計算分數</button>
                             <button className='processBtn mr-2 whitespace-nowrap' 
-                            onClick={saveRecord} disabled={!isSaveAble}>儲存紀錄</button>
+                            onClick={()=>saveRecord()} disabled={!isSaveAble}>儲存紀錄</button>
                         </div>
                     </div>
                 </div>
@@ -527,14 +527,14 @@ function Simulator(){
                         <HistoryList context={SimulatorContext}/>
                     </div>
                 </div>
-                <div className='border-t-4 border-gray-600 w-[100%] flex flex-row'>
-                    <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
+                <div className='border-t-4 border-gray-600 w-[100%] flex flex-row flex-wrap'>
+                    <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                         <RelicData  context={SimulatorContext} mode={'Simulator'} button={true}/>
                     </div>
-                    <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[400px]:w-[100%]`} >
+                    <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                         <StandDetails context={SimulatorContext}/>
                     </div>
-                    <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%]' id="resultDetails">
+                    <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] max-[500px]:w-4/5 max-[500px]:mx-auto' id="resultDetails">
                         <Result ExpRate={ExpRate} 
                                 Rscore={Rscore} 
                                 statusMsg={statusMsg} 

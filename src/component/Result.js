@@ -98,13 +98,13 @@ const Pie=React.memo(({PieNums})=>{;
     if(PieNums!==undefined){
         const pieParams = {
             height: 200,
-            margin:{ top: 10, right: 0, bottom: 0, left: -100 },
+            margin:{ top: 10, right: 0, bottom: 0, left: -20 },
             slotProps: { legend: { hidden: true } },
         };
 
         return(
            <div className='w-[100%] flex flex-row flex-wrap'>
-                <div className='min-w-[300px]'>
+                <div className='min-w-[250px]'>
                     <PieChart  
                     series={[
                         {

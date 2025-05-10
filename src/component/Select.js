@@ -1,4 +1,4 @@
-import React,{useContext, useState} from 'react';
+import React,{useContext, useEffect, useState} from 'react';
 import AffixList from '../data/AffixList';
 import characters from '../data/characters';
 import Select from 'react-select';
@@ -173,6 +173,102 @@ const StandardSelect=React.memo(({context})=>{
 
 });
 
+
+//自訂義有效詞條種類
+const StandardSelect2=React.memo(({context})=>{
+    const [selectAffix,setAffix]=useState(undefined);
+    const {partsIndex,selfStand,setSelfStand,isChangeAble}=useContext(context);
+    
+    //監聽selectAffix
+    useEffect(()=>{
+        console.log(selectAffix);
+        if(selectAffix!==undefined){
+            let newItemArr = selectAffix.map((s)=>{
+                return {
+                    name:s,
+                    value:1
+                }
+            });
+            setSelfStand(newItemArr);
+        }
+            
+    },[selectAffix])
+
+    const customStyles = {
+        control: (provided) => ({
+            ...provided,
+            backgroundColor: 'inherit',
+            outline: 'none',
+            borderColor: 'white', // 可自訂邊框色
+            color: 'white',
+        }),
+        input: (provided) => ({
+            ...provided,
+            color: 'white',
+            backgroundColor: 'inherit'
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: 'white'
+        }),
+        multiValueLabel: (provided) => ({
+            ...provided,
+            color: 'white',
+            width: '100px', // ✅ 統一寬度，可視需求調整
+            display: 'inline-block',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+        }),
+        multiValue: (provided) => ({
+            ...provided,
+            backgroundColor: '#555' // 多選的 tag 背景
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected
+                ? '#555' // 被選中的背景
+                : state.isFocused
+                ? '#444' // hover 時的背景
+                : 'rgb(36, 36, 36)', // 預設背景
+            color: 'white',
+            cursor: 'pointer',
+        }),
+        menu: (provided) => ({
+            ...provided,
+            backgroundColor: 'rgb(36, 36, 36)',
+        }),
+    };
+      
+
+    if(partsIndex!==undefined){
+        //依據所選部位 給出不同的選澤
+        let target=AffixList.find((a)=>a.id===parseInt(partsIndex));
+        //合併所有選項 並且移除重複值
+        let mergedArray = [...new Set([...target.main, ...target.sub])];
+        mergedArray=mergedArray.filter((item)=>item!=='生命值'&&item!=='攻擊力'&&item!=='防禦力')
+
+        let options = mergedArray.map((affix)=>{
+            return {
+                value:affix,
+                label:affix
+            }
+        });
+
+
+        return(<Select isMulti
+                       options={options}
+                       styles={customStyles}
+                       placeholder="請選擇"
+                       onChange={(selected) => {setAffix(selected.map(opt => opt.value));}}
+                        />)
+    }else{
+        return(<></>)
+    }
+
+});
+
+
 //腳色選擇器
 const CharSelect=React.memo(({context})=>{
     const {charID,setCharID,setIsSaveAble,isChangeAble}=useContext(context)
@@ -243,7 +339,7 @@ const RelicSelect=React.memo(({context})=>{
             const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/${r.relic.icon}`;
     
             return(
-                <div className={`rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] max-[400px]:w-[45px] max-[400px]:h-[45px] max-[400px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
+                <div className={`rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] max-[400px]:mx-1 max-[400px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
                     key={'RelicSelect'+i}
                     onClick={()=>setRelicIndex(i)}>
                     <img src={reliclink} alt='relic' width={50} height={50}/>
@@ -252,7 +348,7 @@ const RelicSelect=React.memo(({context})=>{
         })
     
         return(
-            <div className='w-4/5 flex flex-col pt-1'>
+            <div className='w-4/5 flex flex-col pt-1 max-[500px]:w-[100%]'>
                 <div className='flex flex-row items-baseline'>
                     <span className='text-red-600 font-bold text-lg'>遺器匹配結果</span>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -270,4 +366,6 @@ const RelicSelect=React.memo(({context})=>{
     }
 })
 
-export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect,RelicSelect}
+
+
+export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect,RelicSelect,StandardSelect2}

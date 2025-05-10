@@ -295,12 +295,12 @@ const Enchant=React.memo(()=>{
     }
 
     const ResultSection=(simulatorData.newData!==undefined&&simulatorData.oldData!==undefined)?(
-        <div className='flex flex-row flex-wrap  max-[600px]:!flex-col'>
+        <div className='flex flex-row max-[600px]:flex-wrap  max-[600px]:!flex-col'>
             <DataList standDetails={standDetails} data={simulatorData.oldData} title={'重洗前'} />
-            <div className={`flex my-auto w-[30px] moveAnimate moveAnimate2 max-[600px]:w-1/2 max-[600px]:justify-center h-[30px] ${(simulatorData.newData===null)?'hidden':''}`} >
-                <svg xmlns="http://www.w3.org/2000/svg" className='max-[600px]:hidden'
+            <div className={`flex my-auto w-[30px] moveAnimate moveAnimate2 max-[600px]:w-4/5 max-[600px]:justify-center h-[30px] ${(simulatorData.newData===null)?'hidden':''}`} >
+                <svg xmlns="http://www.w3.org/2000/svg" className='max-[600px]:hidden mx-auto'
                     height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" className='min-[600px]:hidden'
+                <svg xmlns="http://www.w3.org/2000/svg" className='min-[600px]:hidden mx-auto'
                     height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-800v487L216-537l-56 57 320 320 320-320-56-57-224 224v-487h-80Z"/></svg>
             </div>
             <DataList standDetails={standDetails} data={simulatorData.newData} title={'重洗後'} />          
@@ -322,33 +322,40 @@ const Enchant=React.memo(()=>{
     return(
         <EnchantContext.Provider value={EnchantStatus}>
             <Helmet>
-                <title>崩鐵--模擬重洗</title>
+                <title>崩鐵--遺器重洗模擬</title>
                 <meta name="description" content="崩鐵--遺器重洗" />
             </Helmet>
             <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
                 <div className="w-[100%] border-gray-600 my-4 justify-center flex flex-row flex-wrap max-[900px]:flex-col">
-                    <div className='flex flex-row flex-wrap w-1/2 max-[900px]:w-[100%]'>
-                        <div className='flex flex-row w-1/2 max-[900px]:w-1/2 max-[400px]:w-[100%]'>
+                    <div className='flex flex-row flex-wrap w-1/2 max-[900px]:w-[100%] max-[500px]:justify-center'>
+                        <div className='flex flex-row w-1/2 max-[900px]:w-1/2 max-[400px]:w-3/5'>
                             {(mode==="Importer")?
                                 <RelicData context={EnchantContext} />:
                                 <RelicData_simuldate context={EnchantContext} />}
                             
                         </div>
-                        <div className='w-1/2 max-[900px]:w-1/2 max-[400px]:w-[100%]'>
+                        <div className='w-1/2 max-[900px]:w-1/2 max-[400px]:w-3/5'>
                             <StandDetails context={EnchantContext}/>
                         </div>
                     </div>
                     <div className='w-1/2 max-[900px]:w-[100%]'>
-                        <div className='flex flex-row'>
-                            <span className='text-red-600 text-lg font-bold'>模擬強化</span>
-                            <button className='processBtn ml-2' onClick={()=>execute()} >再洗一次</button>
-                            <button className='processBtn ml-2' onClick={()=>changeToNew()}>套用新強化</button>
-                            <button className='processBtn ml-2' onClick={()=>reInit()}>還原至初始</button>
+                        <div className='flex flex-row flex-wrap max-[500px]:justify-center'>
+                            <div className='flex flex-row'>
+                                <span className='text-red-600 text-lg font-bold'>模擬強化</span>
+                                <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="RelicDataHint">
+                                    <span className='text-white'>?</span>
+                                </div>
+                            </div>
+                            <div className='flex flex-row'>
+                                <button className='processBtn ml-2' onClick={()=>execute()} >再洗一次</button>
+                                <button className='processBtn ml-2' onClick={()=>changeToNew()}>套用新強化</button>
+                                <button className='processBtn ml-2' onClick={()=>reInit()}>還原至初始</button>
+                            </div>
                         </div>
-                        <div className='my-2'>
+                        <div className='my-2 max-[500px]:text-center'>
                             <span>目前重洗次數:<span className='text-white ml-1'>{count}</span></span>
                         </div>
-                        <div>
+                        <div className='flex max-[500px]:justify-center'>
                             {ResultSection}
                         </div>
                         <div>
@@ -421,7 +428,7 @@ const DataList=React.memo(({standDetails,data,title})=>{
             )
         });
         return(
-            <div className='flex flex-col mx-1'>
+            <div className='flex flex-col max-[400px]:w-[90%] max-[400px]:mx-auto'>
                 <div>
                     <span className='text-amber-700 font-bold text-lg'>{title}</span>
                     <div className='flex flex-row'>
@@ -449,39 +456,39 @@ const Pie=React.memo(({PieNums})=>{
     if(PieNums!==undefined){
         const pieParams = {
             height: 200,
-            margin:{ top: 10, right: 0, bottom: 0, left: -100 },
+            margin:{ top: 10, right: 0, bottom: 0, left: 0 },
             slotProps: { legend: { hidden: true } },
         };
 
         return(
            <div className='w-[100%] flex flex-row flex-wrap'>
-                <div className='min-w-[300px]'>
+                <div className='w-3/5 max-w-[300px] flex justify-center mt-2 mx-auto'>
                     <PieChart  
                     series={[
                         {
                             innerRadius: 20,
                             arcLabelMinAngle: 35,
-                            arcLabel: (item) => `${item.value}%`,
+                            arcLabel: (item) => `${item.value}次`,
                             data: PieNums,
                         }
                     ]}  {...pieParams} />
                 </div>
-                    <div className={`flex flex-col w-2/5 max-[500px]:w-[100%] mt-2 ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
-                        <div>
-                            <span className='text-amber-700 font-bold text-lg'>模擬次數</span>
-                        </div>
-                        <div className='text-center'>
-                        {PieNums.map((p,i)=>{
-                            if(p.value!==0)
-                                return(
-                                    <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[100px] [&>*]:max-[500px]:text-center' key={'pieNums'+i}>
-                                        <div style={{color:p.color}} className='w-[30px] text-left '>{`${p.tag}`}</div>
-                                        <div style={{color:p.color}} className='w-[70px] text-right'>{`${p.value}次`}</div>
-                                    </div>
-                                )
-                        })}
-                        </div>
+                <div className={`flex flex-col w-2/5 max-[500px]:w-3/5 max-[500px]:mx-auto mt-2 max-[500px]:justify-center ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
+                    <div className='flex justify-start'>
+                        <span className='text-amber-700 font-bold text-lg'>模擬次數</span>
                     </div>
+                    <div className='text-center'>
+                    {PieNums.map((p,i)=>{
+                        if(p.value!==0)
+                            return(
+                                <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[50px]' key={'pieNums'+i}>
+                                    <div style={{color:p.color}} className='w-[30px] text-left max-[500px]:'>{`${p.tag}`}</div>
+                                    <div style={{color:p.color}} className='w-[70px] text-right max-[500px]:w-[30px]'>{`${p.value}次`}</div>
+                                </div>
+                            )
+                    })}
+                    </div>
+                </div>
                
            </div>
         );

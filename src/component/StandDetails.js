@@ -42,7 +42,6 @@ const StandDetails=React.memo(({context})=>{
 //顯示你所輸入的標準
 const ShowStand=React.memo(({context})=>{
     const {selfStand,setSelfStand,setStatusMsg,isChangeAble} = useContext(context);
-
     if(selfStand !== null){
         const list=selfStand.map((s,i)=>{
         
