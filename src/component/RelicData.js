@@ -2,10 +2,11 @@ import React, { Component, useContext } from 'react';
 import AffixName from '../data/AffixName';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
+import SiteContext from '../context/SiteContext';
 
 //顯示儀器分數區間
-const RelicData=React.memo(({context,mode,button})=>{
-    const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(context)
+const RelicData=React.memo(({mode,button})=>{
+    const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(SiteContext);
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Rope 連結繩','Ball 位面球'];
     const navigate = useNavigate();
     //導航至模擬強化頁面
@@ -160,8 +161,8 @@ const RelicData=React.memo(({context,mode,button})=>{
     }
 });
 
-const RelicData_simuldate=React.memo(({context,mode,button})=>{
-    const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(context);
+const RelicData_simulate=React.memo(({mode,button})=>{
+    const {relic,Rrank,Rscore,standDetails,isChangeAble} = useContext(SiteContext);
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
     const navigate = useNavigate();
     //導航至模擬強化頁面
@@ -261,6 +262,24 @@ const RelicData_simuldate=React.memo(({context,mode,button})=>{
                 {(button)?<div className='mt-3'>
                     <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
                 </div>:<></>}
+                <Tooltip id="RelicDataHint"  
+                        place="right-start"
+                        render={()=>
+                            <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                                <div>
+                                    <span className='text-white'>下方會顯示出該遺器的</span>
+                                </div>
+                                <ul>
+                                    <li>1.所屬套裝</li>
+                                    <li>2.主屬性及其數值</li>
+                                    <li>3.副屬性及其數值</li>
+                                    <li>4.個別副屬性強化次數</li>
+                                </ul>
+                                <div className='mt-2'>
+                                    <span className='text-white'>此外下方有個重洗模擬按鈕，此功能將會帶入這個遺器的資訊進行重洗模擬</span>
+                                </div>
+                            </div>
+                        }/>
             </div>
         )
     }else{
@@ -268,4 +287,4 @@ const RelicData_simuldate=React.memo(({context,mode,button})=>{
     }
 })
 
-export  {RelicData,RelicData_simuldate};
+export  {RelicData,RelicData_simulate};

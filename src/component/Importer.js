@@ -14,9 +14,10 @@ import Result from './Result';
 import { StandDetails, ShowStand } from './StandDetails';
 import { RelicData } from './RelicData';
 import { StandardSelect,   CharSelect ,RelicSelect} from './Select';
+import SiteContext from '../context/SiteContext';
 
 //Importer的context狀態
-const ImporterContext = createContext();
+//const ImporterContext = createContext();
 
 function Importer(){
     //版本序號
@@ -471,7 +472,7 @@ function Importer(){
     }
     
     return(
-    <ImporterContext.Provider value={ImporterStatus}>
+    <SiteContext.Provider value={ImporterStatus}>
         <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
              <Helmet>
                 <title>崩鐵--遺器重洗匯入</title>
@@ -495,7 +496,7 @@ function Importer(){
                             <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                         </div>                       
                         <div className='flex flex-row items-center'>
-                            <CharSelect context={ImporterContext} />
+                            <CharSelect  />
                             <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
                                 <span className='text-white'>?</span>
                             </div>
@@ -506,7 +507,7 @@ function Importer(){
                             <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
                         </div>
                         <div className='flex flex-row items-center'>
-                            <StandardSelect context={ImporterContext}/>
+                            <StandardSelect />
                             <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="StandardHint">
                                 <span className='text-white'>?</span>
                             </div>
@@ -516,7 +517,7 @@ function Importer(){
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
                             <span className='text-white'>Params 參數:</span>
                         </div>
-                        <ShowStand context={ImporterContext}/>
+                        <ShowStand />
                     </div>
                     <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px] max-[400px]:justify-start'>
                         <button className='processBtn' onClick={()=>getRecord()}  disabled={!isChangeAble}>開始匹配</button>
@@ -545,19 +546,19 @@ function Importer(){
                     </div>
                 </div>
                 <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
-                    <PastPreviewList context={ImporterContext} />
+                    <PastPreviewList  />
                 </div>
                     
             </div>
             <div className='flex flex-row flex-wrap w-[100%] border-t-4 border-gray-600' >
                 <div className={`w-[100%] ${(PieNums===undefined)?'hidden':''}`}>
-                    <RelicSelect context={ImporterContext} />
+                    <RelicSelect />
                 </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`}>
-                    <RelicData  context={ImporterContext} mode={'Importer'} button={true}/>
+                    <RelicData  mode={'Importer'} button={true}/>
                 </div>
                 <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
-                    <StandDetails context={ImporterContext}/>
+                    <StandDetails />
                 </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] ${(statusMsg===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} 
                     id="resultDetails">
@@ -610,7 +611,7 @@ function Importer(){
             
         </div>
             
-    </ImporterContext.Provider>)
+    </SiteContext.Provider>)
 }
 
 

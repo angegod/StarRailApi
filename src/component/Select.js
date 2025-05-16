@@ -1,11 +1,12 @@
-import React,{useContext, useEffect, useState} from 'react';
+import React,{useContext, useState} from 'react';
 import AffixList from '../data/AffixList';
 import characters from '../data/characters';
 import Select from 'react-select';
+import SiteContext from '../context/SiteContext';
 
 //主詞條選擇
-const MainAffixSelect=React.memo(({context})=>{
-    const {partsIndex,MainSelectOptions,setMainSelectOptions,isChangeAble} = useContext(context);
+const MainAffixSelect=React.memo(()=>{
+    const {partsIndex,MainSelectOptions,setMainSelectOptions,isChangeAble} = useContext(SiteContext);
 
     if(Number.isInteger(parseInt(partsIndex))&&partsIndex!==undefined){
         let range=AffixList.find((s)=>s.id===(parseInt(partsIndex))).main;
@@ -38,8 +39,8 @@ const MainAffixSelect=React.memo(({context})=>{
 });
 
 //副詞條選擇
-const SubAffixSelect=React.memo(({index,context})=>{
-    const {SubData,MainSelectOptions,partsIndex,isChangeAble}=useContext(context)
+const SubAffixSelect=React.memo(({index})=>{
+    const {SubData,MainSelectOptions,partsIndex,isChangeAble}=useContext(SiteContext)
 
     function updateSubAffix(val,index){
         SubData.current.find((s,i)=>i===parseInt(index)).subaffix=val;
@@ -86,9 +87,9 @@ const SubAffixSelect=React.memo(({index,context})=>{
 });
 
 //部位選擇器
-const PartSelect=React.memo(({context})=>{
+const PartSelect=React.memo(()=>{
 
-    const {partArr,partsIndex,setPartsIndex,setIsSaveAble,isChangeAble}=useContext(context);
+    const {partArr,partsIndex,setPartsIndex,setIsSaveAble,isChangeAble}=useContext(SiteContext);
     let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
     partArr.forEach((a,i)=>{
@@ -113,9 +114,9 @@ const PartSelect=React.memo(({context})=>{
 });
 
 //自訂義有效詞條種類
-const StandardSelect=React.memo(({context})=>{
+const StandardSelect=React.memo(()=>{
     const [selectAffix,setAffix]=useState(undefined);
-    const {partsIndex,selfStand,setSelfStand,isChangeAble}=useContext(context);
+    const {partsIndex,selfStand,setSelfStand,isChangeAble}=useContext(SiteContext);
     
     //添加標準 目前設定先不超過六個有效 且不重複
     function addAffix(){
@@ -175,8 +176,8 @@ const StandardSelect=React.memo(({context})=>{
 
 
 //腳色選擇器
-const CharSelect=React.memo(({context})=>{
-    const {charID,setCharID,setIsSaveAble,isChangeAble}=useContext(context)
+const CharSelect=React.memo(()=>{
+    const {charID,setCharID,setIsSaveAble,isChangeAble}=useContext(SiteContext)
     let options=[];
 
     const customStyles={
@@ -237,8 +238,8 @@ const CharSelect=React.memo(({context})=>{
 });
 
 //遺器選擇
-const RelicSelect=React.memo(({context})=>{
-    const {RelicDataArr,relicIndex,setRelicIndex}=useContext(context);
+const RelicSelect=React.memo(()=>{
+    const {RelicDataArr,relicIndex,setRelicIndex}=useContext(SiteContext);
     if(RelicDataArr.length !==0){
         let list = RelicDataArr.map((r,i)=>{
             const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/${r.relic.icon}`;
@@ -273,4 +274,4 @@ const RelicSelect=React.memo(({context})=>{
 
 
 
-export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect,RelicSelect,StandardSelect2}
+export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect,RelicSelect}

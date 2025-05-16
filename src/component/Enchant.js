@@ -5,12 +5,11 @@ import '../css/enchant.css';
 import { useLocation } from 'react-router-dom';
 import { StandDetails } from './StandDetails';
 import { Helmet } from 'react-helmet';
-import { RelicData, RelicData_simuldate } from './RelicData';
+import { RelicData, RelicData_simulate } from './RelicData';
 import { PieChart } from '@mui/x-charts/PieChart';
-import { BarLabel } from '@mui/x-charts';
-
-
-const EnchantContext = createContext();
+import { Tooltip } from 'react-tooltip';
+import SiteContext from '../context/SiteContext';
+//const EnchantContext = createContext();
 
 //此物件為單次模擬隨機強化後的結果
 const Enchant=React.memo(()=>{
@@ -308,8 +307,6 @@ const Enchant=React.memo(()=>{
     ):(<></>);
 
 
-
-
     const EnchantStatus ={
         relic:relic,
         Rrank:Rrank,
@@ -320,7 +317,7 @@ const Enchant=React.memo(()=>{
     };
     
     return(
-        <EnchantContext.Provider value={EnchantStatus}>
+        <SiteContext.Provider value={EnchantStatus}>
             <Helmet>
                 <title>崩鐵--遺器重洗模擬</title>
                 <meta name="description" content="崩鐵--遺器重洗" />
@@ -330,19 +327,19 @@ const Enchant=React.memo(()=>{
                     <div className='flex flex-row flex-wrap w-1/2 max-[900px]:w-[100%] max-[500px]:justify-center'>
                         <div className='flex flex-row w-1/2 max-[900px]:w-1/2 max-[400px]:w-3/5'>
                             {(mode==="Importer")?
-                                <RelicData context={EnchantContext} />:
-                                <RelicData_simuldate context={EnchantContext} />}
+                                <RelicData  />:
+                                <RelicData_simulate    />}
                             
                         </div>
                         <div className='w-1/2 max-[900px]:w-1/2 max-[400px]:w-3/5'>
-                            <StandDetails context={EnchantContext}/>
+                            <StandDetails context={SiteContext}/>
                         </div>
                     </div>
                     <div className='w-1/2 max-[900px]:w-[100%]'>
                         <div className='flex flex-row flex-wrap max-[500px]:justify-center'>
                             <div className='flex flex-row'>
                                 <span className='text-red-600 text-lg font-bold'>模擬強化</span>
-                                <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="RelicDataHint">
+                                <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="EnchantHint">
                                     <span className='text-white'>?</span>
                                 </div>
                             </div>
@@ -365,7 +362,26 @@ const Enchant=React.memo(()=>{
                 </div>
                
             </div>
-        </EnchantContext.Provider>
+            <Tooltip id="EnchantHint"  
+                    place="top-start"
+                    render={()=>
+                        <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                            <div className='flex flex-col mb-1'>
+                                <span className='text-white'>再洗一次</span>
+                                <span>可以模擬使用變量骰子所得到的結果</span>
+                            </div>
+                            <div className='flex flex-col my-1'>
+                                <span className='text-white'>套用新強化</span>
+                                <span>將重洗過程中較滿意的結果暫時替換掉目前遺器的配置</span>
+                            </div>
+                            <div className='flex flex-col mt-1'>
+                                <span className='text-white'>還原至初始</span>
+                                <span>重置所有有關重洗的結果與次數</span>
+                            </div>
+                            
+                        </div>
+                    }/>
+        </SiteContext.Provider>
     )
      
 });

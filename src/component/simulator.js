@@ -9,12 +9,14 @@ import AffixName from '../data/AffixName';
 
 import Result from './Result';
 import { StandDetails ,ShowStand } from './StandDetails';
-import { RelicData_simuldate as RelicData} from './RelicData';
+import { RelicData_simulate as RelicData} from './RelicData';
 import { PastPreview_simulator as PastPreview } from './PastPreview';
 import { CharSelect,PartSelect,StandardSelect,MainAffixSelect,SubAffixSelect } from './Select';
 import { Tooltip } from 'react-tooltip'
+import SiteContext from '../context/SiteContext';
 
-const SimulatorContext = createContext();
+//const SimulatorContext = createContext();
+
 
 //遺器強化模擬器
 function Simulator(){
@@ -413,7 +415,7 @@ function Simulator(){
     }
     
     return(
-    <SimulatorContext.Provider value={SimulatorStatus}>
+    <SiteContext.Provider value={SimulatorStatus}>
         <div className='w-4/5 mx-auto max-[600px]:w-[90%]'>
             <Helmet>
                 <title>崩鐵--遺器重洗模擬器</title>
@@ -428,7 +430,7 @@ function Simulator(){
                             <span className='text-white'>Characters 腳色:</span>
                         </div>
                         <div className='flex flex-row items-center'>
-                            <CharSelect context={SimulatorContext}/>
+                            <CharSelect />
                             <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
                                 <span className='text-white'>?</span>
                             </div>
@@ -439,7 +441,7 @@ function Simulator(){
                             <span className='text-white'>Parts 部位:</span>
                         </div>
                         <div className='flex flex-row items-center'>
-                            <PartSelect context={SimulatorContext}/>
+                            <PartSelect />
                             <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="PartSelectHint">
                                 <span className='text-white'>?</span>
                             </div>   
@@ -450,7 +452,7 @@ function Simulator(){
                             <span className='text-white'>MainAffix 主屬性:</span>
                         </div>
                         <div className='flex flex-row items-center'>
-                            <MainAffixSelect context={SimulatorContext}/>
+                            <MainAffixSelect />
                             <div className={`hintIcon ml-1 overflow-visible ${(parseInt(partsIndex)!==1&&(parseInt(partsIndex)!==2)?'':'hidden')}`} data-tooltip-id="MainAffixHint">
                                 <span className='text-white'>?</span>
                             </div>
@@ -463,10 +465,10 @@ function Simulator(){
                         </div>
                         <div className='flex flex-row items-start'>
                             <div className='flex flex-col'>
-                                <SubAffixSelect index={0} context={SimulatorContext}/>
-                                <SubAffixSelect index={1} context={SimulatorContext}/>
-                                <SubAffixSelect index={2} context={SimulatorContext}/>
-                                <SubAffixSelect index={3} context={SimulatorContext}/>
+                                <SubAffixSelect index={0} />
+                                <SubAffixSelect index={1} />
+                                <SubAffixSelect index={2} />
+                                <SubAffixSelect index={3} />
                             </div>
                             <div className='hintIcon ml-1 mt-1 overflow-visible'data-tooltip-id="SubAffixHint">
                                 <span className='text-white'>?</span>
@@ -478,7 +480,7 @@ function Simulator(){
                             <span className='text-white'>Affix 有效詞條:</span>
                         </div>
                         <div className='flex flex-row items-center'>
-                            <StandardSelect context={SimulatorContext}/>
+                            <StandardSelect />
                             <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="StandardHint">
                                 <span className='text-white'>?</span>
                             </div>
@@ -489,7 +491,7 @@ function Simulator(){
                         <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
                             <span className='text-white'>Params 參數:</span>
                         </div>
-                        <ShowStand context={SimulatorContext}/>
+                        <ShowStand />
                     </div>
                     <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
                         <div className='flex flex-row mt-1'>
@@ -524,15 +526,15 @@ function Simulator(){
                         </div>
                     </div>
                     <div className='flex flex-row flex-wrap h-[300px] overflow-y-scroll hiddenScrollBar max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
-                        <HistoryList context={SimulatorContext}/>
+                        <HistoryList />
                     </div>
                 </div>
                 <div className='border-t-4 border-gray-600 w-[100%] flex flex-row flex-wrap'>
                     <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
-                        <RelicData  context={SimulatorContext} mode={'Simulator'} button={true}/>
+                        <RelicData   mode={'Simulator'} button={true}/>
                     </div>
                     <div className={`mt-3 w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
-                        <StandDetails context={SimulatorContext}/>
+                        <StandDetails />
                     </div>
                     <div className='mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] max-[500px]:w-4/5 max-[500px]:mx-auto' id="resultDetails">
                         <Result ExpRate={ExpRate} 
@@ -605,10 +607,21 @@ function Simulator(){
                 place="right-bottom"
                 render={()=>
                     <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
-                        <span>"檢視"可以查看曾經查詢出來的資訊</span>
-                        <span>"刪除"則會刪除該筆紀錄</span>
-                        <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
-                        <span className='!text-yellow-500'>如果在已有6筆資料的情況再新增，則會從最舊的紀錄覆蓋掉</span>
+                        <div className='flex flex-col'>
+                            <span className='text-white'>檢視</span>
+                            <span>可以查看曾經查詢出來的資訊</span>
+                        </div>
+                        <div className='my-1 flex flex-col'>
+                            <span className='text-white'>刪除</span>
+                            <span>則會刪除該筆紀錄</span>
+                        </div>
+                        <div className='my-1 flex flex-col'>
+                            <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
+                        </div>
+                        <div>
+                            <span className='!text-yellow-500'>如果在已有6筆資料的情況再新增，則會從最舊的紀錄覆蓋掉</span>
+                        </div>
+                        
                     </div>
                 }/>
             <Tooltip id="RelicDataHint"  
@@ -631,18 +644,18 @@ function Simulator(){
                     </div>
                 }/>
         </div>
-    </SimulatorContext.Provider>)
+    </SiteContext.Provider>)
 }
 
 //歷史紀錄清單
-const HistoryList=({context})=>{
-    const {historyData} = useContext(context)
+const HistoryList=()=>{
+    const {historyData} = useContext(SiteContext)
     if(historyData){
         return(
             historyData.map((item,i)=>
                 <PastPreview index={i} 
                             data={item}    
-                            context={context}
+                            context={SiteContext}
                             key={'historyData'+i}/>
             )
         )
