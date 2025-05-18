@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer , createContext } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import characters from '../data/characters';
 import AffixName from '../data/AffixName';
 import { useState ,useRef,useCallback } from 'react';
@@ -81,8 +81,6 @@ function Importer(){
     const [selfStand,setSelfStand]=useState([]);
     const standDetails=useRef([]);
 
-    //模擬強化相關數據
-    const [simulatorData,setSimulatorData]=useState({});
 
     //元件狀態
     const [isChangeAble,setIsChangeAble]=useState(true);
@@ -120,8 +118,6 @@ function Importer(){
             standDetails.current=RelicDataArr[relicIndex].standDetails;
 
             //還原至初始狀態
-            setIsSaveAble(true);
-            setSimulatorData({});
             setIsChangeAble(true);
 
             requestAnimationFrame(()=>{
@@ -154,38 +150,43 @@ function Importer(){
     }
     
 
-    //先獲得遺器資料
-    async function getRecord(){
-        //如果UID本身就不合理 則直接返回錯誤訊息
-        if (!/^\d+$/.test(userID.current)||!userID.current) { // 僅允許數字
-            alert('The UID is not vaild');
-            setStatusMsg('請輸入有效的UID!!');
-            return ;
-        }
+    //   獲得遺器資料
+    async function getRecord(sendData = undefined ,standard = undefined){
 
-        //腳色相關防呆
-        if(!charID){
-            alert('請輸入要查詢的腳色');
-            setStatusMsg('未選擇任何腳色');
-            return ;
-        }
-
-        //部位選擇相關防呆
-        /*if(!partsIndex||partsIndex>6||partsIndex<0){
-            setStatusMsg('部位沒有選擇成功!!');
-            return;
-        }*/
-
-
-        //如果是連結繩或位面球 則代號交換
-        
         let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/relic/get`:`https://expressapi-o9du.onrender.com/relic/get`;
-        
-        let sendData={
-            uid:userID.current,
-            charID:charID,            
-            partsIndex:7
+
+        //如果是非更新紀錄
+        if(!sendData){
+            //如果UID本身就不合理 則直接返回錯誤訊息
+            if (!/^\d+$/.test(userID.current)||!userID.current) { // 僅允許數字
+                alert('The UID is not vaild');
+                setStatusMsg('請輸入有效的UID!!');
+                return ;
+            }
+
+            //腳色相關防呆
+            if(!charID){
+                alert('請輸入要查詢的腳色');
+                setStatusMsg('未選擇任何腳色');
+                return ;
+            }
+
+            //部位選擇相關防呆
+            /*if(!partsIndex||partsIndex>6||partsIndex<0){
+                setStatusMsg('部位沒有選擇成功!!');
+                return;
+            }*/
+
+            sendData={
+                uid:userID.current,
+                charID:charID,            
+                partsIndex:7
+            }
         }
+
+        if(!standard)
+            standard = selfStand;
+
         //送出之前先清空一次資料
         setIsSaveAble(false);
         setStatusMsg('正在尋找匹配資料......');
@@ -225,7 +226,7 @@ function Importer(){
                     break;
                 default:
                     //calscore(response.data);
-                    process(response.data);
+                    process(response.data,standard);
                     break;
             }
 
@@ -245,7 +246,7 @@ function Importer(){
         })
     }
 
-    async function process(relicArr){
+    async function process(relicArr,standard = undefined){
         let temparr = []
 
         //檢查加權標準
@@ -257,11 +258,14 @@ function Importer(){
         });
 
         for (const r of relicArr) {
-            const ExpData = await calscore(r);  // 等這個做完
+            const ExpData = await calscore(r,standard);  // 等這個做完
             temparr.push(ExpData);
         }
         console.log(temparr);
         setRelicDataArr(temparr);
+
+        //如果是剛查詢完的 則改成可以儲存
+        setIsSaveAble(true);
        
     }
 
@@ -279,10 +283,8 @@ function Importer(){
         
         setRelicDataArr(data.dataArr);
         setRelicIndex(0);
+        setIsSaveAble(false); 
         
-        //清空模擬強化紀錄
-        setSimulatorData({});
-
         setStatusMsg('資料替換完畢!!');
 
         //避免第一次顯示區塊 而導致滾動失常
@@ -292,6 +294,21 @@ function Importer(){
                 behavior: 'smooth'
             });
         });
+    },[historyData]);
+
+    //更新紀錄
+    const updateDetails=useCallback((index)=>{
+        let data=historyData[index];
+        console.log(data);
+
+        let sendData={
+            uid:data.userID,
+            charID:data.char.charID,            
+            partsIndex:7
+        };
+        
+        getRecord(sendData,data.dataArr[0].standDetails);
+
     },[historyData]);
 
     //刪除過往紀錄
@@ -451,7 +468,6 @@ function Importer(){
         partArr:partArr,
         historyData:historyData,
         isChangeAble:isChangeAble,
-        simulatorData:simulatorData,
         RelicDataArr:RelicDataArr,
         relicIndex:relicIndex,
         
@@ -462,6 +478,7 @@ function Importer(){
         //方法
         updateHistory:updateHistory,
         checkDetails:checkDetails,
+        updateDetails:updateDetails,
 
         //state管理
         setCharID:setCharID,

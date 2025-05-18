@@ -83,7 +83,7 @@ const Result = React.memo(({ ExpRate, Rrank, PieNums, statusMsg, Rscore }) => {
         } else {
             return (
                 <div className={`w-[100%] mb-5 max-[500px]:w-[100%] my-1 ${(statusMsg !== undefined) ? '' : 'hidden'}`}>
-                    <div><span className='text-white'>{statusMsg}</span></div>
+                    <div><span className='text-red-500 font-bold text-lg'>{statusMsg}</span></div>
                 </div>
             );
         }

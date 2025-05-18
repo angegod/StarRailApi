@@ -5,7 +5,7 @@ import SiteContext from '../context/SiteContext';
 
 //簡易瀏覽
 const PastPreview=React.memo(({index,data})=>{
-    const {checkDetails,updateHistory,isChangeAble} = useContext(SiteContext);
+    const {checkDetails,updateDetails,updateHistory,isChangeAble} = useContext(SiteContext);
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
     const BaseLink =  `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
@@ -36,6 +36,7 @@ const PastPreview=React.memo(({index,data})=>{
                 </div>
                 <div className='[&>button]:max-[400px]:text-sm'>
                     <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
+                    <button className='processBtn mr-2 px-1' onClick={()=>updateDetails(index)} disabled={!isChangeAble}>更新</button>
                     <button className='deleteBtn px-1' onClick={()=>updateHistory(index)} disabled={!isChangeAble}>刪除</button>
                 </div>
             </div>
