@@ -15,9 +15,6 @@ import { CharSelect,PartSelect,StandardSelect,MainAffixSelect,SubAffixSelect } f
 import { Tooltip } from 'react-tooltip'
 import SiteContext from '../context/SiteContext';
 
-//const SimulatorContext = createContext();
-
-
 //遺器強化模擬器
 function Simulator(){
     //版本代號

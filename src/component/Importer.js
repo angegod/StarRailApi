@@ -16,8 +16,6 @@ import { RelicData } from './RelicData';
 import { StandardSelect,   CharSelect ,RelicSelect} from './Select';
 import SiteContext from '../context/SiteContext';
 
-//Importer的context狀態
-//const ImporterContext = createContext();
 
 function Importer(){
     //版本序號
@@ -119,15 +117,18 @@ function Importer(){
 
             //還原至初始狀態
             setIsChangeAble(true);
+        }
+    },[RelicDataArr,relicIndex]);
 
-            requestAnimationFrame(()=>{
+    //當遺器被選擇時
+    useEffect(()=>{
+        requestAnimationFrame(()=>{
                 window.scrollTo({
                     top: document.body.scrollHeight,
                     behavior: 'smooth'
                 });
             })
-        }
-    },[RelicDataArr,relicIndex])
+    },[relic]);
 
 
     function initHistory(){

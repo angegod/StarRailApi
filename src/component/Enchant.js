@@ -23,8 +23,12 @@ const Enchant=React.memo(()=>{
     //模擬強化相關數據
     const [simulatorData,setSimulatorData]=useState({oldData:null,newData:null});
     const [statics,setStatics]=useState(undefined);
+    
     //強化次數
     const [count,setCount]=useState(0);
+
+    //成功翻盤次數
+    const [successCount,setSuccessCount]=useState(0);
 
     const scoreStand=[
         {rank:'S+',stand:85,color:'rgb(239, 68, 68)',tag:'S+'},
@@ -180,9 +184,17 @@ const Enchant=React.memo(()=>{
                     },
                     newData:event.data
                 });
+
+                setCount((c)=>c+=1);
+
+                //如果該次強化超過原有分數 則成功次數+1
+                if(simulatorData.oldData!==null){
+                    if(parseInt(event.data.relicscore) > parseInt(simulatorData.oldData.relicscore))
+                        setSuccessCount((c)=>c+=1);
+                }
+    
             };
 
-            setCount((c)=>c+=1);
         }
     }
 
@@ -253,6 +265,12 @@ const Enchant=React.memo(()=>{
                 });
 
                 setCount((c)=>c+=1);
+
+                //如果該次強化超過原有分數 則成功次數+1
+                if(simulatorData.oldData!==null){
+                    if(parseInt(event.data.relicscore) > parseInt(simulatorData.oldData.relicscore))
+                        setSuccessCount((c)=>c+=1);
+                }
             };
         }
     }
@@ -328,7 +346,7 @@ const Enchant=React.memo(()=>{
                         <div className='flex flex-row w-1/2 max-[900px]:w-1/2 max-[400px]:w-3/5'>
                             {(mode==="Importer")?
                                 <RelicData  />:
-                                <RelicData_simulate    />}
+                                <RelicData_simulate  />}
                             
                         </div>
                         <div className='w-1/2 max-[900px]:w-1/2 max-[400px]:w-3/5'>
@@ -337,7 +355,7 @@ const Enchant=React.memo(()=>{
                     </div>
                     <div className='w-1/2 max-[900px]:w-[100%]'>
                         <div className='flex flex-row flex-wrap max-[500px]:justify-center'>
-                            <div className='flex flex-row'>
+                            <div className='flex flex-row items-center'>
                                 <span className='text-red-600 text-lg font-bold'>模擬強化</span>
                                 <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="EnchantHint">
                                     <span className='text-white'>?</span>
@@ -356,7 +374,7 @@ const Enchant=React.memo(()=>{
                             {ResultSection}
                         </div>
                         <div>
-                            <Pie PieNums={statics}/> 
+                            <Pie PieNums={statics} successCount={successCount}/> 
                         </div>
                     </div>
                 </div>
@@ -468,7 +486,8 @@ const DataList=React.memo(({standDetails,data,title})=>{
     
 });
 
-const Pie=React.memo(({PieNums})=>{
+const Pie=React.memo(({PieNums,successCount})=>{
+
     if(PieNums!==undefined){
         const pieParams = {
             height: 200,
@@ -477,7 +496,7 @@ const Pie=React.memo(({PieNums})=>{
         };
 
         return(
-           <div className='w-[100%] flex flex-row flex-wrap'>
+           <div className='w-[100%] flex flex-row flex-wrap max-[500px]:flex-col-reverse'>
                 <div className='w-3/5 max-w-[300px] flex justify-center mt-2 mx-auto'>
                     <PieChart  
                     series={[
@@ -490,21 +509,32 @@ const Pie=React.memo(({PieNums})=>{
                     ]}  {...pieParams} />
                 </div>
                 <div className={`flex flex-col w-2/5 max-[500px]:w-3/5 max-[500px]:mx-auto mt-2 max-[500px]:justify-center ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
-                    <div className='flex justify-start'>
-                        <span className='text-amber-700 font-bold text-lg'>模擬次數</span>
+                    <div>
+                        <div className='flex justify-start max-[500px]:justify-center'>
+                            <span className='text-amber-700 font-bold text-lg'>模擬次數</span>
+                        </div>
+                        <div className='text-center '>
+                            {PieNums.map((p,i)=>{
+                                if(p.value!==0)
+                                    return(
+                                        <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[50px] max-[500px]:justify-center' key={'pieNums'+i}>
+                                            <div style={{color:p.color}} className='w-[30px] text-left max-[500px]:'>{`${p.tag}`}</div>
+                                            <div style={{color:p.color}} className='w-[70px] text-right max-[500px]:w-[30px]'>{`${p.value}次`}</div>
+                                        </div>
+                                    )
+                            })}
+                        </div>
                     </div>
-                    <div className='text-center'>
-                    {PieNums.map((p,i)=>{
-                        if(p.value!==0)
-                            return(
-                                <div className='my-1 flex flex-row [&>*]:max-[500px]:w-[50px]' key={'pieNums'+i}>
-                                    <div style={{color:p.color}} className='w-[30px] text-left max-[500px]:'>{`${p.tag}`}</div>
-                                    <div style={{color:p.color}} className='w-[70px] text-right max-[500px]:w-[30px]'>{`${p.value}次`}</div>
-                                </div>
-                            )
-                    })}
+                    <div >
+                        <div className='flex justify-start max-[500px]:justify-center'>
+                            <span className='text-amber-700 font-bold text-lg'>翻盤次數</span>
+                        </div>
+                        <div className='flex justify-start max-[500px]:justify-center'>
+                            <span className='text-white'>{successCount}次</span>
+                        </div>
                     </div>
                 </div>
+                
                
            </div>
         );
