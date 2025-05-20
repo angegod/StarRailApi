@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/StarRailApi/static/css/main.8e816601.css",
-    "main.js": "/StarRailApi/static/js/main.dc23f29d.js",
+    "main.css": "/StarRailApi/static/css/main.c2b74c59.css",
+    "main.js": "/StarRailApi/static/js/main.f8a0cf48.js",
     "static/js/31.e36b9e49.chunk.js": "/StarRailApi/static/js/31.e36b9e49.chunk.js",
     "static/js/269.e36b9e49.chunk.js": "/StarRailApi/static/js/269.e36b9e49.chunk.js",
     "static/js/650.e36b9e49.chunk.js": "/StarRailApi/static/js/650.e36b9e49.chunk.js",
@@ -10,8 +10,8 @@
     "static/js/453.25b0480a.chunk.js": "/StarRailApi/static/js/453.25b0480a.chunk.js",
     "static/js/517.d01bc76a.chunk.js": "/StarRailApi/static/js/517.d01bc76a.chunk.js",
     "index.html": "/StarRailApi/index.html",
-    "main.8e816601.css.map": "/StarRailApi/static/css/main.8e816601.css.map",
-    "main.dc23f29d.js.map": "/StarRailApi/static/js/main.dc23f29d.js.map",
+    "main.c2b74c59.css.map": "/StarRailApi/static/css/main.c2b74c59.css.map",
+    "main.f8a0cf48.js.map": "/StarRailApi/static/js/main.f8a0cf48.js.map",
     "31.e36b9e49.chunk.js.map": "/StarRailApi/static/js/31.e36b9e49.chunk.js.map",
     "269.e36b9e49.chunk.js.map": "/StarRailApi/static/js/269.e36b9e49.chunk.js.map",
     "650.e36b9e49.chunk.js.map": "/StarRailApi/static/js/650.e36b9e49.chunk.js.map",
@@ -21,7 +21,7 @@
     "517.d01bc76a.chunk.js.map": "/StarRailApi/static/js/517.d01bc76a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.8e816601.css",
-    "static/js/main.dc23f29d.js"
+    "static/css/main.c2b74c59.css",
+    "static/js/main.f8a0cf48.js"
   ]
 }
