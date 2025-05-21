@@ -526,7 +526,7 @@ function Simulator(){
                         <HistoryList />
                     </div>
                 </div>
-                <div className='border-t-4 border-gray-600 w-[100%] flex flex-row flex-wrap'>
+                <div className={`border-t-4 border-gray-600 w-[100%] flex flex-row flex-wrap ${(PieNums===undefined)?'hidden':''}`}>
                     <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                         <RelicData   mode={'Simulator'} button={true}/>
                     </div>

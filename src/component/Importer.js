@@ -204,7 +204,7 @@ function Importer(){
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then((response)=>{
+        }).then(async (response)=>{
             console.log(response.data);
 
             switch(response.data){
@@ -237,7 +237,7 @@ function Importer(){
                     break;
                 default:
                     //calscore(response.data);
-                    process(response.data,standard);
+                    await process(response.data,standard);
                     break;
             }
 
@@ -258,7 +258,8 @@ function Importer(){
     }
 
     async function process(relicArr,standard = undefined){
-        let temparr = []
+        let temparr = [];
+        console.log(standard);
 
         //檢查加權標準
         standard.forEach((s)=>{
@@ -273,8 +274,10 @@ function Importer(){
             
             temparr.push(ExpData);
         }
+        
         setRelicDataArr(temparr);
         RelicDataArrRef.current=temparr;
+        console.log('serring ref');
 
         //如果是剛查詢完的 則改成可以儲存
         setIsSaveAble(true);
@@ -318,9 +321,10 @@ function Importer(){
             charID:data.char.charID,            
             partsIndex:7
         };
-        console.log(sendData);
+
         await getRecord(sendData,data.dataArr[0].standDetails)
         .then(()=>{
+            console.log(RelicDataArrRef.current);
              //計算平均分數與平均機率
             let sum = 0;
             let sum2 = 0;
@@ -359,12 +363,7 @@ function Importer(){
             oldHistory[index]=newHistorydata;
             localStorage.setItem('importData',JSON.stringify(oldHistory));
         });
-
-        
-        
-       
-
-
+            
     },[historyData]);
 
     //刪除過往紀錄
@@ -437,7 +436,7 @@ function Importer(){
                         PieNums:event.data.returnData,
                         Rank:event.data.relicrank,
                         standDetails:standard
-                    }
+                    };
 
                     resolve(returnData);
                 };
@@ -663,13 +662,41 @@ function Importer(){
                         </div>
                     }/>
             <Tooltip id="HistoryHint"  
-                    place="top-start"
+                    place="top-center"
                     render={()=>
-                        <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
-                            <span>"檢視"可以查看曾經查詢出來的資訊</span>
-                            <span>"刪除"則會刪除該筆紀錄</span>
-                            <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
-                            <span className='!text-yellow-500'>如果在已有6筆資料的情況再新增，則會從最舊的紀錄開始覆蓋掉</span>
+                        <div className='flex flex-col max-w-[250px] p-1'>
+                            <div>
+                                <span className='text-white'>此區塊可以查看過往查詢紀錄，下面為三個功能相關簡述。</span>
+                            </div>
+                            <div className='mt-2 flex flex-col'>
+                                <span className='text-md font-bold text-white'>檢視</span>
+                                <span>可以查看曾經查詢出來的資訊、包括遺器、評分標準等</span>
+                            </div>
+                            <div className='mt-2 flex flex-col'>
+                                <div>
+                                    <span className='text-white font-bold'>更新</span>
+                                </div>
+                                <div>
+                                    <span>點選後會根據該紀錄原本的參數再查詢一次，並且將新結果更新至掉該筆紀錄中。</span>
+                                </div>
+                            </div>
+                            <div className='mt-2 flex flex-col'>
+                                <div>
+                                    <span className='text-md font-bold text-white'>刪除</span>
+                                </div>
+                                <div>
+                                    <span>刪除該筆紀錄</span>
+                                </div>
+                            </div>
+                            <div className='mt-2 flex flex-col'>
+                                <div>
+                                    <span className='text-md font-bold text-white'>注意事項</span>
+                                </div>
+                                <div className='flex flex-col'>
+                                    <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
+                                    <span className='!text-yellow-500'>如果在已有6筆資料的情況再新增，則會從最舊的紀錄開始覆蓋掉</span>
+                                </div>
+                            </div>
                         </div>
                     }/>
             <Tooltip id="RelicSelectHint"  

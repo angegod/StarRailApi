@@ -36,7 +36,7 @@ const PastPreview=React.memo(({index,data})=>{
                 </div>
                 <div className='[&>button]:max-[400px]:text-sm'>
                     <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
-                    
+                    <button className='processBtn mr-2 px-1' onClick={()=>updateDetails(index)} disabled={!isChangeAble}>更新</button>
                     <button className='deleteBtn px-1' onClick={()=>updateHistory(index)} disabled={!isChangeAble}>刪除</button>
                 </div>
             </div>
@@ -47,7 +47,7 @@ const PastPreview=React.memo(({index,data})=>{
     
 });
 
-//<button className='processBtn mr-2 px-1' onClick={()=>updateDetails(index)} disabled={!isChangeAble}>更新</button>
+//
 //簡易瀏覽_模擬器版本
 const PastPreview_simulator=React.memo(({data,index})=>{
     const {checkDetails,updateHistory,isChangeAble} = useContext(SiteContext);

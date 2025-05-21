@@ -1,4 +1,4 @@
-import React, { Component, useContext, useEffect, useRef,createContext } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import AffixName from '../data/AffixName';
 import { useState } from 'react';
 import '../css/enchant.css';
@@ -9,7 +9,6 @@ import { RelicData, RelicData_simulate } from './RelicData';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Tooltip } from 'react-tooltip';
 import SiteContext from '../context/SiteContext';
-//const EnchantContext = createContext();
 
 //此物件為單次模擬隨機強化後的結果
 const Enchant=React.memo(()=>{
@@ -39,6 +38,15 @@ const Enchant=React.memo(()=>{
         {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
     ];
 
+    useEffect(()=>{
+        //初始紀錄
+        if(relicBackUp.current === null){
+            relicBackUp.current=simulatorData.oldData;
+        }
+        //新增強化紀錄
+        addStatics();
+    },[simulatorData]);
+
     //進入頁面初始化自動執行一次
     useEffect(()=>{
         //回到畫面最上方
@@ -55,15 +63,6 @@ const Enchant=React.memo(()=>{
         execute();
     },[])
 
-    useEffect(()=>{
-        //初始紀錄
-        if(relicBackUp.current === null){
-            relicBackUp.current=simulatorData.oldData;
-        }
-        //新增強化紀錄
-        addStatics();
-    },[simulatorData])
-
 
     //初始化統計數據
     function initStatics(){
@@ -79,6 +78,21 @@ const Enchant=React.memo(()=>{
 
         setStatics(arr);
     }
+
+    function execute(){
+        //根據傳入模式執行對應模擬
+        switch(mode){
+            case 'Importer':
+                simulate();
+                break;
+            case 'Simulator':
+                simulate2();
+                break;
+            default:
+                break;
+        }
+    }
+    
 
     //增加統計數據
     function addStatics(){
@@ -120,6 +134,8 @@ const Enchant=React.memo(()=>{
             }
         }
     }
+
+
 
     //模擬強化--Importer
     function simulate(){
@@ -283,26 +299,16 @@ const Enchant=React.memo(()=>{
                 newData:null
             });
         }
+        setSuccessCount(0);
     }
 
-    function execute(){
-        //根據傳入模式執行對應模擬
-        switch(mode){
-            case 'Importer':
-                simulate();
-                break;
-            case 'Simulator':
-                simulate2();
-                break;
-            default:
-                break;
-        }
-    }
+
 
     //回到初始狀態
     function reInit(){
         //將counter歸0
         setCount(0);
+        setSuccessCount(0);
 
         //還原至一開始記錄
         setSimulatorData({oldData:relicBackUp.current,newData:null});
@@ -363,8 +369,8 @@ const Enchant=React.memo(()=>{
                             </div>
                             <div className='flex flex-row'>
                                 <button className='processBtn ml-2' onClick={()=>execute()} >再洗一次</button>
-                                <button className='processBtn ml-2' onClick={()=>changeToNew()}>套用新強化</button>
-                                <button className='processBtn ml-2' onClick={()=>reInit()}>還原至初始</button>
+                                <button className='processBtn ml-2' onClick={()=>changeToNew()} disabled={!simulatorData.newData}>套用新強化</button>
+                                <button className='processBtn ml-2' onClick={()=>reInit()} disabled={count===0}>還原至初始</button>
                             </div>
                         </div>
                         <div className='my-2 max-[500px]:text-center'>
@@ -408,7 +414,7 @@ const Enchant=React.memo(()=>{
 const DataList=React.memo(({standDetails,data,title})=>{
     let list=[];
     if(data!==null){
-        data.returnData.map((d,i)=>{
+        data.returnData.forEach((d,i)=>{
             let markcolor="";
             var targetAffix = AffixName.find((a)=>a.name===d.subaffix);
             let isBold=(standDetails.find((st)=>st.name===d.subaffix)!==undefined)?true:false;
@@ -522,6 +528,8 @@ const Pie=React.memo(({PieNums,successCount})=>{
                                             <div style={{color:p.color}} className='w-[70px] text-right max-[500px]:w-[30px]'>{`${p.value}次`}</div>
                                         </div>
                                     )
+                                else
+                                    return(<></>)
                             })}
                         </div>
                     </div>

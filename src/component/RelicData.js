@@ -139,16 +139,18 @@ const RelicData=React.memo(({mode,button})=>{
                 <Tooltip id="RelicDataHint"  
                         place="right-start"
                         render={()=>
-                            <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                            <div className='flex flex-col max-w-[250px] p-1'>
                                 <div>
                                     <span className='text-white'>下方會顯示出該遺器的</span>
                                 </div>
-                                <ul>
-                                    <li>1.所屬套裝</li>
-                                    <li>2.主屬性及其數值</li>
-                                    <li>3.副屬性及其數值</li>
-                                    <li>4.個別副屬性強化次數</li>
-                                </ul>
+                                <div>
+                                    <ul className='[&>li]:text-stone-400'>
+                                        <li>1.所屬套裝</li>
+                                        <li>2.主屬性及其數值</li>
+                                        <li>3.副屬性及其數值</li>
+                                        <li>4.個別副屬性強化次數</li>
+                                    </ul>
+                                </div>
                                 <div className='mt-2'>
                                     <span className='text-white'>此外下方有個重洗模擬按鈕，此功能將會帶入這個遺器的資訊進行重洗模擬</span>
                                 </div>
@@ -220,13 +222,15 @@ const RelicData_simulate=React.memo(({mode,button})=>{
                             {s.count}
                         </span>
                     </div>
-                    <div className='w-[160px] flex flex-row'>
+                    <div className='w-[160px] flex flex-row max-[500px]:w-[120px]'>
                         <div className='flex justify-center items-center'>
                             <img src={imglink} alt='555' width={24} height={24}/>
                         </div>
                         <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.subaffix}</span>
                     </div>
-                    <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
+                    <div>
+                        <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
+                    </div>
                 </div>    
             )
         })
@@ -236,7 +240,7 @@ const RelicData_simulate=React.memo(({mode,button})=>{
                 <div className='flex flex-row items-center'>
                     <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                     <div className='hintIcon ml-2 overflow-visible'
-                        data-tooltip-id="RelicDataHint">
+                        data-tooltip-id="RelicDataHint2">
                         <span className='text-white'>?</span>
                     </div>
                 </div>
@@ -262,19 +266,21 @@ const RelicData_simulate=React.memo(({mode,button})=>{
                 {(button)?<div className='mt-3'>
                     <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
                 </div>:<></>}
-                <Tooltip id="RelicDataHint"  
+                <Tooltip id="RelicDataHint2"  
                         place="right-start"
                         render={()=>
-                            <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
+                            <div className='flex flex-col max-w-[250px] p-1'>
                                 <div>
                                     <span className='text-white'>下方會顯示出該遺器的</span>
                                 </div>
-                                <ul>
-                                    <li>1.所屬套裝</li>
-                                    <li>2.主屬性及其數值</li>
-                                    <li>3.副屬性及其數值</li>
-                                    <li>4.個別副屬性強化次數</li>
-                                </ul>
+                                <div>
+                                    <ul className='[&>li]:text-stone-400'>
+                                        <li>1.所屬套裝</li>
+                                        <li>2.主屬性及其數值</li>
+                                        <li>3.副屬性及其數值</li>
+                                        <li>4.個別副屬性強化次數</li>
+                                    </ul>
+                                </div>
                                 <div className='mt-2'>
                                     <span className='text-white'>此外下方有個重洗模擬按鈕，此功能將會帶入這個遺器的資訊進行重洗模擬</span>
                                 </div>
