@@ -44,6 +44,7 @@ function Importer(){
 
     //找到所有遺器後計算的所有數據，包含期望值、分數等
     const [RelicDataArr,setRelicDataArr]=useState([]);
+    const RelicDataArrRef = useRef(null);
     
 
     // 定義 reducer
@@ -60,6 +61,11 @@ function Importer(){
                 return { ...state, historyData: state.historyData.filter((item, i) => i !== 0) }; // 刪除第一項
             case "DELETE":
                 return { ...state, historyData: state.historyData.filter((item, i) => i !== action.payload) }; // 刪除指定項
+            case "UPDATE":
+                const updatedHistory = state.historyData.map((item, i) =>
+                    i === action.payload.index ? { ...item, ...action.payload.newData } : item
+                );
+                return { ...state, historyData: updatedHistory };    
             default:
                 return state;
         }
@@ -104,7 +110,6 @@ function Importer(){
     //當遺器資料更新時
     useEffect(()=>{
         if(RelicDataArr.length !==0){
-            console.log(RelicDataArr);
             //顯示第一個儀器
             setRelic(RelicDataArr[relicIndex].relic)
             setExpRate(RelicDataArr[relicIndex].ExpRate);
@@ -123,11 +128,11 @@ function Importer(){
     //當遺器被選擇時
     useEffect(()=>{
         requestAnimationFrame(()=>{
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: 'smooth'
-                });
-            })
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        })
     },[relic]);
 
 
@@ -153,7 +158,7 @@ function Importer(){
 
     //   獲得遺器資料
     async function getRecord(sendData = undefined ,standard = undefined){
-
+        
         let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/relic/get`:`https://expressapi-o9du.onrender.com/relic/get`;
 
         //如果是非更新紀錄
@@ -194,7 +199,8 @@ function Importer(){
         setIsChangeAble(false);
         clearData();
 
-       await axios.post(apiLink,sendData,{
+        console.log(sendData);
+        await axios.post(apiLink,sendData,{
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -225,6 +231,10 @@ function Importer(){
                 case 810:
                     alert('溝通次數太過於頻繁 請稍後再試!!');
                     break;
+                case 900:
+                    setStatusMsg('系統正在維護，請稍後再試!');
+                    setIsChangeAble(true);
+                    break;
                 default:
                     //calscore(response.data);
                     process(response.data,standard);
@@ -251,7 +261,7 @@ function Importer(){
         let temparr = []
 
         //檢查加權標準
-        selfStand.forEach((s)=>{
+        standard.forEach((s)=>{
             if(s.value===''){
                 setStatusMsg('加權指數不可為空或其他非法型式');
                 return;
@@ -260,10 +270,11 @@ function Importer(){
 
         for (const r of relicArr) {
             const ExpData = await calscore(r,standard);  // 等這個做完
+            
             temparr.push(ExpData);
         }
-        console.log(temparr);
         setRelicDataArr(temparr);
+        RelicDataArrRef.current=temparr;
 
         //如果是剛查詢完的 則改成可以儲存
         setIsSaveAble(true);
@@ -298,17 +309,61 @@ function Importer(){
     },[historyData]);
 
     //更新紀錄
-    const updateDetails=useCallback((index)=>{
+    const updateDetails=useCallback(async (index)=>{
         let data=historyData[index];
-        console.log(data);
 
+        
         let sendData={
             uid:data.userID,
             charID:data.char.charID,            
             partsIndex:7
         };
+        console.log(sendData);
+        await getRecord(sendData,data.dataArr[0].standDetails)
+        .then(()=>{
+             //計算平均分數與平均機率
+            let sum = 0;
+            let sum2 = 0;
+
+            RelicDataArrRef.current.forEach((r)=>{
+                sum +=Number(r.Rscore);
+                sum2 += r.ExpRate;
+            });
+            let avgScore = Number(parseFloat(sum/RelicDataArrRef.current.length).toFixed(1));
+            let calDate=new Date();
+            let avgRank = undefined;
+            let avgRate = Number((sum2*100/RelicDataArrRef.current.length).toFixed(1));
+            
+            scoreStand.forEach((stand)=>{
+                //接著去找尋這個分數所屬的區間
+                if(stand.stand<=avgScore&&avgRank===undefined)
+                    avgRank=stand;
+            });
+
+            //儲存紀錄
+            let newHistorydata={
+                version:version,
+                calDate:calDate.toISOString().split('T')[0],
+                userID:data.userID,
+                char:data.char,
+                dataArr:RelicDataArrRef.current,
+                avgScore:avgScore,
+                avgRank:avgRank,
+                avgRate:avgRate
+            };
+
+            dispatchHistory({ type: "UPDATE", payload: {index:index,newData:newHistorydata} });
+            setStatusMsg('已更新');
+            setIsSaveAble(false);
+            let oldHistory=historyData;
+            oldHistory[index]=newHistorydata;
+            localStorage.setItem('importData',JSON.stringify(oldHistory));
+        });
+
         
-        getRecord(sendData,data.dataArr[0].standDetails);
+        
+       
+
 
     },[historyData]);
 
@@ -328,7 +383,7 @@ function Importer(){
         }, 0);
     },[historyData]);
 
-    function calscore(relic){
+    function calscore(relic,standard){
         return new Promise((resolve)=>{
             let isCheck=true;
             //將獲得到遺器先儲存起來
@@ -365,7 +420,7 @@ function Importer(){
                 MainData:MainAffix.name,
                 SubData:SubData,
                 partsIndex:relic.type,
-                standard:selfStand,
+                standard:standard,
                 deviation:0.5
             };
             
@@ -381,7 +436,7 @@ function Importer(){
                         Rscore:event.data.relicscore,
                         PieNums:event.data.returnData,
                         Rank:event.data.relicrank,
-                        standDetails:selfStand
+                        standDetails:standard
                     }
 
                     resolve(returnData);
@@ -433,7 +488,7 @@ function Importer(){
             //接著去找尋這個分數所屬的區間
             if(stand.stand<=avgScore&&avgRank===undefined)
                 avgRank=stand;
-        })
+        });
 
 
         //儲存紀錄

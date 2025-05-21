@@ -181,7 +181,7 @@ function relicScore(partsIndex,charStandard,SubData,MainData){
        
     });
     //計算這件遺器的最大有效詞條數
-    console.log(calPartWeights(charStandard,partsIndex));
+    //console.log(calPartWeights(charStandard,partsIndex));
     //計算分數
     caltype.forEach((ms)=>{
         if(ms.type!=='AttackDelta'&&ms.type!=='DefenceDelta'&&ms.type!=='HPDelta')
