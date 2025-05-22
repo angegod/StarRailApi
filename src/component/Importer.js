@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import characters from '../data/characters';
 import AffixName from '../data/AffixName';
 import { useState ,useRef,useCallback } from 'react';

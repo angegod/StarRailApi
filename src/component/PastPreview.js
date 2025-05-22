@@ -42,12 +42,8 @@ const PastPreview=React.memo(({index,data})=>{
             </div>
         </div>        
     )
-
-    
-    
 });
 
-//
 //簡易瀏覽_模擬器版本
 const PastPreview_simulator=React.memo(({data,index})=>{
     const {checkDetails,updateHistory,isChangeAble} = useContext(SiteContext);

@@ -1,4 +1,4 @@
-import React, { Component, useContext } from 'react';
+import React, { useContext } from 'react';
 import AffixName from '../data/AffixName';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip';
@@ -33,7 +33,6 @@ const RelicData=React.memo(({mode,button})=>{
 
         relic.sub_affix.forEach((s)=>{
             let markcolor="";
-            let isBold=(standDetails.find((st)=>st.name===s.name)!==undefined)?true:false;
             
             if(s.name==="攻擊力"&&s.display.includes('%')){
                 s.name="攻擊力%數";
@@ -43,6 +42,9 @@ const RelicData=React.memo(({mode,button})=>{
             }else if(s.name==="生命值"&&s.display.includes('%')){
                 s.name="生命值%數";
             }
+
+            //該詞條是否要標記
+            let isBold=(standDetails.find((st)=>st.name===s.name)!==undefined)?true:false;
 
 
             var IconName = AffixName.find((a)=>a.name===s.name).icon;
