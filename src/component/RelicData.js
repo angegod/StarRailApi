@@ -183,6 +183,7 @@ const RelicData_simulate=React.memo(({mode,button})=>{
     }
 
     if(relic!==undefined){
+        console.log(relic.main_affix);
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix).icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
