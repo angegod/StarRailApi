@@ -94,3 +94,7 @@ input[type="number"]::-webkit-outer-spin-button {
     justify-content: center;
     align-items: center;
 }
+
+.clip-both-corners {
+  clip-path: polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px);
+}

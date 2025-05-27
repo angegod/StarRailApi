@@ -1,6 +1,6 @@
 import AffixList from '../data/AffixList';
 import characters from '../data/characters';
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -14,6 +14,8 @@ import { PastPreview_simulator as PastPreview } from './PastPreview';
 import { CharSelect,PartSelect,StandardSelect,MainAffixSelect,SubAffixSelect } from './Select';
 import { Tooltip } from 'react-tooltip'
 import SiteContext from '../context/SiteContext';
+import SubAffixHint from './Hint/SubAffixHint';
+import HintSimulator from './Hint/HintSimulator';
 
 //遺器強化模擬器
 function Simulator(){
@@ -419,104 +421,97 @@ function Simulator(){
                 <meta name="description" content="崩鐵--遺器重洗模擬器" />
                 <meta name="keywords" content="遺器重洗、遺器重洗模擬器" />
             </Helmet>
-            <h1 className='text-red-500 font-bold text-2xl'>遺器重洗模擬器</h1>
-            <div className='flex flex-row flex-wrap'>
-                <div className='flex flex-col mt-2 w-3/5 max-[900px]:w-[100%]'>
-                    <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col max-[400px]:items-start'>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
-                            <span className='text-white'>Characters 腳色:</span>
-                        </div>
-                        <div className='flex flex-row items-center'>
-                            <CharSelect />
-                            <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
-                                <span className='text-white'>?</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={`my-1 ${(Number.isInteger(charID)&&charID!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col max-[400px]:items-start`}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
-                            <span className='text-white'>Parts 部位:</span>
-                        </div>
-                        <div className='flex flex-row items-center'>
-                            <PartSelect />
-                            <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="PartSelectHint">
-                                <span className='text-white'>?</span>
-                            </div>   
-                        </div>
-                    </div>
-                    <div className={`my-1 ${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:items-start max-[400px]:!flex-col`}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
-                            <span className='text-white'>MainAffix 主屬性:</span>
-                        </div>
-                        <div className='flex flex-row items-center'>
-                            <MainAffixSelect />
-                            <div className={`hintIcon ml-1 overflow-visible ${(parseInt(partsIndex)!==1&&(parseInt(partsIndex)!==2)?'':'hidden')}`} data-tooltip-id="MainAffixHint">
-                                <span className='text-white'>?</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined)?'':'hidden'} 
-                            mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center max-[400px]:text-left`}>
-                        <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center max-[400px]:text-left'>
-                            <span className='text-white'>SubAffix 副屬性:</span>
-                        </div>
-                        <div className='flex flex-row items-start'>
-                            <div className='flex flex-col'>
-                                <SubAffixSelect index={0} />
-                                <SubAffixSelect index={1} />
-                                <SubAffixSelect index={2} />
-                                <SubAffixSelect index={3} />
-                            </div>
-                            <div className='hintIcon ml-1 mt-1 overflow-visible'data-tooltip-id="SubAffixHint">
-                                <span className='text-white'>?</span>
-                            </div>  
-                        </div>
-                    </div>
-                    <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`}>
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
-                            <span className='text-white'>Affix 有效詞條:</span>
-                        </div>
-                        <div className='flex flex-row items-center'>
-                            <StandardSelect />
-                            <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="StandardHint">
-                                <span className='text-white'>?</span>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`} >
-                        <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
-                            <span className='text-white'>Params 參數:</span>
-                        </div>
-                        <ShowStand />
-                    </div>
-                    <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
-                        <div className='flex flex-row mt-1'>
-                            <button className='processBtn mr-2 whitespace-nowrap' 
-                                onClick={()=>calScore()} 
-                                disabled={!processBtn}>計算分數</button>
-                            <button className='processBtn mr-2 whitespace-nowrap' 
-                            onClick={()=>saveRecord()} disabled={!isSaveAble}>儲存紀錄</button>
-                        </div>
-                    </div>
-                </div>
-                <div className='w-2/5 max-w-[400px] flex flex-col max-[900px]:w-[100%] max-[600px]:my-3'>
-                    <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
-                    <ul className='[&>li]:text-white list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
-                        <li>此工具主要目的是給予一些想要重洗詞條的人參考</li>
-                        <li>翻盤機率是指說該遺器透過重洗詞條道具後導致遺器分數變高的機率為何</li>
-                        <li>目前遺器只支援計算五星遺器</li>
-                        <li>此工具相關數據仍有更改的可能，敬請見諒!</li>
-                        <li>操作說明可以參考
-                        <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a></li>
-                    </ul>
+            <div className='flex flex-row items-center'>
+                <h1 className='text-red-600 font-bold text-2xl'>遺器重洗模擬器</h1>
+                <div className='hintIcon ml-2 overflow-visible'
+                    data-tooltip-id="SimulatorHint">
+                    <span className='text-white'>?</span>
                 </div>
             </div>
-            <div className='flex flex-row mb-3 flex-wrap'>
-                <div className={`w-[100%] max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-4 ${(!historyData.current||historyData.current.length===0)?'hidden':''}`}
+            <div className='flex flex-row flex-wrap'>
+                <div className='flex flex-row flex-wrap w-1/2 max-[1200px]:w-[100%]'>
+                    <div className='flex flex-col mt-2'>
+                        <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col max-[400px]:items-start'>
+                            <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
+                                <span className='text-white'>Characters 腳色:</span>
+                            </div>
+                            <div className='flex flex-row items-center'>
+                                <CharSelect />
+                                <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
+                                    <span className='text-white'>?</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`my-1 ${(Number.isInteger(charID)&&charID!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col max-[400px]:items-start`}>
+                            <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
+                                <span className='text-white'>Parts 部位:</span>
+                            </div>
+                            <div className='flex flex-row items-center'>
+                                <PartSelect />
+                                <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="PartSelectHint">
+                                    <span className='text-white'>?</span>
+                                </div>   
+                            </div>
+                        </div>
+                        <div className={`my-1 ${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:items-start max-[400px]:!flex-col`}>
+                            <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
+                                <span className='text-white'>Main 主屬性:</span>
+                            </div>
+                            <div className='flex flex-row items-center'>
+                                <MainAffixSelect />
+                                <div className={`hintIcon ml-1 overflow-visible ${(parseInt(partsIndex)!==1&&(parseInt(partsIndex)!==2)?'':'hidden')}`} data-tooltip-id="MainAffixHint">
+                                    <span className='text-white'>?</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center max-[400px]:text-left`}>
+                            <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center max-[400px]:text-left'>
+                                <span className='text-white'>SubAffix 副屬性:</span>
+                            </div>
+                            <div className='flex flex-row items-start justify-center'>
+                                <div className='flex flex-col'>
+                                    <SubAffixSelect index={0} />
+                                    <SubAffixSelect index={1} />
+                                    <SubAffixSelect index={2} />
+                                    <SubAffixSelect index={3} />
+                                </div>
+                                <div className='hintIcon ml-1 mt-1 overflow-visible'data-tooltip-id="SubAffixHint">
+                                    <span className='text-white'>?</span>
+                                </div>  
+                            </div>
+                        </div>
+                        <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`}>
+                            <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
+                                <span className='text-white'>Affix 有效詞條:</span>
+                            </div>
+                            <div className='flex flex-row items-center'>
+                                <StandardSelect />
+                                <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="StandardHint">
+                                    <span className='text-white'>?</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`} >
+                            <div className='text-right w-[200px] max-[600px]:max-w-[150px] max-[400px]:text-left'>
+                                <span className='text-white'>Params 參數:</span>
+                            </div>
+                            <ShowStand />
+                        </div>
+                        <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
+                            <div className='flex flex-row mt-1'>
+                                <button className='processBtn mr-2 whitespace-nowrap' 
+                                    onClick={()=>calScore()} 
+                                    disabled={!processBtn}>計算分數</button>
+                                <button className='processBtn mr-2 whitespace-nowrap' 
+                                onClick={()=>saveRecord()} disabled={!isSaveAble}>儲存紀錄</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className={`w-1/2 max-[1200px]:w-[100%]  my-4 ${(!historyData.current||historyData.current.length===0)?'hidden':''}`}
                     id="historyData" >
                     <div className='flex flex-row items-center'>
-                        <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
+                        <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                         <div className='hintIcon ml-2 overflow-visible'
                             data-tooltip-id="HistoryHint">
                             <span className='text-white'>?</span>
@@ -526,6 +521,8 @@ function Simulator(){
                         <HistoryList />
                     </div>
                 </div>
+            </div>
+            <div className='flex flex-row mb-3 flex-wrap'>
                 <div className={`border-t-4 border-gray-600 w-[100%] flex flex-row flex-wrap ${(PieNums===undefined)?'hidden':''}`}>
                     <div className={`mt-3 flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                         <RelicData   mode={'Simulator'} button={true}/>
@@ -571,25 +568,7 @@ function Simulator(){
             <Tooltip id="SubAffixHint"  
                     place="right-start" 
                     render={()=>
-                        <div className='flex flex-col max-w-[230px] '>
-                            <div className='[&>span]:text-white flex flex-col'>
-                                <span>根據遺器現有狀況</span>
-                                <span>依序輸入詞條種類、詞條數值、強化次數</span>
-                                <span className='!text-yellow-500'>詞條數值不用輸入%</span>
-                                <span className='!text-yellow-500'>如果該詞條沒有被強化過，則強化次數打上0即可</span>
-                            </div>
-                            <div className='mt-2 [&>span]:text-white flex flex-col'>
-                                <span>例如:今天有一個詞條為</span>
-                                <span className='!text-green-500'>暴擊傷害 13.4% 2</span>
-                                <span>那麼只要key上</span>
-                                <span className='!text-green-500'>暴擊傷害 13.4 2</span>
-                            </div>
-                            <div className='mt-2 [&>span]:text-red-500 flex flex-col'>
-                                <span>注意事項:</span>
-                                <span>1.副詞條彼此間不能重複</span>
-                                <span>2.主詞條跟副詞條不可重複</span>
-                            </div>
-                        </div>
+                        <SubAffixHint />
                     }/>
             <Tooltip id="StandardHint" 
                     place="right-start"
@@ -601,24 +580,33 @@ function Simulator(){
                         </div>
                     }/>
             <Tooltip id="HistoryHint"  
-                place="right-bottom"
+                place="top-center"
                 render={()=>
-                    <div className='flex flex-col [&>span]:text-white max-w-[250px] p-1'>
-                        <div className='flex flex-col'>
-                            <span className='text-white'>檢視</span>
-                            <span>可以查看曾經查詢出來的資訊</span>
-                        </div>
-                        <div className='my-1 flex flex-col'>
-                            <span className='text-white'>刪除</span>
-                            <span>則會刪除該筆紀錄</span>
-                        </div>
-                        <div className='my-1 flex flex-col'>
-                            <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
-                        </div>
+                    <div className='flex flex-col max-w-[250px] p-1'>
                         <div>
-                            <span className='!text-yellow-500'>如果在已有6筆資料的情況再新增，則會從最舊的紀錄覆蓋掉</span>
+                            <span className='text-white'>此區塊可以查看過往查詢紀錄，下面為個別功能相關簡述。</span>
                         </div>
-                        
+                        <div className='mt-2 flex flex-col'>
+                            <span className='text-md font-bold text-white'>檢視</span>
+                            <span>可以查看曾經查詢出來的資訊、包括遺器、評分標準等</span>
+                        </div>
+                        <div className='mt-2 flex flex-col'>
+                            <div>
+                                <span className='text-md font-bold text-white'>刪除</span>
+                            </div>
+                            <div>
+                                <span>刪除該筆紀錄</span>
+                            </div>
+                        </div>
+                        <div className='mt-2 flex flex-col'>
+                            <div>
+                                <span className='text-md font-bold text-white'>注意事項</span>
+                            </div>
+                            <div className='flex flex-col'>
+                                <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
+                                <span className='!text-yellow-500'>如果在已有6筆資料的情況再新增，則會從最舊的紀錄開始覆蓋掉</span>
+                            </div>
+                        </div>
                     </div>
                 }/>
             <Tooltip id="RelicDataHint"  
@@ -640,6 +628,11 @@ function Simulator(){
                         </div>
                     </div>
                 }/>
+            <Tooltip id="SimulatorHint"
+                    place='right-start'
+                    render={()=><HintSimulator/>}
+                    clickable={true}/>
+            
         </div>
     </SiteContext.Provider>)
 }

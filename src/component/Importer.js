@@ -15,6 +15,7 @@ import { StandDetails, ShowStand } from './StandDetails';
 import { RelicData } from './RelicData';
 import { StandardSelect,   CharSelect ,RelicSelect} from './Select';
 import SiteContext from '../context/SiteContext';
+import HintImporter from './Hint/HintImporter';
 
 
 function Importer(){
@@ -250,7 +251,7 @@ function Importer(){
                     setStatusMsg('系統正在維護中 請稍後再試!!');
                 }
             }else{
-                setStatusMsg('發生錯誤請稍後再試!!');    
+                setStatusMsg('系統正在維護中 請稍後再試!!');    
             }
             
             setIsChangeAble(true);
@@ -362,6 +363,8 @@ function Importer(){
             let oldHistory=historyData;
             oldHistory[index]=newHistorydata;
             localStorage.setItem('importData',JSON.stringify(oldHistory));
+        }).catch(()=>{
+            console.log('error');
         });
             
     },[historyData]);
@@ -551,9 +554,15 @@ function Importer(){
                 <meta name="description" content="崩鐵--遺器重洗匯入" />
                 <meta name="keywords" content="遺器重洗、遺器重洗模擬器" />
             </Helmet>
-            <h1 className='text-red-500 font-bold text-2xl'>遺器匯入</h1>
+            <div className='flex flex-row items-center'>
+                <h1 className='text-red-600 font-bold text-2xl'>遺器匯入</h1>
+                <div className='hintIcon ml-2 overflow-visible'
+                    data-tooltip-id="ImporterHint">
+                    <span className='text-white'>?</span>
+                </div>
+            </div>
             <div className='flex flex-row flex-wrap '>
-                <div className='flex flex-col w-1/2 max-[900px]:w-[100%]'>
+                <div className='flex flex-col w-1/2 max-[1200px]:w-[100%] min-w-[400px]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>玩家UID :</span></div>
                         <input type='text' placeholder='HSR UID' 
@@ -597,31 +606,20 @@ function Importer(){
                     </div>
                     
                 </div>
-                <div className='w-1/2 max-w-[400px] flex flex-col max-[900px]:w-[100%] max-[600px]:my-3'>
-                    <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
-                    <ul className='[&>li]:text-white list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
-                        <li>此工具會根據玩家放在展示框的8個腳色身上的遺器做數據分析</li>
-                        <li>翻盤機率是指該遺器透過重洗詞條道具後遺器分數變高的機率為何</li>
-                        <li>目前該工具只支援計算五星強化至滿等遺器</li>
-                        <li>此工具相關數據仍有更改的可能，敬請見諒!</li>
-                        <li>操作說明可以參考
-                        <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div className={`${(historyData.length===0)?'hidden':''} flex-wrap max-[930px]:w-[100%] border-t-4 border-gray-600 p-2 my-4 `}>
-                <div className='flex flex-row items-baseline'>
-                    <span className='text-red-500 text-lg font-bold'>過往紀錄</span>
-                    <div className='hintIcon ml-2 overflow-visible'
-                        data-tooltip-id="HistoryHint">
-                        <span className='text-white'>?</span>
+                <div className={`w-1/2 ${(historyData.length===0)?'hidden':''} flex-wrap max-[1200px]:w-[100%]`}>
+                    <div className='flex flex-row items-baseline'>
+                        <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
+                        <div className='hintIcon ml-2 overflow-visible'
+                            data-tooltip-id="HistoryHint">
+                            <span className='text-white'>?</span>
+                        </div>
                     </div>
+                    <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
+                        <PastPreviewList  />
+                    </div> 
                 </div>
-                <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
-                    <PastPreviewList  />
-                </div>
-                    
             </div>
+            
             <div className='flex flex-row flex-wrap w-[100%] border-t-4 border-gray-600' >
                 <div className={`w-[100%] ${(PieNums===undefined)?'hidden':''}`}>
                     <RelicSelect />
@@ -666,7 +664,7 @@ function Importer(){
                     render={()=>
                         <div className='flex flex-col max-w-[250px] p-1'>
                             <div>
-                                <span className='text-white'>此區塊可以查看過往查詢紀錄，下面為三個功能相關簡述。</span>
+                                <span className='text-white'>此區塊可以查看過往查詢紀錄，下面為個別功能相關簡述。</span>
                             </div>
                             <div className='mt-2 flex flex-col'>
                                 <span className='text-md font-bold text-white'>檢視</span>
@@ -708,7 +706,10 @@ function Importer(){
                             <span className='!text-red-600 font-bold'>僅顯示符合條件的五星滿等遺器遺器</span>
                         </div>
                     }/>
-            
+            <Tooltip id="ImporterHint" 
+                    place='right-start'
+                    render={()=><HintImporter/>}
+                    clickable={true}/>
         </div>
             
     </SiteContext.Provider>)
