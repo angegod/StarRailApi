@@ -562,7 +562,7 @@ function Importer(){
                 </div>
             </div>
             <div className='flex flex-row flex-wrap '>
-                <div className='flex flex-col w-1/2 max-[1200px]:w-[100%] min-w-[400px]'>
+                <div className='flex flex-col w-2/5 max-[1250px]:w-[100%] min-w-[400px]'>
                     <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
                         <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>玩家UID :</span></div>
                         <input type='text' placeholder='HSR UID' 
@@ -606,7 +606,7 @@ function Importer(){
                     </div>
                     
                 </div>
-                <div className={`w-1/2 ${(historyData.length===0)?'hidden':''} flex-wrap max-[1200px]:w-[100%]`}>
+                <div className={`w-3/5 ${(historyData.length===0)?'hidden':''} flex-wrap max-[1250px]:w-[100%]`}>
                     <div className='flex flex-row items-baseline'>
                         <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                         <div className='hintIcon ml-2 overflow-visible'
