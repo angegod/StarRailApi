@@ -13,7 +13,7 @@ export default function Layout({ children }) {
     const pathname =usePathname();
 
     const MainContent = ()=>{
-        if(pathname === '/' || pathname === '/TestNextApi/'){
+        if(pathname === '/' || pathname === '/StarRailApi/'){
             return(<MainMenu/>)
         }else{
             return(<>
@@ -28,7 +28,7 @@ export default function Layout({ children }) {
     //判斷現在該使用哪種背景?
     let backgroundClass = "";
 
-    if(pathname === "/"||pathname === "/TestNextApi/"){
+    if(pathname === "/"||pathname === "/StarRailApi/"){
         backgroundClass = "MainBackGround"
     }else {
         backgroundClass = "SubBackGround"
