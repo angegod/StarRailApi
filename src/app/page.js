@@ -1,10 +1,7 @@
 export const metadata = {
-  title: '崩鐵--遺器重洗模擬',
-  description: '崩鐵--遺器重洗模擬',
-  keywords: ['遺器重洗', '遺器重洗模擬', 'relic enchant'],
-  icons: {
-    icon: '/favicon.ico', // 對應 public/favicon.ico
-  },
+    title: '崩鐵--遺器重擲模擬--主頁',
+    description: '崩鐵--遺器重擲模擬--主頁',
+    keywords: ['遺器重洗', '遺器重洗模擬', 'relic enchant', 'relic simulator','relic ranker','遺器重擲','遺器重擲模擬器']
 };
 
 

@@ -1,6 +1,5 @@
 "use client";
 import '@/css/globals.css';
-// app/layout.js
 
 import {Menu,MainMenu} from '@/components/Menu';
 import Footer from '@/components/Footer'
