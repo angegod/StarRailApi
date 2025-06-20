@@ -1,9 +1,9 @@
 import '@/css/globals.css';
 import Footer from '@/components/Footer';
 import { StatusToastProvider } from '@/context/StatusMsg.js';
-import LayoutClient from './layoutclient'; // 👈 新增的 Client Component
-import Head from 'next/head';
+import LayoutClient from './LayoutClient'; // 👈 新增的 Client Component
 
+//不能移除掉 下方手動寫的也不能拿掉
 export const metadata = {
   title: '崩鐵--遺器重擲模擬--主頁',
   description: '崩鐵--遺器重擲模擬--主頁',
@@ -19,6 +19,7 @@ export default function RootLayout({ children }) {
             <title>{metadata.title}</title>
             <meta name="description" content={metadata.description} />
             <meta name="keywords" content={metadata.other.keywords} />
+            <link rel="icon" href="/favicon.ico" />
         </head>
         <body>
             <StatusToastProvider>
