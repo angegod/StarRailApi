@@ -4,11 +4,10 @@ import SiteContext from '../context/SiteContext';
 import Link from 'next/link';
 const PastPreviewList=React.memo(()=>{
     const {historyData}=useContext(SiteContext);
-    console.log(process.env.NEXT_PUBLIC_BASE_PATH);
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}/`:'../'
     introPath = introPath +'/intro';
 
-    if(historyData.length===0){
+    if(historyData.length!==0){
         const renderList=historyData.map((item,i)=>{
             return(
                 <PastPreview    index={i}
