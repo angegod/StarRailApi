@@ -579,11 +579,11 @@ function Importer(){
                                         onChange={(e)=>userID.current=e.target.value}
                                         disabled={!isChangeAble}/>
                             </div>
-                            <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col items-baseline'>
+                            <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col items-center'>
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                                 </div>                       
-                                <div className='flex flex-row items-left'>
+                                <div className='flex flex-row items-center'>
                                     <CharSelect  />
                                     <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
                                         <span className='text-white'>?</span>
@@ -611,7 +611,7 @@ function Importer(){
                             
                         </div>
                     </div>
-                    <div className={`w-[55%] pb-3 pt-1 ${(historyData.length===0)?'hidden':''} flex-wrap max-[1250px]:w-[100%] max-[1250px]:mb-5 ml-2 bg-[rgba(0,0,0,0.5)] rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
+                    <div className={`w-[55%] pb-3 pt-1 h-fit ${(historyData.length===0)?'hidden':''} flex-wrap max-[1250px]:w-[100%] max-[1250px]:mb-5 ml-2 bg-[rgba(0,0,0,0.5)] rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
                         <div className='flex flex-row items-baseline px-2 max-[600px]:justify-center'>
                             <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                             <div className='hintIcon ml-2 overflow-visible'
@@ -619,7 +619,7 @@ function Importer(){
                                 <span className='text-white'>?</span>
                             </div>
                         </div>
-                        <div className='h-[300px] overflow-y-scroll hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap max-[600px]:items-center'>
+                        <div className='max-h-[300px] overflow-y-scroll p-2  hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap max-[600px]:items-center'>
                             <PastPreviewList  />
                         </div> 
                     </div>

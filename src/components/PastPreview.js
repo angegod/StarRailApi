@@ -9,7 +9,6 @@ const PastPreview=React.memo(({index,data})=>{
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
     const BaseLink =  `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
-    console.log(data);
     return(
         <div className={`PastPreview clip-both-corners`}>
             <div className='flex flex-col'>

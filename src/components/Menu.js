@@ -51,7 +51,7 @@ function MainMenu(){
             <div className='w-4/5 flex flex-col top-[10vh] relative mx-auto max-[900px]:w-[90%] max-[900px]:top-[5vh]'>
                 <div className='text-center h-fit flex flex-col'>
                     <div className='flex flex-col mt-5'>
-                        <span className='font-bold text-2xl text-gray-200'>遺器重洗模擬器 </span>
+                        <span className='font-bold text-2xl text-gray-200'>遺器重擲模擬器 </span>
                         <span className='font-bold text-xl text-gray-300'>Relic Simulator</span>
                     </div>
                     <div className='mt-3'>
