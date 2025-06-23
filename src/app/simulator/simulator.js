@@ -233,7 +233,13 @@ function Simulator(){
         //副詞條是否有空值?
         //副詞條是否有跟主詞條重複?
         let errors=false;
-        console.log(SubData.current);
+
+        if(!charID){
+            errors=true;
+            updateStatus("沒有選擇任何腳色!!",'error');
+            return;
+        }
+
         SubData.current.some((s,i)=>{
             if(s.subaffix===MainSelectOptions){
                 //alert(`第${i+1}個詞條選擇\n副詞條不可選擇與主詞條相同的詞條\n請再重新選擇!!`);

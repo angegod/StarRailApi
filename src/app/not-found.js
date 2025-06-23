@@ -6,8 +6,10 @@ export default function NotFound() {
   const router = useRouter()
 
   useEffect(() => {
-    // 自動導回首頁或其他頁面
-    router.replace('/')
+      // 自動導回首頁或其他頁面
+      setTimeout(()=>{
+        router.replace('/')
+      },1000);
   }, [])
 
   return (

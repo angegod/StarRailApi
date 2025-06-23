@@ -243,7 +243,7 @@ function Importer(){
                     setIsChangeAble(true);
                     break;
                 case 900:
-                    updateStatus('系統正在維護，請稍後再試!','error');
+                    updateStatus('系統正在維護\n請稍後再試!','error');
                     setIsChangeAble(true);
                     break;
                 default:
@@ -255,12 +255,12 @@ function Importer(){
             console.log(error);
             if(error.response){
                 if(error.response.status===429){
-                    updateStatus('請求次數過於頻繁，請稍後再試!!','error');
+                    updateStatus('請求次數過於頻繁\n請稍後再試!!','error');
                 }else{
-                    updateStatus('系統正在維護中 請稍後再試!!','error');
+                    updateStatus('系統正在維護中\n請稍後再試!!','error');
                 }
             }else{   
-                updateStatus('系統正在維護中 請稍後再試!!','error');
+                updateStatus('系統正在維護中\n請稍後再試!!','error');
             }
             
             setIsChangeAble(true);

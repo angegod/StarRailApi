@@ -62,7 +62,8 @@ const ShowStand=React.memo(()=>{
                         min-w-[40px] bgInput' 
                         defaultValue={selfStand[i].value}
                         title='最小值為0 最大為1'
-                        onChange={(event)=>changeVal(i,event.target.value)}/>
+                        onChange={(event)=>changeVal(i,event.target.value)}
+                        disabled={!isChangeAble}/>
                     
                 </div>
                 <div className='flex items-center'>
@@ -78,9 +79,11 @@ const ShowStand=React.memo(()=>{
             </div>)
         })
         
-        //<button onClick={()=>removeAffix(i)} className='deleteBtn px-1 whitespace-nowrap' disabled={!isChangeAble}>移除</button>
+        //如果此時處於查詢階段時，則不可刪除
         function removeAffix(index){
-            setSelfStand((arr)=>arr.filter((item,i)=>i!==index));
+            if(isChangeAble){
+                setSelfStand((arr)=>arr.filter((item,i)=>i!==index));
+            }   
         }
     
         function changeVal(index,val){
