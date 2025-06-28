@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d out --dotfiles",
+    "deploy": "gh-pages -d out --dotfiles --remote origin2",
     "deploy:origin": "gh-pages -d out --dotfiles --remote origin",
     "deploy:origin2": "gh-pages -d out --dotfiles --remote origin2"
   },

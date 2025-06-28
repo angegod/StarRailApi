@@ -52,7 +52,7 @@ body{
 }
 
 .MainBackGround-release::before{
-    background-image: url('/TestNextApi/image/background.jpg');
+    background-image: url('/StarRailApi/image/background.jpg');
 
     content: "";
     position: absolute;
@@ -94,7 +94,7 @@ body{
 }
 
 .SubBackGround-release::before{
-    background-image: url('/TestNextApi/image/background2.jpg');
+    background-image: url('/StarRailApi/image/background2.jpg');
 
     content: "";
     position: absolute;
