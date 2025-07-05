@@ -1,13 +1,18 @@
 import React, { Component,useCallback,useContext,useMemo } from 'react';
 import {PastPreview, PastPreview_simulator} from './PastPreview';
 import SiteContext from '../context/SiteContext';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 const PastPreviewList=React.memo(()=>{
-    const {historyData}=useContext(SiteContext);
+    const {isLoad} = useContext(SiteContext);//是否處理完reset?
+    const historyData=useSelector(state => state.history.historyData);
+    console.log(historyData);
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}/`:'../'
     introPath = introPath +'/intro';
-
-    if(historyData.length!==0){
+    
+    
+    if(historyData&&historyData.length>0&&isLoad){
         const renderList=historyData.map((item,i)=>{
             return(
                 <PastPreview    index={i}
@@ -35,12 +40,13 @@ const PastPreviewList=React.memo(()=>{
 
 //歷史紀錄清單
 const PastPreviewList_simulator=React.memo(()=>{
-    const {historyData} = useContext(SiteContext);
+    const {isLoad} = useContext(SiteContext);//是否處理完reset?
+    const historyData = useSelector(state => state.history.historyData);
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}/`:'../'
     introPath = introPath +'/intro';
 
 
-    if(historyData&&historyData.length>0){
+    if(historyData&&historyData.length>0&&isLoad){
         return(
             historyData.map((item,i)=>
                 <PastPreview_simulator 

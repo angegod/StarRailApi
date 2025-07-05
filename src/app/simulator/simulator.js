@@ -13,12 +13,16 @@ import { StandDetails ,ShowStand } from '@/components/StandDetails';
 import { RelicData_simulate as RelicData} from '@/components/RelicData';
 import { PastPreviewList_simulator } from '@/components/PastPreviewList';
 import { CharSelect,PartSelect,StandardSelect,MainAffixSelect,SubAffixSelect } from '@/components/Select';
+
 import SubAffixHint from '@/components/Hint/SubAffixHint';
 import HintSimulator from '@/components/Hint/HintSimulator';
 import { Tooltip } from 'react-tooltip';
 
 import SiteContext from '@/context/SiteContext';
 import { useStatusToast } from '@/context/StatusMsg';
+import { useSelector, useDispatch } from 'react-redux';
+import { createHistory,addHistory,limitHistory,deleteHistory,resetHistory } from '../../model/historySlice';
+import JSXStyle from 'styled-jsx/style';
 
 //遺器強化模擬器
 function Simulator(){
@@ -55,8 +59,11 @@ function Simulator(){
     const [relic,setRelic]=useState();
 
     //歷史紀錄
-    //const historyData=useRef([]);
-    const [historyData,setHistoryData]=useState([]);
+    const dispatch = useDispatch();
+    const historyData = useSelector(state => state.history.historyData);
+    const [isLoad,setIsLoad] = useState(false);
+
+    //部位
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
     
     //是否可以儲存(防呆用)、是否可以立馬變更
@@ -78,6 +85,9 @@ function Simulator(){
     }, [partsIndex]); 
 
     function init(){
+        //歷史紀錄標記尚未載入
+        setIsLoad(false);
+        dispatch(resetHistory());
 
         SubData.current=[];
         for(var i=0;i<=3;i++){
@@ -102,18 +112,22 @@ function Simulator(){
         if(history!=null&&history.length>0){
             history=history.filter((h)=>h.version===version);
             localStorage.setItem('HistoryData',JSON.stringify(history));
-            setHistoryData(history);
+            dispatch(createHistory(history));
+
             updateStatus('先前紀錄已匯入!!','success');
         }else{
             updateStatus('尚未有任何操作紀錄!!','default');
         }
+
+        //標記已經處理歷史紀錄完畢
+        setIsLoad(true);
     }
 
     //刪除過往紀錄
     function updateHistory(index){
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         let newHistory = historyData.filter((item,i)=>i!==index);
-        setHistoryData(newHistory);
+        dispatch(deleteHistory(index));
         showStatus('正在處理中......');
         //強制觸發刷新紀錄
         setTimeout(() => {
@@ -137,9 +151,9 @@ function Simulator(){
 
         //如果目前則沒有紀錄 則初始化
         if(!historyData)
-            setHistoryData([]);
+            dispatch(createHistory([]));
         else if(historyData.length>=maxHistoryLength)//如果原本紀錄超過6個 要先刪除原有紀錄
-           setHistoryData(historyData.filter((item,i)=>i!==0));
+            dispatch(limitHistory());
         
         //如果當前沒有任何資料則不予匯入
         if(!PieNums||ExpRate===undefined||!Rrank||Rscore===undefined){
@@ -172,7 +186,7 @@ function Simulator(){
 
         //利用深拷貝區分原有資料
         let oldHistory=JSON.parse(JSON.stringify(historyData));
-        setHistoryData((old)=>[...old,data]);
+        dispatch(addHistory(data));
         updateStatus("已儲存",'success');
         const targetElement = document.getElementById('historyData');
         targetElement.scrollIntoView({ behavior: 'smooth' });
@@ -219,7 +233,9 @@ function Simulator(){
             else
                 s.display=s.data;
         })
-        data.subaffix=SubData.current;
+
+        //這邊複製出去一定得用深拷貝
+        data.subaffix=JSON.parse(JSON.stringify(SubData.current));
         data.type = parseInt(partsIndex);
 
         setRelic(data);
@@ -416,6 +432,7 @@ function Simulator(){
         Rrank:Rrank,
         Rscore:Rscore,
         relic:relic,
+        isLoad:isLoad,
 
 
         updateHistory:updateHistory,

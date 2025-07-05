@@ -5,7 +5,7 @@ import SiteContext from '../context/SiteContext';
 
 //簡易瀏覽
 const PastPreview=React.memo(({index,data})=>{
-    const {checkDetails,updateDetails,updateHistory,isChangeAble} = useContext(SiteContext);
+    const {checkDetails,updateDetails,deleteHistoryData,isChangeAble} = useContext(SiteContext);
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
     const BaseLink =  `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
@@ -24,18 +24,18 @@ const PastPreview=React.memo(({index,data})=>{
                     <span className='w-[70px] max-[400px]:w-[60px] break-keep'>查詢日期:</span>
                     <span className='pl-1'>{data.calDate}</span>
                 </div>
-                <div className='flex flex-row [&>span]:text-white justify-start '>
+                <div className='flex flex-row [&>span]:text-white justify-start [&>span]:max-[400px]:text-sm'>
                     <span className='w-[70px] max-[400px]:w-[60px] break-keep'>玩家UID:</span>
                     <span className='pl-1'>{data.userID}</span>
                 </div>
-                <div className='flex flex-row [&>span]:text-white justify-start '>
+                <div className='flex flex-row [&>span]:text-white justify-start [&>span]:max-[400px]:text-sm'>
                     <span className='w-[70px] max-[400px]:w-[60px] break-keep'>平均期望:</span>
                     <span className='pl-1'>{data.avgRate}%</span>
                 </div>
-                <div className='[&>button]:max-[400px]:text-sm'>
+                <div className='[&>button]:max-[400px]:text-sm flex flex-row max-[400px]:justify-evenly'>
                     <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
-                    <button className='processBtn mr-2 px-1' onClick={()=>updateDetails(index)} disabled={!isChangeAble}>更新</button>
-                    <button className='deleteBtn px-1' onClick={()=>updateHistory(index)} disabled={!isChangeAble}>刪除</button>
+                    <button className='processBtn mr-2 px-1' onClick={()=>updateDetail(index)} disabled={!isChangeAble}>更新</button>
+                    <button className='deleteBtn px-1' onClick={()=>deleteHistoryData(index)} disabled={!isChangeAble}>刪除</button>
                 </div>
             </div>
         </div>        
@@ -44,9 +44,8 @@ const PastPreview=React.memo(({index,data})=>{
 
 //簡易瀏覽_模擬器版本
 const PastPreview_simulator=React.memo(({data,index})=>{
-    const {checkDetails,updateHistory,isChangeAble} = useContext(SiteContext);
+    const {checkDetails,deleteHistoryData,isChangeAble} = useContext(SiteContext);
     const hue = data.expRate * 120;
-    
     const textColor =`hsl(${hue}, 100%, 50%)`;
     let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
@@ -75,7 +74,7 @@ const PastPreview_simulator=React.memo(({data,index})=>{
                 </div>
                 <div className='[&>button]:max-[400px]:text-sm'>
                     <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
-                    <button className='deleteBtn px-1 ' onClick={()=>updateHistory(index)} disabled={!isChangeAble}>刪除</button>
+                    <button className='deleteBtn px-1 ' onClick={()=>deleteHistoryData(index)} disabled={!isChangeAble}>刪除</button>
                 </div>
             </div>
         </div>

@@ -8,6 +8,10 @@ import { StandDetails } from '../../components/StandDetails';
 import { RelicData, RelicData_simulate } from '../../components/RelicData';
 import { PieChart } from '@mui/x-charts/PieChart';
 import SiteContext from '@/context/SiteContext';
+import { useSelector,useDispatch } from 'react-redux';
+import HintImporter from '@/components/Hint/HintImporter';
+import { Tooltip } from 'react-tooltip';
+import { useRouter } from 'next/navigation';
 
 //此物件為單次模擬隨機強化後的結果
 const Enchant=React.memo(()=>{
@@ -37,18 +41,10 @@ const Enchant=React.memo(()=>{
     ];
 
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
+    const simulateData = useSelector((state)=>state.enchant.enchantData);
+    const router = useRouter();
 
-    //進入頁面初始化自動執行一次
-    useEffect(()=>{
-        if(localStorage.getItem('EnchantData')!==null&&localStorage.getItem('EnchantData')!==undefined){
-            let getSendData = JSON.parse(localStorage.getItem('EnchantData'));
-            setData(getSendData);
-        }
-    },[])
-
-   
-
-
+    
     useEffect(()=>{
         //回到畫面最上方
         requestAnimationFrame(()=>{
@@ -66,6 +62,14 @@ const Enchant=React.memo(()=>{
     },[data])
 
     useEffect(()=>{
+        //偵測初始化數據是否帶有指定屬性
+        if(simulateData.relic !== undefined)
+            setData(simulateData);
+        else{
+            alert('沒有任何模擬數據，即將導回至主頁');
+            router.push('./');
+        }
+
         //初始紀錄
         if(relicBackUp.current === null){
             relicBackUp.current=simulatorData.oldData;
@@ -386,7 +390,10 @@ const Enchant=React.memo(()=>{
                         </div>
                     </div>
                 </div>
-               
+                <Tooltip id="ImporterHint" 
+                    place='right-start'
+                    render={()=><HintImporter/>}
+                    clickable={true}/>
             </div>
         </SiteContext.Provider>
     )

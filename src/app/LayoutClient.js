@@ -1,6 +1,8 @@
 "use client"
 import { usePathname } from 'next/navigation';
 import { Menu, MainMenu } from '@/components/Menu';
+import { Provider } from 'react-redux';
+import store from '@/model/reducer';
 
 export default function LayoutClient({ children }) {
   const pathname = usePathname();
@@ -19,7 +21,11 @@ export default function LayoutClient({ children }) {
       ) : (
         <>
           <Menu />
-          <div className="min-h-[100vh]">{children}</div>
+          <div className="min-h-[100vh]">
+              <Provider store={store}>
+                  {children}
+              </Provider>
+          </div>
         </>
       )}
     </div>

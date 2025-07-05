@@ -75,9 +75,7 @@ const characters = [
     { charID: 8006, name: "開拓者(女)(同諧)", eng_name: "Trailblazer (Harmony)" },
     { charID: 8007, name: "開拓者(男)(記憶)", eng_name: "Trailblazer (Memory)" },
     { charID: 8008, name: "開拓者(女)(記憶)", eng_name: "Trailblazer (memory)" }
-];
-//{ charID: 1014, name: "Saber", eng_name: "Saber" },
-//{ charID: 1015, name: "Archer", eng_name: "Archer" },
+];  
 
 
 //腳色列表

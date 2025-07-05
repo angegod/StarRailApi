@@ -16,7 +16,9 @@ import { StandardSelect,   CharSelect ,RelicSelect } from '@/components/Select';
 
 import SiteContext from '@/context/SiteContext';
 import { useStatusToast } from '@/context/StatusMsg';
-import HintImporter from '@/components/Hint/HintImporter';
+import { useSelector, useDispatch } from 'react-redux';
+import { createHistory,addHistory,limitHistory,deleteHistory,updateHistory, resetHistory } from '../../model/historySlice';
+
 import HintHistory from '@/components/Hint/HintHistory';
 
 
@@ -43,15 +45,15 @@ function Importer(){
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
     const [PieNums,setPieNums]=useState(undefined);
 
-    //找到所有遺器後計算的所有數據，包含期望值、分數等
+    // 找到所有遺器後計算的所有數據，包含期望值、分數等
     const [RelicDataArr,setRelicDataArr]=useState([]);
     const RelicDataArrRef = useRef(null);
     
-    //共用statusMsg
+    // 共用statusMsg
     const {showStatus,updateStatus,hideStatus}=useStatusToast();
 
     // 定義 reducer
-    const reducer = (state, action) => {
+    /*const reducer = (state, action) => {
         switch (action.type) {
             case "CREATE":
                 return { ...state, historyData: [...action.payload] }; // 合併狀態
@@ -79,10 +81,10 @@ function Importer(){
         historyData: [] // 確保 historyData 預設為陣列
     };
     const [historyState,dispatchHistory]=useReducer(reducer, initialState );
-    const {historyData=[]} =historyState;
-
-    //狀態訊息
-    const [statusMsg,setStatusMsg]=useState(undefined);
+    const {historyData=[]} =historyState;*/
+    const dispatch = useDispatch();
+    const historyData = useSelector(state => state.history.historyData);
+    const [isLoad,setIsLoad] = useState(false);
 
     //自訂義標準
     const [selfStand,setSelfStand]=useState([]);
@@ -145,27 +147,29 @@ function Importer(){
 
 
     function initHistory(){
-        
+        //標記歷史紀錄尚未處理完
+        setIsLoad(false);
+
+        //清空redux儲存的歷史紀錄
+        dispatch(resetHistory());
+
         let history=JSON.parse(localStorage.getItem('importData'));
-        //先針對過往紀錄作清空
 
         if(history===null)return;
 
         showStatus('正在載入過往紀錄中......');
         
-
         //為了避免更新迭代而造成歷史紀錄格式上的問題 
         //必須要核對重大版本代號 如果版本不一致也不予顯示並且刪除
         history=history.filter((h)=>h.version===version);
         localStorage.setItem('importData',JSON.stringify(history));
 
         if(history != null && history.length > 0){
-            dispatchHistory({ type: "CREATE", payload: history })
-            updateStatus("先前紀錄已匯入!!","success");
+            dispatch(createHistory(history));
             console.log(history);
+            updateStatus("先前紀錄已匯入!!","success");
         }
-            
-            
+        setIsLoad(true);
     }
     
 
@@ -366,7 +370,8 @@ function Importer(){
                     avgRate:avgRate
                 };
 
-                dispatchHistory({ type: "UPDATE", payload: {index:index,newData:newHistorydata} });
+                //dispatchHistory({ type: "UPDATE", payload: {index:index,newData:newHistorydata} });
+                dispatch(updateHistory({ index: index, newData: newHistorydata }));
                 updateStatus('已更新','success');
                 setIsSaveAble(false);
                 let oldHistory=historyData;
@@ -382,11 +387,12 @@ function Importer(){
             
     },[historyData]);
 
-    //刪除過往紀錄
-    const updateHistory=useCallback((index)=>{
+    //刪除過往紀錄 
+    const deleteHistoryData=useCallback((index)=>{
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         let oldHistory=historyData;
-        dispatchHistory({ type: "DELETE", payload: index })
+        //dispatchHistory({ type: "DELETE", payload: index })
+        dispatch(deleteHistory({index:index}));
 
         oldHistory=oldHistory.filter((item,i)=>i!==index);
         localStorage.setItem('importData',JSON.stringify(oldHistory));
@@ -466,7 +472,8 @@ function Importer(){
 
         //如果原本紀錄超過6個 要先刪除原有紀錄
         if(historyData.length>=maxHistoryLength)
-            dispatchHistory({ type: "LIMIT" })
+            dispatch(limitHistory());
+            //dispatchHistory({ type: "LIMIT" })
 
         //如果當前沒有任何資料則不予匯入
         if(RelicDataArr.length === 0){
@@ -516,15 +523,14 @@ function Importer(){
         };
         let oldHistory=historyData;
         
-        dispatchHistory({ type: "ADD", payload: data })
+        //dispatchHistory({ type: "ADD", payload: data })
+        dispatch(addHistory(data));
         updateStatus('已儲存','success');
         setIsSaveAble(false);
         oldHistory.push(data);
         
         localStorage.setItem('importData',JSON.stringify(oldHistory));
-       
     }
-    
     
     //共用context狀態
     let ImporterStatus={
@@ -538,13 +544,15 @@ function Importer(){
         isChangeAble:isChangeAble,
         RelicDataArr:RelicDataArr,
         relicIndex:relicIndex,
+        isLoad:isLoad,
         
         //RelicData
         relic:relic,
         Rscore:Rscore,
         Rrank:Rrank,
+
         //方法
-        updateHistory:updateHistory,
+        deleteHistoryData:deleteHistoryData,
         checkDetails:checkDetails,
         updateDetails:updateDetails,
 
@@ -552,7 +560,6 @@ function Importer(){
         setCharID:setCharID,
         setSelfStand:setSelfStand,
         setIsSaveAble:setIsSaveAble,
-        setStatusMsg:setStatusMsg,
         setRelicIndex:setRelicIndex
     }
     
@@ -625,7 +632,6 @@ function Importer(){
                     </div>
                 </div>
             </div>
-            
             <div className={`flex flex-row flex-wrap mt-2 w-[100%] ${(!PieNums)?'hidden':''} bg-[rgba(0,0,0,0.5)] shadowBox px-2 mb-5 rounded-md`} >
                 <div className={`w-[100%] ${(PieNums===undefined)?'hidden':''} max-[500px]:justify-center`}>
                     <RelicSelect />
@@ -667,10 +673,6 @@ function Importer(){
                             <span className='!text-red-600 font-bold'>僅顯示符合條件的五星滿等遺器遺器</span>
                         </div>
                     }/>
-            <Tooltip id="ImporterHint" 
-                    place='right-start'
-                    render={()=><HintImporter/>}
-                    clickable={true}/>
         </div>
             
     </SiteContext.Provider>)

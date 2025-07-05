@@ -76,7 +76,9 @@ const SubAffixSelect=React.memo(({index})=>{
     }
 
     function updateSubData(val,index){
+        console.log(SubData.current);
         SubData.current.find((s,i)=>i===parseInt(index)).data=Number(val);
+
     }
 
     function updateSubCount(val,index){
@@ -93,22 +95,23 @@ const SubAffixSelect=React.memo(({index})=>{
         
         
 
-        return(<div className='my-1' key={'SubAffixSelect'}>
-            <select defaultValue={SubData.current[index].subaffix} 
-                    onChange={(event)=>updateSubAffix(event.target.value,index)} 
-                    className='graySelect'
-                    disabled={!isChangeAble}>
-                        {options}
+        return(
+            <div className='my-1' key={'SubAffixSelect'}>
+                <select defaultValue={SubData.current[index].subaffix} 
+                        onChange={(event)=>updateSubAffix(event.target.value,index)} 
+                        className='graySelect'
+                        disabled={!isChangeAble}>
+                            {options}
 
-            </select>
-            <input type='number' defaultValue={SubData.current[index].data}
-                    onChange={(event)=>updateSubData(event.target.value,index)}
-                    className='ml-2 max-w-[50px] bgInput text-center' 
-                    disabled={!isChangeAble} min={0} title='詞條數值'/>
-            <input type='number' defaultValue={SubData.current[index].count}
-                    onChange={(event)=>updateSubCount(event.target.value,index)}
-                    className='ml-2 text-center bgInput' disabled={!isChangeAble}
-                    min={0} max={5} title='強化次數'/>
+                </select>
+                <input type='number' defaultValue={SubData.current[index].data}
+                        onChange={(event)=>updateSubData(event.target.value,index)}
+                        className='ml-2 max-w-[50px] bgInput text-center' 
+                        disabled={!isChangeAble} min={0} title='詞條數值' />
+                <input type='number' defaultValue={SubData.current[index].count}
+                        onChange={(event)=>updateSubCount(event.target.value,index)}
+                        className='ml-2 text-center bgInput' disabled={!isChangeAble}
+                        min={0} max={5} title='強化次數' />
             </div>)
     }else{
         return(<></>)

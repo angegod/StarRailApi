@@ -5,12 +5,18 @@ import { Tooltip } from 'react-tooltip';
 import { useRouter } from 'next/navigation';
 import SiteContext from '../context/SiteContext';
 import RelicDataHint from './Hint/RelicDataHint';
+import { useSelector, useDispatch } from 'react-redux';
+import { setEnchantData } from '@/model/enchantDataSlice';
 
 
 //顯示儀器分數區間
 const RelicData=React.memo(({mode,button})=>{
     const {relic,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
     const router = useRouter();
+
+    //儲存模擬數據
+    const dispatch = useDispatch();
+    const enchantData = useSelector(state => state.enchant.enchantData);
     
     //導航至模擬強化頁面
     function navEnchant(){
@@ -21,8 +27,8 @@ const RelicData=React.memo(({mode,button})=>{
             standDetails:standDetails,
             mode:mode
         }
-        console.log(sendData);
-        localStorage.setItem('EnchantData',JSON.stringify(sendData));
+        
+        dispatch(setEnchantData(sendData));
         router.push('./enchant');
     }
 
@@ -159,6 +165,11 @@ const RelicData_simulate=React.memo(({mode,button})=>{
     const {relic,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
     
     const router = useRouter();
+
+    //儲存模擬數據
+    const dispatch = useDispatch();
+    //const enchantData = useSelector(state => state.enchant.enchantData);
+
     //導航至模擬強化頁面
     function navEnchant(){
         let sendData={
@@ -170,7 +181,7 @@ const RelicData_simulate=React.memo(({mode,button})=>{
         }
 
         //next專案必須這麼寫
-        localStorage.setItem('EnchantData',JSON.stringify(sendData));
+        dispatch(setEnchantData(sendData));
         router.push('./enchant');
     }
 
