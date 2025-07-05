@@ -9,8 +9,6 @@ import { RelicData, RelicData_simulate } from '../../components/RelicData';
 import { PieChart } from '@mui/x-charts/PieChart';
 import SiteContext from '@/context/SiteContext';
 import { useSelector,useDispatch } from 'react-redux';
-import HintImporter from '@/components/Hint/HintImporter';
-import { Tooltip } from 'react-tooltip';
 import { useRouter } from 'next/navigation';
 
 //此物件為單次模擬隨機強化後的結果
@@ -390,10 +388,7 @@ const Enchant=React.memo(()=>{
                         </div>
                     </div>
                 </div>
-                <Tooltip id="ImporterHint" 
-                    place='right-start'
-                    render={()=><HintImporter/>}
-                    clickable={true}/>
+                
             </div>
         </SiteContext.Provider>
     )

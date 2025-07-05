@@ -7,6 +7,7 @@ function HintImporter(){
                 <li>翻盤機率是指該遺器透過重洗詞條道具後遺器分數變高的機率為何</li>
                 <li>目前該工具只支援計算五星強化至滿等遺器</li>
                 <li>此工具相關數據仍有更改的可能，敬請見諒!</li>
+                <li>如果發現服務頻繁發生錯誤，可以先使用simulator。</li>
                 <li>操作說明可以參考
                 <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a></li>
             </ul>

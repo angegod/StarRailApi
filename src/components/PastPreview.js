@@ -50,16 +50,16 @@ const PastPreview_simulator=React.memo(({data,index})=>{
     let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
 
     return(<>
-        <div className='flex flex-row flex-wrap w-[300px] max-h-[120px] bg-slate-700 rounded-md p-2 m-2 max-[400px]:w-[95%] max-[400px]:flex-nowrap'>
-            <div className='flex flex-col mr-3'>
+        <div className='PastPreview clip-both-corners'>
+            <div className='flex flex-col mr-1'>
                 <div>
-                    <img src={BaseLink} alt='iconChar' className='w-[70px] min-w-[] rounded-[50px] max-[400px]:w-[50px]'/>
+                    <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]'/>
                 </div>
                 <div className='text-center'>
                     <span style={{color:data.rank.color}} className='font-bold text-xl'>{data.score}</span>
                 </div>
             </div>
-            <div className='flex flex-col '>
+            <div className='flex flex-col min-w-[200px] max-[900px]:min-w-[150px]'>
                 <div className='[&>span]:text-white flex justify-start [&>span]:max-[400px]:text-sm'>
                     <span className='w-[70px] max-[400px]:w-[60px] break-keep'>部位:</span>
                     <span>{data.part}</span>

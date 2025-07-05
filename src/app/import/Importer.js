@@ -20,6 +20,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createHistory,addHistory,limitHistory,deleteHistory,updateHistory, resetHistory } from '../../model/historySlice';
 
 import HintHistory from '@/components/Hint/HintHistory';
+import HintImporter from '@/components/Hint/HintImporter';
 
 
 function Importer(){
@@ -673,6 +674,10 @@ function Importer(){
                             <span className='!text-red-600 font-bold'>僅顯示符合條件的五星滿等遺器遺器</span>
                         </div>
                     }/>
+            <Tooltip id="ImporterHint" 
+                    place='right-start'
+                    render={()=><HintImporter/>}
+                    clickable={true}/>
         </div>
             
     </SiteContext.Provider>)

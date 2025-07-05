@@ -124,7 +124,7 @@ function Simulator(){
     }
 
     //刪除過往紀錄
-    function updateHistory(index){
+    function deleteHistoryData(index){
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         let newHistory = historyData.filter((item,i)=>i!==index);
         dispatch(deleteHistory(index));
@@ -434,10 +434,9 @@ function Simulator(){
         relic:relic,
         isLoad:isLoad,
 
-
-        updateHistory:updateHistory,
         checkDetails:checkDetails,
         simulate:simulate,
+        deleteHistoryData:deleteHistoryData,
 
         setCharID:setCharID,
         setIsChangeAble:setIsChangeAble,
@@ -451,7 +450,7 @@ function Simulator(){
     return(
     <SiteContext.Provider value={SimulatorStatus}>
         <div className='w-4/5 mx-auto max-[600px]:w-[90%] flex flex-row flex-wrap'>
-            <div className='flex flex-col  bg-[rgba(0,0,0,0.5)] p-2 rounded-md max-[1200px]:w-full'>
+            <div className='flex flex-col w-2/5 bg-[rgba(0,0,0,0.5)] p-2 rounded-md max-[1200px]:w-full'>
                 <div className='flex flex-row items-center'>
                     <h1 className='text-red-600 font-bold text-2xl'>遺器重洗模擬器</h1>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -536,7 +535,7 @@ function Simulator(){
                     
                 </div>
             </div>
-            <div className={`w-1/2 ml-2 bg-[rgba(0,0,0,0.5)] rounded-md p-2 h-fit max-[1200px]:w-[100%] max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
+            <div className={`w-[55%] ml-2 bg-[rgba(0,0,0,0.5)] rounded-md p-2 h-fit max-[1200px]:w-[100%] max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
                 <div className='flex flex-row items-center'>
                     <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -544,7 +543,7 @@ function Simulator(){
                         <span className='text-white'>?</span>
                     </div>
                 </div>
-                <div className='flex flex-row flex-wrap h-max max-h-[600px] overflow-y-scroll hiddenScrollBar max-[600px]:!flex-col max-[600px]:!flex-nowrap'>
+                <div className='flex flex-row flex-wrap h-max max-h-[300px] overflow-y-scroll hiddenScrollBar max-[600px]:!flex-col max-[600px]:!flex-nowrap max-[600px]:items-center'>
                     <PastPreviewList_simulator />
                 </div>
             </div>
