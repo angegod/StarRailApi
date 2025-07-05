@@ -7,7 +7,6 @@ import Link from 'next/link';
 const PastPreviewList=React.memo(()=>{
     const {isLoad} = useContext(SiteContext);//是否處理完reset?
     const historyData=useSelector(state => state.history.historyData);
-    console.log(historyData);
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}/`:'../'
     introPath = introPath +'/intro';
     

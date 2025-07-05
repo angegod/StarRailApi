@@ -34,7 +34,7 @@ const PastPreview=React.memo(({index,data})=>{
                 </div>
                 <div className='[&>button]:max-[400px]:text-sm flex flex-row max-[400px]:justify-evenly'>
                     <button className='processBtn mr-2 px-1' onClick={()=>checkDetails(index)} disabled={!isChangeAble}>檢視</button>
-                    <button className='processBtn mr-2 px-1' onClick={()=>updateDetail(index)} disabled={!isChangeAble}>更新</button>
+                    <button className='processBtn mr-2 px-1' onClick={()=>updateDetails(index)} disabled={!isChangeAble}>更新</button>
                     <button className='deleteBtn px-1' onClick={()=>deleteHistoryData(index)} disabled={!isChangeAble}>刪除</button>
                 </div>
             </div>

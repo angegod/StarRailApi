@@ -1,5 +1,5 @@
 'use client';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AffixName from '../data/AffixName';
 import { Tooltip } from 'react-tooltip';
 import { useRouter } from 'next/navigation';
@@ -7,17 +7,36 @@ import SiteContext from '../context/SiteContext';
 import RelicDataHint from './Hint/RelicDataHint';
 import { useSelector, useDispatch } from 'react-redux';
 import { setEnchantData } from '@/model/enchantDataSlice';
+import { jsx } from 'react/jsx-runtime';
 
 
 //顯示儀器分數區間
 const RelicData=React.memo(({mode,button})=>{
-    const {relic,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
+    const {relic,setRelic,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
     const router = useRouter();
 
     //儲存模擬數據
     const dispatch = useDispatch();
-    const enchantData = useSelector(state => state.enchant.enchantData);
-    
+
+    useEffect(() => {
+        if(relic?.sub_affix){
+            const relicBackup = JSON.parse(JSON.stringify(relic));
+
+            relicBackup.sub_affix.forEach((s) => {
+                if(s.name === "攻擊力" && s.display.includes('%')){
+                    s.name = "攻擊力%數";
+                } else if(s.name === "防禦力" && s.display.includes('%')){
+                    s.name = "防禦力%數";
+                } else if(s.name === "生命值" && s.display.includes('%')){
+                    s.name = "生命值%數";
+                }
+            });
+
+            setRelic(relicBackup);
+        }
+    }, [relic?.sub_affix?.length]); 
+
+
     //導航至模擬強化頁面
     function navEnchant(){
         let sendData={
@@ -33,6 +52,8 @@ const RelicData=React.memo(({mode,button})=>{
     }
 
     if(relic!==undefined){
+        //深拷貝既有遺器資訊
+        
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix.name).icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} 
@@ -40,21 +61,11 @@ const RelicData=React.memo(({mode,button})=>{
 
         const list=[];
         const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
-
+        
         relic.sub_affix.forEach((s)=>{
             let markcolor="";
             let isBold=(standDetails.find((st)=>st.name===s.name)!==undefined)?true:false;
             
-            if(s.name==="攻擊力"&&s.display.includes('%')){
-                s.name="攻擊力%數";
-            }
-            else if(s.name==="防禦力"&&s.display.includes('%')){
-                s.name="防禦力%數";
-            }else if(s.name==="生命值"&&s.display.includes('%')){
-                s.name="生命值%數";
-            }
-
-
             var IconName = AffixName.find((a)=>a.name===s.name).icon;
             
             var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
@@ -104,8 +115,8 @@ const RelicData=React.memo(({mode,button})=>{
                 </div>
                 
             )
-        })
-        
+        });
+
         
         return(
             <div className={`w-[100%] my-1 ${(relic!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>

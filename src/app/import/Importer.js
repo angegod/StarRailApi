@@ -561,7 +561,8 @@ function Importer(){
         setCharID:setCharID,
         setSelfStand:setSelfStand,
         setIsSaveAble:setIsSaveAble,
-        setRelicIndex:setRelicIndex
+        setRelicIndex:setRelicIndex,
+        setRelic:setRelic
     }
     
     return(
