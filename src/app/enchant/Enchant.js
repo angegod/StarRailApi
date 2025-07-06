@@ -10,6 +10,8 @@ import { PieChart } from '@mui/x-charts/PieChart';
 import SiteContext from '@/context/SiteContext';
 import { useSelector,useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
+import { Tooltip } from 'react-tooltip';
+import HintEnchant from '@/components/Hint/HintEnchant';
 
 //此物件為單次模擬隨機強化後的結果
 const Enchant=React.memo(()=>{
@@ -329,7 +331,7 @@ const Enchant=React.memo(()=>{
     const ResultSection=(simulatorData.newData!==undefined&&simulatorData.oldData!==undefined)?(
         <div className='flex flex-row flex-wrap  max-[600px]:!flex-col'>
             <DataList standDetails={standDetails} data={simulatorData.oldData} title={'重洗前'} />
-            <div className={`flex my-auto w-[30px] moveAnimate moveAnimate2 max-[600px]:w-full  h-[30px] ${(simulatorData.newData===null)?'hidden':''}`} >
+            <div className={`flex my-auto w-[30px] moveAnimate moveAnimate2 max-[600px]:w-full h-[30px] ${(simulatorData.newData===null)?'hidden':''}`} >
                 <svg xmlns="http://www.w3.org/2000/svg" className='max-[600px]:hidden mx-auto'
                     height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/></svg>
                 <svg xmlns="http://www.w3.org/2000/svg" className='min-[600px]:hidden mx-auto'
@@ -346,7 +348,10 @@ const Enchant=React.memo(()=>{
         standDetails:standDetails,
         isChangeAble:isChangeAble,
         standDetails:standDetails,
-        partArr:partArr
+        partArr:partArr,
+        PieNums:statics,
+        successCount:successCount,
+        count:count
     };
     
     return(
@@ -363,11 +368,11 @@ const Enchant=React.memo(()=>{
                             <StandDetails />
                         </div>
                     </div>
-                    <div className='w-1/2 bg-[rgba(0,0,0,0.5)] p-2 rounded-md max-[900px]:w-[100%] flex flex-col max-[900px]:items-center'>
+                    <div className='w-1/2 bg-[rgba(0,0,0,0.5)] h-fit p-2 rounded-md max-[900px]:w-[100%] flex flex-col max-[900px]:items-center'>
                         <div className='flex flex-row'>
                             <div className='items-center flex flex-row'>
                                 <span className='text-red-600 text-lg font-bold'>模擬強化</span>
-                                <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="ImporterHint">
+                                <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="EnchantHint">
                                     <span className='text-white'>?</span>
                                 </div>
                             </div>
@@ -383,13 +388,18 @@ const Enchant=React.memo(()=>{
                         <div>
                             {ResultSection}
                         </div>
-                        <div className=''>
-                            <Pie PieNums={statics} successCount={successCount}/> 
+                        <div>
+                            <Pie /> 
                         </div>
                     </div>
                 </div>
                 
             </div>
+            <Tooltip id="EnchantHint"  
+                    place="right-start" 
+                    render={()=>
+                        <HintEnchant />
+                    }/>
         </SiteContext.Provider>
     )
      
@@ -477,10 +487,12 @@ const DataList=React.memo(({standDetails,data,title})=>{
     
 });
 
-const Pie=React.memo(({PieNums,successCount})=>{
+const Pie=React.memo(()=>{
+    const {PieNums,successCount,count} =useContext(SiteContext);
+
     if(PieNums!==undefined){
         const pieParams = {
-            height: 200,
+            height: (count === 0)?0:200,
             margin:{ top: 10, right: 0, bottom: 0, left: 0 },
             slotProps: { legend: { hidden: true } },
         };
@@ -498,7 +510,7 @@ const Pie=React.memo(({PieNums,successCount})=>{
                         }
                     ]}  {...pieParams} />
                 </div>
-                <div className={`flex flex-col w-2/5 max-[500px]:w-[100%] mt-2 hidden ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
+                <div className={`flex-col w-2/5 max-[500px]:w-[100%] mt-2 hidden ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
                     <div className='flex flex-col max-[600px]:w-3/5 max-[600px]:mx-auto'>
                         <div>
                             <span className='text-amber-700 font-bold text-lg'>模擬次數</span>
@@ -517,7 +529,7 @@ const Pie=React.memo(({PieNums,successCount})=>{
                         </div>
                         
                     </div>
-                    <div className='flex flex-col justify-center hidden max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                    <div className='flex-col justify-center hidden max-[600px]:w-3/5 max-[600px]:mx-auto'>
                         <div className='flex justify-start'>
                             <span className='text-amber-700 font-bold text-lg'>翻盤次數</span>
                         </div>

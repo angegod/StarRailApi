@@ -327,7 +327,8 @@ function Importer(){
     //更新紀錄
     const updateDetails=useCallback(async (index)=>{
         showStatus('正在更新資料中');
-        let data=historyData[index];
+        let originData = JSON.parse(JSON.stringify(historyData));
+        let data = originData[index];
 
         let sendData={
             uid:data.userID,
@@ -335,7 +336,9 @@ function Importer(){
             partsIndex:7
         };
 
-        await getRecord(sendData,data.dataArr[0].standDetails)
+        let cloneDetails = data.dataArr[0].standDetails.map(item => ({ ...item }));
+
+        await getRecord(sendData,cloneDetails)
         .then(()=>{
             console.log(RelicDataArrRef.current);
             //計算平均分數與平均機率
@@ -371,19 +374,20 @@ function Importer(){
                     avgRate:avgRate
                 };
 
-                //dispatchHistory({ type: "UPDATE", payload: {index:index,newData:newHistorydata} });
                 dispatch(updateHistory({ index: index, newData: newHistorydata }));
                 updateStatus('已更新','success');
                 setIsSaveAble(false);
-                let oldHistory=historyData;
+                let oldHistory=JSON.parse(JSON.stringify(historyData));
                 oldHistory[index]=newHistorydata;
                 localStorage.setItem('importData',JSON.stringify(oldHistory));
             }
 
 
             
-        }).catch(()=>{
-            console.log('error');
+        }).catch((error)=>{
+            console.error("錯誤發生：", error);             // 原始錯誤物件
+            console.error("錯誤訊息：", error.message);     // 錯誤文字
+            console.error("堆疊追蹤：", error.stack);       // 🔥 鎖定發生行數
         });
             
     },[historyData]);
@@ -588,7 +592,7 @@ function Importer(){
                                         onChange={(e)=>userID.current=e.target.value}
                                         disabled={!isChangeAble}/>
                             </div>
-                            <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col items-center'>
+                            <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col'>
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                                 </div>                       

@@ -19,7 +19,8 @@ const RelicData=React.memo(({mode,button})=>{
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if(relic?.sub_affix){
+        //當遺器數據跟setRelic初始化完成 才進行數據修改
+        if(relic?.sub_affix && typeof setRelic === 'function'){
             const relicBackup = JSON.parse(JSON.stringify(relic));
 
             relicBackup.sub_affix.forEach((s) => {

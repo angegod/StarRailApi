@@ -536,7 +536,7 @@ function Simulator(){
                 </div>
             </div>
             <div className={`w-[55%] ml-2 bg-[rgba(0,0,0,0.5)] rounded-md p-2 h-fit max-[1200px]:w-[100%] max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
-                <div className='flex flex-row items-center'>
+                <div className='flex flex-row items-baseline px-2 max-[600px]:justify-center'>
                     <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                     <div className='hintIcon ml-2 overflow-visible'
                         data-tooltip-id="HistoryHint"> 
