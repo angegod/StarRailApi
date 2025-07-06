@@ -555,6 +555,8 @@ function Importer(){
         relic:relic,
         Rscore:Rscore,
         Rrank:Rrank,
+        ExpRate:ExpRate,
+        PieNums:PieNums,
 
         //方法
         deleteHistoryData:deleteHistoryData,
@@ -649,10 +651,7 @@ function Importer(){
                     <StandDetails />
                 </div>
                 <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] ${(!PieNums)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} id="resultDetails">
-                    <Result ExpRate={ExpRate} 
-                            Rscore={Rscore} 
-                            Rrank={Rrank} 
-                            PieNums={PieNums}/>
+                    <Result />
                 </div>
             </div>
         </div>

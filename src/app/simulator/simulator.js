@@ -429,10 +429,14 @@ function Simulator(){
         MainSelectOptions:MainSelectOptions,
         SubData:SubData,
         simulatorData:simulatorData,
-        Rrank:Rrank,
-        Rscore:Rscore,
         relic:relic,
         isLoad:isLoad,
+
+        //RelicData for Result
+        Rscore:Rscore,
+        Rrank:Rrank,
+        ExpRate:ExpRate,
+        PieNums:PieNums,
 
         checkDetails:checkDetails,
         simulate:simulate,
@@ -556,11 +560,7 @@ function Simulator(){
                         <StandDetails />
                     </div>
                     <div className='flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] max-[500px]:w-4/5 max-[500px]:mx-auto ' id="resultDetails">
-                        <Result ExpRate={ExpRate} 
-                                Rscore={Rscore} 
-                                statusMsg={statusMsg} 
-                                Rrank={Rrank} 
-                                PieNums={PieNums}/>
+                        <Result />
                     </div>
                 </div>
             </div>
