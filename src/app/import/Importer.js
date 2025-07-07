@@ -478,7 +478,6 @@ function Importer(){
         //如果原本紀錄超過6個 要先刪除原有紀錄
         if(historyData.length>=maxHistoryLength)
             dispatch(limitHistory());
-            //dispatchHistory({ type: "LIMIT" })
 
         //如果當前沒有任何資料則不予匯入
         if(RelicDataArr.length === 0){
@@ -526,14 +525,17 @@ function Importer(){
             avgRank:avgRank,
             avgRate:avgRate
         };
-        let oldHistory=historyData;
+
+        //針對原紀錄做深拷貝
+        let oldHistory=JSON.parse(JSON.stringify(historyData));
         
-        //dispatchHistory({ type: "ADD", payload: data })
         dispatch(addHistory(data));
+        oldHistory.push(data);
         updateStatus('已儲存','success');
         setIsSaveAble(false);
-        oldHistory.push(data);
+
         
+        //覆蓋原有紀錄
         localStorage.setItem('importData',JSON.stringify(oldHistory));
     }
     

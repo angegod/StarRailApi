@@ -63,7 +63,7 @@ const RelicData=React.memo(({mode,button})=>{
         const list=[];
         const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
         
-        relic.sub_affix.forEach((s)=>{
+        relic.sub_affix.forEach((s,i)=>{
             let markcolor="";
             let isBold=(standDetails.find((st)=>st.name===s.name)!==undefined)?true:false;
             
@@ -96,7 +96,7 @@ const RelicData=React.memo(({mode,button})=>{
             }
 
             list.push(
-                <div className='flex flex-row' key={'Subaffix_'+s.name}>
+                <div className='flex flex-row' key={`Subaffix_${s.name}_${i}`}>
                     <div className='flex justify-center items-center'>
                         <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
                             flex justify-center items-center' style={{backgroundColor:markcolor}}>
