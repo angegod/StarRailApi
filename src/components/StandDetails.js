@@ -2,6 +2,7 @@ import React, {  useContext } from 'react';
 import AffixName from '../data/AffixName';
 import SiteContext from '../context/SiteContext';
 import Image from 'next/image';
+import { useStatusToast } from '@/context/StatusMsg';
 
 const StandDetails=React.memo(()=>{
     const {standDetails} = useContext(SiteContext);
@@ -44,6 +45,8 @@ const StandDetails=React.memo(()=>{
 //顯示你所輸入的標準
 const ShowStand=React.memo(()=>{
     const {selfStand,setSelfStand,setStatusMsg,isChangeAble} = useContext(SiteContext);
+    // 共用statusMsg
+    const {showStatus,updateStatus,hideStatus}=useStatusToast();
     if(selfStand !== null){
         const list=selfStand.map((s,i)=>{
         
@@ -89,12 +92,13 @@ const ShowStand=React.memo(()=>{
         function changeVal(index,val){
             if(val>1||val<0){
                 val=1;
-                setStatusMsg('加權指數不可高於1或低於0!')
+                event.target.value=1;
+                updateStatus('加權指數不可高於1或低於0!','error');
             }
     
-            let stand=selfStand;
-            selfStand[index].value=val;
-    
+            const stand = [...selfStand]; // 複製陣列
+            stand[index] = { ...stand[index], value: val }; // 複製物件並修改 value
+
             setSelfStand(stand);
         }
     
