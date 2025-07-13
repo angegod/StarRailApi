@@ -8,6 +8,8 @@ const characters = [
     { charID: 1008, name: "阿蘭", eng_name: "Arlan" },
     { charID: 1009, name: "艾斯妲", eng_name: "Asta" },
     { charID: 1013, name: "黑塔", eng_name: "Herta" },
+    { charID: 1014, name: "Saber", eng_name: "Saber" },
+    { charID: 1015, name: "Archer", eng_name: "Archer" },
     { charID: 1101, name: "布洛尼亞", eng_name: "Bronya" },
     { charID: 1102, name: "希兒", eng_name: "Seele" },
     { charID: 1103, name: "希露瓦", eng_name: "Serval" },
