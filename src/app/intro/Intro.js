@@ -19,7 +19,7 @@ function Intro(){
                             className="inline align-middle h-[25px] w-auto ml-1"/>
                     </div>
                     <div className='[&>span]:text-white flex flex-col'>
-                        <span>A:崩鐵2.7版本中推出了一個道具叫<span className='text-yellow-500'>變量骰子</span></span>
+                        <span>A:崩鐵2.7版本中推出了一個道具叫<span className='text-yellow-500 font-bold'>變量骰子</span></span>
                         <span className="text-md leading-tight">
                             此道具可以針對強化至滿等的五星遺器作詞條隨機重新分配的動作                        
                         </span>
@@ -34,7 +34,7 @@ function Intro(){
                     </div>
                     <div>
                         <span className='text-white'>A:崩鐵的遺器沒有散件的概念，儘管說詞條配置不錯，但如果出錯套裝仍功虧一簣</span>
-                        <span className='text-white flex flex-row items-center'>更何況強化結果有可能會不盡人意，這個道具就是給予每件遺器重生的機會</span>
+                        <span className='text-white flex flex-row items-center'>更何況強化結果有可能會不盡人意，這個道具可以給予遺器重生的機會</span>
                     </div>
                 </div>
                 <div className="flex flex-col [&>div]:my-1 ">
@@ -45,8 +45,10 @@ function Intro(){
                     </div>
                     <div className='flex flex-col'>
                         <span className='text-white'>A:這個就是為何要使用本工具了!本工具不僅可以根據你想要的詞條配置</span>
-                        <span className='text-red-500 font-bold'>計算出每件遺器所有可能的強化組合<span className='text-white'>以及計算出在這些組合中翻盤的機率</span></span>
-                                        
+                        <span className='text-white'>
+                            計算出<span className='text-red-500 font-bold'>每件遺器所有可能的強化組合</span>
+                            以及計算出在<span className='text-red-500 font-bold'>這些組合中翻盤的機率</span>        
+                        </span>
                     </div>
                 </div>
                 <div className="flex flex-col [&>div]:my-1 ">

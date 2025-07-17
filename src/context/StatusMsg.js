@@ -72,10 +72,6 @@ export const StatusToastProvider = ({ children }) => {
         }, 1000);
     };
 
-
-    
-
-
     return (
         <StatusToastContext.Provider value={{ showStatus, updateStatus, hideStatus }}>
             {children}
@@ -102,21 +98,27 @@ const MsgIcon = ({bgMode}) =>{
         case "error":
             imageSrc = 'cancel.svg';
             break;
-        default:
+        case "process":
             imageSrc = 'retry.svg';
             className='animate-spin';
+            break;
+        default:
             break;
     }
 
 
-    return(
-        <Image 
-                src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/${imageSrc}`}
-                alt="Logo"
-                width={25}
-                height={25}
-                className={`${className} mr-2`}/>
-    )
+    if(bgMode !== "default"){
+        return(
+            <Image 
+                    src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/${imageSrc}`}
+                    alt="Logo"
+                    width={25}
+                    height={25}
+                    className={`${className} mr-2`}/>
+        )
+    }else{
+        return null
+    }
 }
 
 export const useStatusToast = () => useContext(StatusToastContext);

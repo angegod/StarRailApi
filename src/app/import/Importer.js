@@ -27,6 +27,7 @@ function Importer(){
     //版本序號
     const version="1.4";
     const maxHistoryLength = 6;
+    const LocalStorageLocation = "importData";
 
     //玩家ID跟腳色ID
     const userID=useRef('');
@@ -122,25 +123,25 @@ function Importer(){
         //清空redux儲存的歷史紀錄
         dispatch(resetHistory());
 
-        let history=JSON.parse(localStorage.getItem('importData'));
+        let history=JSON.parse(localStorage.getItem(LocalStorageLocation));
         if(history===null){
             updateStatus("尚未有任何操作紀錄","default");
             setIsLoad(true);
             return;
         }
 
-        showStatus('正在載入過往紀錄中......');
+        showStatus('正在載入過往紀錄中.....','process');
         
         //為了避免更新迭代而造成歷史紀錄格式上的問題 
         //必須要核對重大版本代號 如果版本不一致也不予顯示並且刪除
         history=history.filter((h)=>h.version===version);
-        localStorage.setItem('importData',JSON.stringify(history));
+        localStorage.setItem(LocalStorageLocation,JSON.stringify(history));
 
         if(history != null && history.length > 0){
             dispatch(createHistory(history));
             updateStatus("先前紀錄已匯入!!","success");
         }else{
-            updateStatus("尚未有任何操作紀錄","success");
+            updateStatus("尚未有任何操作紀錄","default");
         }
         setIsLoad(true);
         
@@ -183,7 +184,7 @@ function Importer(){
 
         //送出之前先清空一次資料
         setIsSaveAble(false);
-        showStatus('正在尋找匹配資料......');
+        showStatus('正在尋找匹配資料......','process');
         setIsChangeAble(false);
         clearData();
 
@@ -286,6 +287,7 @@ function Importer(){
         setRelicDataArr([...data.dataArr]);
         setRelicIndex(0);
         setIsSaveAble(false); 
+        updateStatus("資料替換完畢!!",'success');
 
         //避免第一次顯示區塊 而導致滾動失常
         requestAnimationFrame(()=>{
@@ -298,7 +300,7 @@ function Importer(){
 
     //更新紀錄
     const updateDetails=useCallback(async (index)=>{
-        showStatus('正在更新資料中');
+        showStatus('正在更新資料中......','process');
         let originData = JSON.parse(JSON.stringify(historyData));
         let data = originData[index];
 
@@ -351,11 +353,9 @@ function Importer(){
                 setIsSaveAble(false);
                 let oldHistory=JSON.parse(JSON.stringify(historyData));
                 oldHistory[index]=newHistorydata;
-                localStorage.setItem('importData',JSON.stringify(oldHistory));
+                localStorage.setItem(LocalStorageLocation,JSON.stringify(oldHistory));
             }
-
-
-            
+      
         }).catch((error)=>{
             console.error("錯誤發生：", error);             // 原始錯誤物件
             console.error("錯誤訊息：", error.message);     // 錯誤文字
@@ -372,7 +372,7 @@ function Importer(){
         dispatch(deleteHistory(index));
 
         oldHistory=oldHistory.filter((item,i)=>i!==index);
-        localStorage.setItem('importData',JSON.stringify(oldHistory));
+        localStorage.setItem(LocalStorageLocation,JSON.stringify(oldHistory));
         //強制觸發刷新紀錄
 
         setTimeout(() => {
@@ -422,7 +422,7 @@ function Importer(){
             };
             
             if(isCheck){
-                showStatus('數據計算處理中......');
+                showStatus('數據計算處理中......','process');
                 worker.postMessage(postData);
 
                 // 接收 Worker 返回的訊息
@@ -506,9 +506,8 @@ function Importer(){
         updateStatus('已儲存','success');
         setIsSaveAble(false);
 
-        
         //覆蓋原有紀錄
-        localStorage.setItem('importData',JSON.stringify(oldHistory));
+        localStorage.setItem(LocalStorageLocation,JSON.stringify(oldHistory));
     }
     
     //共用context狀態
@@ -600,7 +599,7 @@ function Importer(){
                             
                         </div>
                     </div>
-                    <div className={`w-[55%] pb-3 pt-1 h-fit ${(historyData.length===0)?'hidden':''} flex-wrap max-[1250px]:w-[100%] max-[1250px]:mb-5 ml-2 bg-[rgba(0,0,0,0.5)] rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
+                    <div className={`w-[55%] pb-3 pt-1 h-fit flex-wrap max-[1250px]:w-[100%] max-[1250px]:mb-5 ml-2 bg-[rgba(0,0,0,0.5)] rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
                         <div className='flex flex-row items-baseline px-2 max-[600px]:justify-center'>
                             <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                             <div className='hintIcon ml-2 overflow-visible'

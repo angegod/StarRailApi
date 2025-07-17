@@ -4,9 +4,11 @@ import SiteContext from '../context/SiteContext';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import Link from 'next/link';
+
 const PastPreviewList=React.memo(()=>{
     const {isLoad} = useContext(SiteContext);//是否處理完reset?
     const historyData=useSelector(state => state.history.historyData);
+    console.log(historyData);
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}/`:'../'
     introPath = introPath +'/intro';
     
@@ -20,7 +22,7 @@ const PastPreviewList=React.memo(()=>{
         })
         
         return <>{renderList}</>;
-    }else if(isLoad){
+    }else{
         return (
             <div className='flex flex-col'>
                 <span className='text-stone-300'>這裡沒有任何操作過的紀錄!!</span>
