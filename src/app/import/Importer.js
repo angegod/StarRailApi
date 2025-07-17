@@ -368,8 +368,8 @@ function Importer(){
     const deleteHistoryData=useCallback((index)=>{
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         let oldHistory=historyData;
-        //dispatchHistory({ type: "DELETE", payload: index })
-        dispatch(deleteHistory({index:index}));
+        console.log(index);
+        dispatch(deleteHistory(index));
 
         oldHistory=oldHistory.filter((item,i)=>i!==index);
         localStorage.setItem('importData',JSON.stringify(oldHistory));
