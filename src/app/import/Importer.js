@@ -53,36 +53,6 @@ function Importer(){
     // 共用statusMsg
     const {showStatus,updateStatus,hideStatus}=useStatusToast();
 
-    // 定義 reducer
-    /*const reducer = (state, action) => {
-        switch (action.type) {
-            case "CREATE":
-                return { ...state, historyData: [...action.payload] }; // 合併狀態
-            case "ADD":
-                const newHistoryData = [...state.historyData]; // 創建新的陣列
-                //newHistoryData.push(action.payload); // 在新陣列上 push
-                console.log(newHistoryData);
-                return { ...state, historyData: newHistoryData }; // 回傳新的 state
-            case "LIMIT":
-                return { ...state, historyData: state.historyData.filter((item, i) => i !== 0) }; // 刪除第一項
-            case "DELETE":
-                return { ...state, historyData: state.historyData.filter((item, i) => i !== action.payload) }; // 刪除指定項
-            case "UPDATE":
-                const updatedHistory = state.historyData.map((item, i) =>
-                    i === action.payload.index ? { ...item, ...action.payload.newData } : item
-                );
-                return { ...state, historyData: updatedHistory };    
-            default:
-                return state;
-        }
-    };
-    
-    //歷史紀錄
-    const initialState = {
-        historyData: [] // 確保 historyData 預設為陣列
-    };
-    const [historyState,dispatchHistory]=useReducer(reducer, initialState );
-    const {historyData=[]} =historyState;*/
     const dispatch = useDispatch();
     const historyData = useSelector(state => state.history.historyData);
     const [isLoad,setIsLoad] = useState(false);
@@ -123,12 +93,10 @@ function Importer(){
             setRelic(RelicDataArr[relicIndex].relic)
             setExpRate(RelicDataArr[relicIndex].ExpRate);
             setRscore(RelicDataArr[relicIndex].Rscore)
-            updateStatus('資料顯示完畢',"success");
             setPieNums(RelicDataArr[relicIndex].PieNums);
             setRank(RelicDataArr[relicIndex].Rank);
 
             standDetails.current=RelicDataArr[relicIndex].standDetails;
-
             //還原至初始狀態
             setIsChangeAble(true);
         }
@@ -155,8 +123,11 @@ function Importer(){
         dispatch(resetHistory());
 
         let history=JSON.parse(localStorage.getItem('importData'));
-
-        if(history===null)return;
+        if(history===null){
+            updateStatus("尚未有任何操作紀錄","default");
+            setIsLoad(true);
+            return;
+        }
 
         showStatus('正在載入過往紀錄中......');
         
@@ -167,10 +138,12 @@ function Importer(){
 
         if(history != null && history.length > 0){
             dispatch(createHistory(history));
-            console.log(history);
             updateStatus("先前紀錄已匯入!!","success");
+        }else{
+            updateStatus("尚未有任何操作紀錄","success");
         }
         setIsLoad(true);
+        
     }
     
 
@@ -275,8 +248,6 @@ function Importer(){
 
     async function process(relicArr,standard = undefined){
         let temparr = [];
-        console.log(standard);
-
         //檢查加權標準
         standard.forEach((s)=>{
             if(s.value===''){
@@ -292,9 +263,10 @@ function Importer(){
         }
         
         setRelicDataArr(temparr);
+        setIsSaveAble(true);
         RelicDataArrRef.current=temparr;
         //如果是剛查詢完的 則改成可以儲存
-        setIsSaveAble(true);
+        updateStatus('資料顯示完畢',"success");
        
     }
 
@@ -550,7 +522,6 @@ function Importer(){
         historyData:historyData,
         isChangeAble:isChangeAble,
         RelicDataArr:RelicDataArr,
-        relicIndex:relicIndex,
         isLoad:isLoad,
         
         //RelicData
@@ -559,6 +530,7 @@ function Importer(){
         Rrank:Rrank,
         ExpRate:ExpRate,
         PieNums:PieNums,
+        relicIndex:relicIndex,
 
         //方法
         deleteHistoryData:deleteHistoryData,

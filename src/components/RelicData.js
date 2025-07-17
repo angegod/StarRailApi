@@ -14,29 +14,8 @@ import { jsx } from 'react/jsx-runtime';
 const RelicData=React.memo(({mode,button})=>{
     const {relic,setRelic,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
     const router = useRouter();
-
     //儲存模擬數據
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        //當遺器數據跟setRelic初始化完成 才進行數據修改
-        if(relic?.sub_affix && typeof setRelic === 'function'){
-            const relicBackup = JSON.parse(JSON.stringify(relic));
-
-            relicBackup.sub_affix.forEach((s) => {
-                if(s.name === "攻擊力" && s.display.includes('%')){
-                    s.name = "攻擊力%數";
-                } else if(s.name === "防禦力" && s.display.includes('%')){
-                    s.name = "防禦力%數";
-                } else if(s.name === "生命值" && s.display.includes('%')){
-                    s.name = "生命值%數";
-                }
-            });
-
-            setRelic(relicBackup);
-        }
-    }, [relic?.sub_affix?.length]); 
-
 
     //導航至模擬強化頁面
     function navEnchant(){
@@ -53,8 +32,6 @@ const RelicData=React.memo(({mode,button})=>{
     }
 
     if(relic!==undefined){
-        //深拷貝既有遺器資訊
-        
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix.name).icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} 
@@ -64,8 +41,19 @@ const RelicData=React.memo(({mode,button})=>{
         const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
         
         relic.sub_affix.forEach((s,i)=>{
+
+            let showAffix = '';
+            if(s.name === "攻擊力" && s.display.includes('%')){
+                showAffix = "攻擊力%數";
+            } else if(s.name === "防禦力" && s.display.includes('%')){
+                showAffix = "防禦力%數";
+            } else if(s.name === "生命值" && s.display.includes('%')){
+                showAffix = "生命值%數";
+            }else
+                showAffix = s.name ;
+
             let markcolor="";
-            let isBold=(standDetails.find((st)=>st.name===s.name)!==undefined)?true:false;
+            let isBold=(standDetails.find((st)=>st.name===showAffix)!==undefined)?true:false;
             
             var IconName = AffixName.find((a)=>a.name===s.name).icon;
             
@@ -107,7 +95,7 @@ const RelicData=React.memo(({mode,button})=>{
                         <div className='flex justify-center items-center'>
                             <img src={imglink} alt='555' width={24} height={24}/>
                         </div>
-                        <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.name}</span>
+                        <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{showAffix}</span>
                     </div>
                     <div className='flex w-[70px]'>
                         <span className='mr-1'>:</span>
@@ -137,7 +125,7 @@ const RelicData=React.memo(({mode,button})=>{
                 <div className='mt-1 flex flex-col'>
                     <span className='text-stone-400'>部位</span>
                     <div className='flex flex-row'>
-                        <span className='text-white'>{(relic.type===5)?partArr[5]:(relic.type===6)?partArr[4]:partArr[relic.type-1]}</span>   
+                        <span className='text-white'>{partArr[relic.type-1]}</span>   
                     </div>
                 </div>
                 <div className='mt-1'>

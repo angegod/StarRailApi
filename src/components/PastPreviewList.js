@@ -10,7 +10,6 @@ const PastPreviewList=React.memo(()=>{
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}/`:'../'
     introPath = introPath +'/intro';
     
-    
     if(historyData&&historyData.length>0&&isLoad){
         const renderList=historyData.map((item,i)=>{
             return(
@@ -21,7 +20,7 @@ const PastPreviewList=React.memo(()=>{
         })
         
         return <>{renderList}</>;
-    }else{
+    }else if(isLoad){
         return (
             <div className='flex flex-col'>
                 <span className='text-stone-300'>這裡沒有任何操作過的紀錄!!</span>
