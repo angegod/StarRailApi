@@ -188,13 +188,13 @@ function Importer(){
         setIsChangeAble(false);
         clearData();
 
-        console.log(sendData);
+        //console.log(sendData);
         await axios.post(apiLink,sendData,{
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(async (response)=>{
-            console.log(response.data);
+            //console.log(response.data);
 
             switch(response.data){
                 case 800:
@@ -247,7 +247,7 @@ function Importer(){
         })
     }
 
-    async function process(relicArr,standard = undefined){
+    const process=useCallback(async(relicArr,standard = undefined)=>{
         let temparr = [];
         //檢查加權標準
         standard.forEach((s)=>{
@@ -269,7 +269,7 @@ function Importer(){
         //如果是剛查詢完的 則改成可以儲存
         updateStatus('資料顯示完畢',"success");
        
-    }
+    },[RelicDataArr,isSaveAble])
 
     //刪除紀錄
     function clearData(){
