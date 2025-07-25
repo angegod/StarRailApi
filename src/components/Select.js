@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 const Select = dynamic(() => import("react-select"), { ssr: false });
 import SiteContext from '../context/SiteContext';
 import { Tooltip } from 'react-tooltip';
+import Image from 'next/image';
 
 //主詞條選擇
 const MainAffixSelect = React.memo(() => {
@@ -192,10 +193,6 @@ const StandardSelect=React.memo(()=>{
         }
     }
 
-    function clearAffix(){
-        setSelfStand([]);
-    }
-
     if(partsIndex!==undefined){
         //依據所選部位 給出不同的選澤
         let target=AffixList.find((a)=>a.id===parseInt(partsIndex));
@@ -255,8 +252,11 @@ const StandardSelect=React.memo(()=>{
                             <div className='flex flex-col'>
                                 <span className='text-white'>根據個人需求</span>
                                 <span className='text-yellow-400'>選擇不重複的詞條種類(包含主詞條)</span>
-                                <span className='!text-red-500'>"有效詞條"選擇最多保有6個。</span>
-                                <span className='text-red-500'>如果已選擇6項，則其餘選項將無法選取。</span>
+                                <div className='flex flex-col mt-2'>
+                                    <span className='text-white font-bold'>注意事項</span>
+                                    <span className='!text-red-500 font-bold'>"有效詞條"選擇最多保有6個。</span>
+                                    <span className='text-red-500 font-bold'>如果已選擇6項，則其餘選項將無法選取。</span>
+                                </div>
                             </div>
                         }/>
                 </div>
@@ -339,7 +339,14 @@ const RelicSelect=React.memo(()=>{
                 <div className={`rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] max-[500px]:mx-1 max-[500px]:p-1 max-[500px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
                     key={'RelicSelect'+i}
                     onClick={()=>setRelicIndex(i)}>
-                    <img src={reliclink} alt='relic' className='w-[50px] max-[500px]:w-[40px] '/>
+                    <Image 
+                        src={reliclink} 
+                        alt='iconRelic'
+                        width={50}
+                        height={50} 
+                        className='max-[500px]:w-[40px]'
+                        placeholder="blur"
+                        blurDataURL={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknownRelic.png`}/>
                 </div>
             )
         })

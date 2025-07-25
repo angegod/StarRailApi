@@ -16,13 +16,14 @@ import { CharSelect,PartSelect,StandardSelect,MainAffixSelect,SubAffixSelect } f
 
 import SubAffixHint from '@/components/Hint/SubAffixHint';
 import HintSimulator from '@/components/Hint/HintSimulator';
+import HintHistory from '@/components/Hint/HintHistory';
 import { Tooltip } from 'react-tooltip';
 
 import SiteContext from '@/context/SiteContext';
 import { useStatusToast } from '@/context/StatusMsg';
 import { useSelector, useDispatch } from 'react-redux';
 import { createHistory,addHistory,limitHistory,deleteHistory,resetHistory } from '../../model/historySlice';
-import JSXStyle from 'styled-jsx/style';
+
 
 //遺器強化模擬器
 function Simulator(){
@@ -432,6 +433,8 @@ function Simulator(){
         relic:relic,
         isLoad:isLoad,
 
+        mode:"Simulator",
+
         //RelicData for Result
         Rscore:Rscore,
         Rrank:Rrank,
@@ -591,32 +594,7 @@ function Simulator(){
             <Tooltip id="HistoryHint"  
                 place="top-center"
                 render={()=>
-                    <div className='flex flex-col max-w-[250px] p-1'>
-                        <div>
-                            <span className='text-white'>此區塊可以查看過往查詢紀錄，下面為個別功能相關簡述。</span>
-                        </div>
-                        <div className='mt-2 flex flex-col'>
-                            <span className='text-md font-bold text-white'>檢視</span>
-                            <span>可以查看曾經查詢出來的資訊、包括遺器、評分標準等</span>
-                        </div>
-                        <div className='mt-2 flex flex-col'>
-                            <div>
-                                <span className='text-md font-bold text-white'>刪除</span>
-                            </div>
-                            <div>
-                                <span>刪除該筆紀錄</span>
-                            </div>
-                        </div>
-                        <div className='mt-2 flex flex-col'>
-                            <div>
-                                <span className='text-md font-bold text-white'>注意事項</span>
-                            </div>
-                            <div className='flex flex-col'>
-                                <span className='!text-red-500'>"過往紀錄"最多只保留6筆</span>
-                                <span className='!text-yellow-500'>如果在已有6筆資料的情況再新增，則會從最舊的紀錄開始覆蓋掉</span>
-                            </div>
-                        </div>
-                    </div>
+                    <HintHistory />
                 }/>
             <Tooltip id="SimulatorHint"
                     place='right-start'

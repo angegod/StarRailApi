@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-
+import SiteContext from '@/context/SiteContext';
+import { useContext } from 'react';
 
 function HintHistory(){
+    const {mode} = useContext(SiteContext);
+
     return(
         <div className='flex flex-col max-w-[250px] p-1'>
             <div>
@@ -11,14 +14,16 @@ function HintHistory(){
                 <span className='text-md font-bold text-white'>檢視</span>
                 <span className='text-stone-400'>可以查看曾經查詢出來的資訊、包括遺器、評分標準等</span>
             </div>
-            <div className='mt-2 flex flex-col'>
-                <div>
-                    <span className='text-white font-bold'>更新</span>
-                </div>
-                <div>
-                    <span className='text-stone-400'>點選後會根據該紀錄原本的參數再查詢一次，並且將新結果更新至掉該筆紀錄中。</span>
-                </div>
-            </div>
+            {(mode === "Importer")?
+                <div className='mt-2 flex flex-col'>
+                    <div>
+                        <span className='text-white font-bold'>更新</span>
+                    </div>
+                    <div>
+                        <span className='text-stone-400'>點選後會根據該紀錄原本的參數再查詢一次，並且將新結果更新至掉該筆紀錄中。</span>
+                    </div>
+                </div>:null
+            }
             <div className='mt-2 flex flex-col'>
                 <div>
                     <span className='text-md font-bold text-white'>刪除</span>

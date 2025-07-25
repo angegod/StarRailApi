@@ -522,6 +522,7 @@ function Importer(){
         isChangeAble:isChangeAble,
         RelicDataArr:RelicDataArr,
         isLoad:isLoad,
+        mode:"Importer",
         
         //RelicData
         relic:relic,

@@ -1,11 +1,13 @@
 import React, { useContext } from 'react';
 import '../css/simulator.css';
 import SiteContext from '../context/SiteContext';
+import Image from 'next/image';
 
 
 //簡易瀏覽
 const PastPreview=React.memo(({index,data})=>{
     const {checkDetails,updateDetails,deleteHistoryData,isChangeAble} = useContext(SiteContext);
+    console.log({checkDetails,updateDetails,deleteHistoryData,isChangeAble})
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
     const BaseLink =  `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
@@ -13,7 +15,14 @@ const PastPreview=React.memo(({index,data})=>{
         <div className={`PastPreview clip-both-corners`}>
             <div className='flex flex-col'>
                 <div>
-                    <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]'/>
+                    <Image 
+                        src={BaseLink} 
+                        alt='iconChar'
+                        width={70}
+                        height={70} 
+                        className='w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]'
+                        placeholder="blur"
+                        blurDataURL={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`}/>
                 </div>
                 <div className='text-center'>
                     <span style={{color:data.avgRank.color}} className='font-bold text-xl max-[400px]:text-lg'>{data.avgScore}</span>
@@ -53,7 +62,14 @@ const PastPreview_simulator=React.memo(({data,index})=>{
         <div className='PastPreview clip-both-corners'>
             <div className='flex flex-col mr-1'>
                 <div>
-                    <img src={BaseLink} alt='iconChar' className='w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]'/>
+                    <Image 
+                        src={BaseLink} 
+                        alt='iconChar'
+                        width={70}
+                        height={70} 
+                        className='w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]'
+                        placeholder="blur"
+                        blurDataURL={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`}/>
                 </div>
                 <div className='text-center'>
                     <span style={{color:data.rank.color}} className='font-bold text-xl'>{data.score}</span>
