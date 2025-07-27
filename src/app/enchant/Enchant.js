@@ -147,8 +147,8 @@ const Enchant=React.memo(()=>{
         if(simulatorData.oldData===null){
             relic.sub_affix.forEach((s,i)=>{
                 let typeName=AffixName.find((a)=>a.fieldName===s.type);
-                let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
-                
+                let val=(!typeName.percent)?Number(s.value.toFixed(0)):Number((s.value*100).toFixed(1));
+                console.log(val);
                 let data={
                     index:i, 
                     subaffix:typeName.name,
@@ -158,6 +158,7 @@ const Enchant=React.memo(()=>{
     
                 SubData.push(data);
             });
+            console.log(SubData);
         }else{
             SubData = simulatorData.oldData.returnData;
         }
@@ -413,10 +414,12 @@ const DataList=React.memo(({standDetails,data,title})=>{
             let markcolor="";
             var targetAffix = AffixName.find((a)=>a.name===d.subaffix);
             let isBold=(standDetails.find((st)=>st.name===d.subaffix)!==undefined)?true:false;
-            let showData;
+            let showData = undefined;
             //檢查是否要顯示%數
             if(targetAffix.percent&&!d.data.toString().includes('%'))
-                showData=d.data+'%';
+                showData = d.data+'%';
+            else 
+                showData = d.data;
                     
             var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${targetAffix.icon}.png`;
     
