@@ -40,11 +40,11 @@ function Footer(){
 
 
     return(
-        <div className='flex flex-row justify-center bg-[rgb(40,40,40)] min-h-[20vh] text-left [&>div]:w-4/5 max-[600px]:min-h-[30vh] max-[600px]:!flex-col'>  
-            <div className='mx-auto flex flex-row flex-wrap h-fit justify-evenly [&>div]:mx-3 mt-3 [&>div]:first:mr-0 max-[800px]:flex-col max-[800px]:items-center max-[600px]:!items-start max-[600px]:[&>div]:mb-1'>
+        <div className='flex flex-row justify-center bg-[rgb(40,40,40)] min-h-[20vh] text-left max-[600px]:min-h-[30vh] max-[600px]:!flex-col max-[600px]:[&>div]:w-4/5'>  
+            <div className='w-2/5 mx-auto flex flex-row flex-wrap h-fit justify-start [&>div]:mx-3 mt-3 [&>div]:first:mr-0 max-[800px]:flex-col max-[800px]:items-center max-[600px]:!items-start max-[600px]:[&>div]:mb-1'>
                 {list}
             </div>
-            <div className='mx-auto text-stone-500 flex flex-col [&>span]:text-left [&>span]:text-sm [&>span]:font-bold [&>span]:mt-1 py-2 max-[600px]:[&>span]:!text-sm'>
+            <div className='w-2/5 mx-auto text-stone-500 flex flex-col [&>span]:text-left [&>span]:text-sm [&>span]:font-bold [&>span]:mt-1 py-2 max-[600px]:[&>span]:!text-sm'>
                 <span>&copy; 2025 <a href="https://home.gamer.com.tw/profile/index.php?&owner=ange0733" className="underline">Ange</a></span>
                 <span>Website created by Ange. All rights reserved.</span>
                 <span>Data latest Updated at 2025/07/25</span>
