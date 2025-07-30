@@ -7,6 +7,7 @@ const Select = dynamic(() => import("react-select"), { ssr: false });
 import SiteContext from '../context/SiteContext';
 import { Tooltip } from 'react-tooltip';
 import Image from 'next/image';
+import LazyImage from './LazyImage';
 
 //主詞條選擇
 const MainAffixSelect = React.memo(() => {
@@ -331,22 +332,21 @@ const CharSelect=React.memo(()=>{
 //遺器選擇
 const RelicSelect=React.memo(()=>{
     const {RelicDataArr,relicIndex,setRelicIndex}=useContext(SiteContext);
+    const unknowRelicImg = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknownRelic.png`;
     if(RelicDataArr.length !==0){
-        let list = RelicDataArr.map((r,i)=>{
+        let list = RelicDataArr.map((r,i)=>{  
             const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/${r.relic.icon}`;
     
             return(
                 <div className={`rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] max-[500px]:mx-1 max-[500px]:p-1 max-[500px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
-                    key={'RelicSelect'+i}
+                    key={'RelicSelect'+r.relic.type}
                     onClick={()=>setRelicIndex(i)}>
-                    <Image 
-                        src={reliclink} 
-                        alt='iconRelic'
+                    <LazyImage 
+                        BaseLink={reliclink}
+                        LoadImg={unknowRelicImg}
                         width={50}
-                        height={50} 
-                        className='max-[500px]:w-[40px]'
-                        placeholder="blur"
-                        blurDataURL={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknownRelic.png`}/>
+                        height={50}
+                        style={'max-[500px]:w-[40px]'} />
                 </div>
             )
         })
