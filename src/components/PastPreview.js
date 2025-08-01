@@ -54,19 +54,17 @@ const PastPreview_simulator=React.memo(({data,index})=>{
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
     let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
-
-    return(<>
+    const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
+    return(
         <div className='PastPreview clip-both-corners'>
             <div className='flex flex-col mr-1'>
                 <div>
-                    <Image 
-                        src={BaseLink} 
-                        alt='iconChar'
+                    <LazyImage 
+                        BaseLink={BaseLink} 
+                        LoadImg={LoadImgLink}
                         width={70}
-                        height={70} 
-                        className='w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]'
-                        placeholder="blur"
-                        blurDataURL={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`}/>
+                        height={70}
+                        style={`w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]`}/>
                 </div>
                 <div className='text-center'>
                     <span style={{color:data.rank.color}} className='font-bold text-xl'>{data.score}</span>
@@ -92,7 +90,7 @@ const PastPreview_simulator=React.memo(({data,index})=>{
             </div>
         </div>
     
-    </>)
+    )
 })
 
 export {PastPreview,PastPreview_simulator};

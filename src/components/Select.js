@@ -314,6 +314,8 @@ const CharSelect=React.memo(()=>{
     };
 
     const selectedOption = options.find((option) => option.value === charID);
+    const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
+
     return(<Select options={options} 
                 className='w-[200px]' 
                 onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
@@ -322,7 +324,12 @@ const CharSelect=React.memo(()=>{
                 styles={customStyles}
                 getOptionLabel={(e) => (
                     <div style={{ display: "flex", alignItems: "center"  }}>
-                        <img src={e.icon} alt={e.label} style={{ width: 30, height: 30, marginRight: 8 ,borderRadius:"25px" }} />
+                        <LazyImage 
+                            BaseLink={e.icon}
+                            LoadImg={LoadImgLink}
+                            width={30}
+                            height={30}
+                            style={'mr-2 rounded-[25px]'} />
                         <span className='text-white'>{e.label}</span>
                     </div>
                 )}
