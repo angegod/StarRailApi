@@ -613,7 +613,7 @@ function Importer(){
                                     <span className='text-white whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
-                                    <button className='bg-gray-400 text-black rounded-sm px-2' onClick={() => setLock(prev => !prev)}>
+                                    <button className='bg-gray-400 text-black rounded-sm px-2 font-bold' onClick={() => setLock(prev => !prev)}>
                                         {Lock ? "啟用" : "不啟用"}
                                     </button>
                                 </div>
