@@ -89,7 +89,7 @@ function Importer(){
 
     //當遺器資料更新時
     useEffect(()=>{
-        if(RelicDataArr.length !==0){
+        if(RelicDataArr.length !==0&&RelicDataArr[relicIndex].relic){
             //顯示第一個儀器
             setRelic(RelicDataArr[relicIndex].relic)
             setExpRate(RelicDataArr[relicIndex].ExpRate);
@@ -188,14 +188,11 @@ function Importer(){
         setIsChangeAble(false);
         clearData();
 
-        //console.log(sendData);
         await axios.post(apiLink,sendData,{
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(async (response)=>{
-            //console.log(response.data);
-
             switch(response.data){
                 case 800:
                     updateStatus('找不到該腳色。必須要將腳色放在展示區才可以抓到資料!!','error');
@@ -601,7 +598,7 @@ function Importer(){
                         </div>
                     </div>
                     <div className={`w-[55%] pb-3 pt-1 h-fit flex-wrap max-[1250px]:w-[100%] max-[1250px]:mb-5 ml-2 bg-[rgba(0,0,0,0.5)] rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
-                        <div className='flex flex-row items-baseline px-2 max-[600px]:justify-center'>
+                        <div className='flex flex-row items-center px-2 max-[600px]:justify-center'>
                             <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                             <div className='hintIcon ml-2 overflow-visible'
                                 data-tooltip-id="HistoryHint">
