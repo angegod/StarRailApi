@@ -30,7 +30,8 @@ function Importer(){
     const LocalStorageLocation = "importData";
 
     //玩家ID跟腳色ID
-    const userID=useRef('');
+    //const userID=useRef('');
+    const [userID,setUserId]=useState('');
     const [charID,setCharID]=useState(undefined);
 
     //部位代碼
@@ -115,6 +116,10 @@ function Importer(){
         }
     },[relic]);
 
+    useEffect(()=>{
+        setIsSaveAble(false);
+    },[charID,userID])
+
 
     function initHistory(){
         //標記歷史紀錄尚未處理完
@@ -156,7 +161,7 @@ function Importer(){
         //如果是非更新紀錄
         if(!sendData){
             //如果UID本身就不合理 則直接返回錯誤訊息
-            if (!/^\d+$/.test(userID.current)||!userID.current) { // 僅允許數字
+            if (!/^\d+$/.test(userID)||!userID) { // 僅允許數字
                 updateStatus("請輸入有效的UID!!",'error');
                 return ;
             }
@@ -173,7 +178,7 @@ function Importer(){
             }
 
             sendData={
-                uid:userID.current,
+                uid:userID,
                 charID:charID,            
                 partsIndex:7
             }
@@ -454,7 +459,7 @@ function Importer(){
             return;
         }
         //如果玩家ID當前並沒有輸入成功
-        if(!userID.current){
+        if(!userID){
             updateStatus("沒有輸入玩家ID，請再試一次!!","error");
             return;
         }
@@ -487,7 +492,7 @@ function Importer(){
         let data={
             version:version,
             calDate:calDate.toISOString().split('T')[0],
-            userID:userID.current,
+            userID:userID,
             char:selectChar,
             dataArr:RelicDataArr,
             avgScore:avgScore,
@@ -562,16 +567,16 @@ function Importer(){
                                         className='h-[40px] max-w-[170px] pl-2 
                                                 bg-inherit text-white outline-none border-b border-white' 
                                         id="userId"
-                                        onChange={(e)=>userID.current=e.target.value}
+                                        onChange={(e)=>setUserId(e.target.value)}
                                         disabled={!isChangeAble}/>
                             </div>
-                            <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col'>
+                            <div className='flex flex-row items-baseline [&>*]:mr-2 my-3 max-[400px]:!flex-col '>
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
                                 </div>                       
                                 <div className='flex flex-row items-center'>
                                     <CharSelect  />
-                                    <div className='hintIcon ml-1 overflow-visible'data-tooltip-id="CharHint">
+                                    <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="CharHint">
                                         <span className='text-white'>?</span>
                                     </div>
                                 </div>

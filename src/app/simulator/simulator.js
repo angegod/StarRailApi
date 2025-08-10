@@ -39,11 +39,11 @@ function Simulator(){
     const [ExpRate,setExpRate]=useState(undefined);
     const [Rscore,setRscore]=useState(undefined);
     const [Rrank,setRank]=useState({color:undefined,rank:undefined});
-    const [statusMsg,setStatusMsg]=useState(undefined);
     const [processBtn,setProcessBtn]=useState(true);
     const standDetails=useRef([]);
 
-    const SubData=useRef([]);
+    //const SubData=useRef([]);
+    const [SubData,setSubData]=useState([]);
     const [charID,setCharID]=useState(undefined);
     const [PieNums,setPieNums]=useState(undefined);
 
@@ -85,12 +85,17 @@ function Simulator(){
         }
     }, [partsIndex]); 
 
+    //防止資料變更時還要儲存之防呆
+    useEffect(()=>{
+        setIsSaveAble(false);
+    },[partsIndex,charID,MainSelectOptions]);
+
     function init(){
         //歷史紀錄標記尚未載入
         setIsLoad(false);
         dispatch(resetHistory());
 
-        SubData.current=[];
+        let tempArr = [];
         for(var i=0;i<=3;i++){
             let data={
                 index:i, 
@@ -99,8 +104,9 @@ function Simulator(){
                 count:0 //強化次數
             }
 
-            SubData.current.push(data);
+            tempArr.push(data);
         }
+        setSubData(tempArr);
         
         let history=JSON.parse(localStorage.getItem('HistoryData'));
 
@@ -228,21 +234,23 @@ function Simulator(){
             subaffix:[]
         }
 
-        SubData.current.forEach((s,i)=>{
+        let tempArr = JSON.parse(JSON.stringify(SubData));
+
+        tempArr.forEach((s,i)=>{
             if(!['生命值','攻擊力','防禦力','速度'].includes(s.subaffix))
                 s.display=s.data+'%';
             else
                 s.display=s.data;
-        })
+        });
 
         //這邊複製出去一定得用深拷貝
-        data.subaffix=JSON.parse(JSON.stringify(SubData.current));
+        data.subaffix=JSON.parse(JSON.stringify(tempArr));
         data.type = parseInt(partsIndex);
 
         setRelic(data);
+        setSubData(tempArr);
     }
 
-    
 
     //計算遺器分數等細節
     function calScore(){
@@ -257,7 +265,7 @@ function Simulator(){
             return;
         }
 
-        SubData.current.some((s,i)=>{
+        SubData.some((s,i)=>{
             if(s.subaffix===MainSelectOptions){
                 //alert(`第${i+1}個詞條選擇\n副詞條不可選擇與主詞條相同的詞條\n請再重新選擇!!`);
                 updateStatus(`第${i+1}個詞條:副詞條不可選擇與主詞條相同的詞條\n請再重新選擇!!`,'error');
@@ -274,7 +282,7 @@ function Simulator(){
         if(errors) return;
         //輸入的副詞條之間是否重複?
         const seen = new Set();
-        for (const obj of SubData.current) {
+        for (const obj of SubData) {
             if (seen.has(obj['subaffix'])) {
                 alert(`副詞條之間不可以選擇重複\n請再重新選擇!!`);
                 errors=true;
@@ -290,23 +298,23 @@ function Simulator(){
                 alert('加權指數不可為空或其他非法型式');
             }
                 
-        })
+        });
 
         if(errors) return;
 
         //如果篩選有速度詞條 需給予0.5誤差計算 
-        let deviation=(SubData.current.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
-        SubData.current.forEach(s=>{
+        let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        SubData.forEach(s=>{
             if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
                 deviation+=0.2;
-        })
+        });
         
         //將運行結果丟到背景執行
         let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
         let postData={
             charID:charID,
             MainData:MainSelectOptions,
-            SubData:SubData.current,
+            SubData:SubData,
             partsIndex:partsIndex,
             standard:selfStand,
             deviation:deviation
@@ -347,78 +355,6 @@ function Simulator(){
         };
     }
 
-    //模擬強化
-    function simulate(){
-        let isCheck=true;
-        //將運行結果丟到背景執行 跟模擬所有組合的worker分開
-        let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
-        let MainAffix=AffixName.find((a)=>a.name===relic.main_affix);
-        let SubData=[];
-
-        relic.subaffix.forEach((s,i)=>{
-            let typeName=AffixName.find((a)=>a.name===s.subaffix);
-           
-            let data={
-                index:i, 
-                subaffix:typeName.name,
-                data:s.data, //詞條數值    
-                count:s.count//強化次數
-            }
-
-            SubData.push(data);
-        });
-
-        //檢查標準是否合法
-        selfStand.forEach((s)=>{
-            if(s.value===''){
-                isCheck=false;
-                updateStatus('加權指數不可為空或其他非法型式','error');
-            }
-        });
-        
-        //如果篩選有速度詞條 需給予0.5誤差計算 
-        /*let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
-        SubData.forEach(s=>{
-            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
-                deviation+=0.2;
-        })*/
-
-        //制定送出資料格式
-        let postData={
-            MainData:MainAffix.name,
-            SubData:SubData,
-            partsIndex:relic.type,
-            standard:standDetails.current,
-            deviation:0.5
-        };
-        
-        if(isCheck){
-            worker.postMessage(postData);
-
-            // 接收 Worker 返回的訊息
-            worker.onmessage = function (event) {
-                setSimulatorData({
-                    oldData:{
-                        relicscore:Rscore,
-                        relicrank:Rrank,
-                        returnData:SubData
-                    },
-                    newData:event.data
-                });
-                requestAnimationFrame(()=>{
-                    window.scrollTo({
-                        top: document.getElementById('enchant').offsetTop,
-                        behavior: 'smooth'
-                    });
-                })
-                
-            };
-        }
-        
-        //將送出按鈕設為可用
-        setIsChangeAble(true);
-    }
-
     let SimulatorStatus = {
         charID:charID,
         standDetails:standDetails.current,
@@ -442,16 +378,15 @@ function Simulator(){
         PieNums:PieNums,
 
         checkDetails:checkDetails,
-        simulate:simulate,
         deleteHistoryData:deleteHistoryData,
 
+        setSubData:setSubData,
         setCharID:setCharID,
         setIsChangeAble:setIsChangeAble,
         setIsSaveAble:setIsSaveAble,
         setSelfStand:setSelfStand,
         setPartsIndex:setPartsIndex,
         setMainSelectOptions:setMainSelectOptions,
-        setStatusMsg:setStatusMsg
     }
     
     return(

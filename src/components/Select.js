@@ -71,52 +71,59 @@ const MainAffixSelect = React.memo(() => {
 
 //副詞條選擇
 const SubAffixSelect=React.memo(({index})=>{
-    const {SubData,MainSelectOptions,partsIndex,isChangeAble}=useContext(SiteContext)
+    const {SubData,setSubData,MainSelectOptions,partsIndex,isChangeAble}=useContext(SiteContext);
 
-    function updateSubAffix(val,index){
-        SubData.current.find((s,i)=>i===parseInt(index)).subaffix=val;
+    function updateSubAffix(val, index) {
+        setSubData(prev => prev.map((item, i) => i === +index ? { ...item, subaffix: val } : item));
     }
 
-    function updateSubData(val,index){
-        console.log(SubData.current);
-        SubData.current.find((s,i)=>i===parseInt(index)).data=Number(val);
-
+    function updateSubData(val, index) {
+        setSubData(prev => prev.map((item, i) => i === +index ? { ...item, data: Number(val) } : item));
     }
 
-    function updateSubCount(val,index){
-        SubData.current.find((s,i)=>i===parseInt(index)).count=Number(val);
+    function updateSubCount(val, index) {
+        setSubData(prev => prev.map((item, i) => i === +index ? { ...item, count: Number(val) } : item));
     }
 
     if(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined){
         let range=AffixList.find((s)=>s.id===parseInt(partsIndex)).sub;
         let options=[<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
 
-        range.forEach((s,i)=>{
-            options.push(<option value={s} key={`Subaffix${i}`}>{s}</option>)
+        //如果被已經被選定了 則也不會出現在選項
+        const filteredRange = range.filter((r) => {
+            if (r === '' || r === 'undefined') return true; // 保留「請選擇」或空值選項
+            if (r === MainSelectOptions) return false; //如果跟主詞條相同
+            const foundIndex = SubData.findIndex((s) => s.subaffix === r);
+            if (foundIndex === -1) return true;
+            if (foundIndex === index) return true;
+
+            return false;
+        });
+
+
+        filteredRange.forEach((s,i)=>{
+            options.push(<option value={s} key={`Subaffix${s}`}>{s}</option>)
         });
         
-        
-
         return(
-            <div className='my-1' key={'SubAffixSelect'}>
-                <select defaultValue={SubData.current[index].subaffix} 
+            <div className='my-1' key={'SubAffixSelect'+index}>
+                <select defaultValue={SubData[index].subaffix} 
                         onChange={(event)=>updateSubAffix(event.target.value,index)} 
                         className='graySelect'
                         disabled={!isChangeAble}>
                             {options}
-
                 </select>
-                <input type='number' defaultValue={SubData.current[index].data}
+                <input type='number' defaultValue={SubData[index].data}
                         onChange={(event)=>updateSubData(event.target.value,index)}
                         className='ml-2 max-w-[50px] bgInput text-center' 
                         disabled={!isChangeAble} min={0} title='詞條數值' />
-                <input type='number' defaultValue={SubData.current[index].count}
+                <input type='number' defaultValue={SubData[index].count}
                         onChange={(event)=>updateSubCount(event.target.value,index)}
                         className='ml-2 text-center bgInput' disabled={!isChangeAble}
                         min={0} max={5} title='強化次數' />
             </div>)
     }else{
-        return(<></>)
+        return null
     }   
 });
 
