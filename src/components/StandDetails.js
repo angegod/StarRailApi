@@ -6,7 +6,6 @@ import { useStatusToast } from '@/context/StatusMsg';
 
 const StandDetails=React.memo(()=>{
     const {standDetails,affixLock} = useContext(SiteContext);
-    console.log(affixLock);
     if(standDetails!==undefined){
         let title = "標準加權";
         if(affixLock) title = "標準加權(啟用鎖定)"

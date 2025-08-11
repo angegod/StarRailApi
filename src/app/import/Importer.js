@@ -401,7 +401,7 @@ function Importer(){
                 let typeName=AffixName.find((a)=>a.fieldName===s.type);
                 let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
                 //每個詞條的加權 如果找不到則為0
-                let stand = standard.find((s)=>s.name===typeName.name);
+                let stand = standard.find((st)=>st.name===typeName.name);
                 
                 let data={
                     index:i, 
@@ -613,7 +613,7 @@ function Importer(){
                                     <span className='text-white whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
-                                    <button className='processBtn' onClick={() => setLock(prev => !prev)}>
+                                    <button className='bg-gray-400 text-black rounded-sm px-2' onClick={() => setLock(prev => !prev)}>
                                         {Lock ? "啟用" : "不啟用"}
                                     </button>
                                 </div>

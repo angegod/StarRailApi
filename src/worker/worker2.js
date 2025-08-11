@@ -14,14 +14,17 @@ onmessage = function (event) {
     
 
     //計算可用強化次數
-    var enchanceCount=0;
+    let enchanceCount=0;
+    let lockArr = [];
     SubData.forEach(sb=>{    
         enchanceCount=enchanceCount+Number(sb.count);
+        if(sb.locked)
+            lockArr.push(sb.index);
     });
 
 
     //計算可能的強化組合
-    let combination=findCombinations(enchanceCount,SubData.filter((s)=>!s.locked).length);
+    let combination=findCombinations(enchanceCount,SubData.length,lockArr);
 
     //根據強化組合的個數，隨機抽取一個(這個數值已經是索引值)
     let randomNum = Math.floor(Math.random() * combination.length);

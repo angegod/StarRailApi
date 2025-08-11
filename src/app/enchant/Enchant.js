@@ -17,13 +17,16 @@ import HintEnchant from '@/components/Hint/HintEnchant';
 const Enchant=React.memo(()=>{
 
     const [data,setData] = useState();//從其他頁面記錄在localstorage的資料
-    const {relic,standDetails,Rscore,Rrank,mode}=data || {};
+    const {relic,standDetails,Rscore,Rrank,mode,affixLock}=data || {};
     
     const relicBackUp =useRef(null);
     const [isChangeAble,setIsChangeAble]=useState(true);
     //模擬強化相關數據
     const [simulatorData,setSimulatorData]=useState({oldData:null,newData:null});
     const [statics,setStatics]=useState(undefined);
+
+    //是否啟用鎖定詞條功能
+    const [Lock,setLock] = useState(false);
     
     //強化次數
     const [count,setCount]=useState(0);
@@ -41,6 +44,8 @@ const Enchant=React.memo(()=>{
     ];
 
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
+
+    //從enchantstore獲取資料
     const simulateData = useSelector((state)=>state.enchant.enchantData);
     const router = useRouter();
 
@@ -138,32 +143,49 @@ const Enchant=React.memo(()=>{
     //模擬強化--Importer
     function simulate(){
         let isCheck=true;
-
+        
         //將運行結果丟到背景執行 跟模擬所有組合的worker分開
         let worker=new Worker(new URL('../../worker/worker2.js', import.meta.url));
         let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
         let SubData=[];
           
         if(simulatorData.oldData===null){
-            relic.sub_affix.forEach((s,i)=>{
-                let typeName=AffixName.find((a)=>a.fieldName===s.type);
-                let val=(!typeName.percent)?Number(s.value.toFixed(0)):Number((s.value*100).toFixed(1));
-                console.log(val);
+            relic.sub_affix.forEach((sb,i)=>{
+                let typeName=AffixName.find((a)=>a.fieldName===sb.type);
+                let val=(!typeName.percent)?Number(sb.value.toFixed(0)):Number((sb.value*100).toFixed(1));
+                let stand = standDetails.find((s)=>s.name===typeName.name);
+
                 let data={
                     index:i, 
                     subaffix:typeName.name,
                     data:val, //詞條數值    
-                    count:s.count-1//強化次數
+                    count:sb.count-1,//強化次數
+                    stand:(!stand)?0:stand.value,
+                    locked:false
                 }
     
                 SubData.push(data);
             });
-            console.log(SubData);
+            
         }else{
             SubData = simulatorData.oldData.returnData;
+            //重新給予stand跟locked
+            SubData.forEach((sb)=>{
+                let stand = standDetails.find((s)=>s.name===sb.subaffix);
+                sb.stand=(!stand)?0:stand.value;
+                sb.locked=false;
+            });
+        }
+
+        //如果需要鎖定
+        if(affixLock){
+            // 找出stand最小的詞條
+            let LockAffix = SubData.reduce((min, curr) => curr.stand < min.stand ? curr : min);
+            
+            // 設定該詞條lock為true
+            LockAffix.locked = true;
         }
         
-
         //檢查標準是否合法
         standDetails.forEach((s)=>{
             if(s.value===''){
@@ -482,7 +504,7 @@ const DataList=React.memo(({standDetails,data,title})=>{
             </div>
         )
     }else{
-        return(<></>)
+        return null
     }
     
     
@@ -546,7 +568,7 @@ const Pie=React.memo(()=>{
         );
 
     }else{
-        return(<></>)
+        return null
     }
 });
 

@@ -12,7 +12,7 @@ import { jsx } from 'react/jsx-runtime';
 
 //顯示儀器分數區間
 const RelicData=React.memo(({mode,button})=>{
-    const {relic,setRelic,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
+    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
     const router = useRouter();
     //儲存模擬數據
     const dispatch = useDispatch();
@@ -24,9 +24,10 @@ const RelicData=React.memo(({mode,button})=>{
             Rrank:Rrank,
             Rscore:Rscore,
             standDetails:standDetails,
+            affixLock:affixLock,
             mode:mode
         }
-        
+
         dispatch(setEnchantData(sendData));
         router.push('./enchant');
     }
@@ -147,8 +148,8 @@ const RelicData=React.memo(({mode,button})=>{
                 </div>
                 {(button)?
                     <div className='mt-3'>
-                        <button className='processBtn' onClick={navEnchant} disabled={!isChangeAble}>重洗模擬</button>
-                    </div>:<></>}
+                        <button className='processBtn' onClick={()=>navEnchant()} disabled={!isChangeAble}>重洗模擬</button>
+                    </div>:null}
                 <Tooltip id="RelicDataHint"  
                         place="right-start"
                         render={()=>

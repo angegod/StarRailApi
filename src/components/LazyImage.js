@@ -11,7 +11,7 @@ function LazyImage({BaseLink,LoadImg,style,width,height}){
         if(imageRef.current.complete&&!imageRef.current.error){
             setTimeout(()=>{
                 setShow(true);
-            },500)   
+            },200)   
         }
         else{
             setShow(false);

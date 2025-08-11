@@ -28,7 +28,7 @@ import { createHistory,addHistory,limitHistory,deleteHistory,resetHistory } from
 //遺器強化模擬器
 function Simulator(){
     //版本代號
-    const version="1.3";
+    const version="1.5";
 
     const maxHistoryLength = 6;
 
@@ -49,6 +49,10 @@ function Simulator(){
 
     //自訂義標準
     const [selfStand,setSelfStand]=useState([]);
+
+    //鎖定功能是否啟用
+    const [Lock,setLock]=useState(false);
+    const isLock = useRef(false);
 
     //模擬強化相關數據
     const [simulatorData,setSimulatorData]=useState({});
@@ -101,7 +105,9 @@ function Simulator(){
                 index:i, 
                 subaffix:0,//詞條種類
                 data:0, //詞條數值
-                count:0 //強化次數
+                count:0, //強化次數
+                stand:0,//加權
+                locked:false
             }
 
             tempArr.push(data);
@@ -190,7 +196,7 @@ function Simulator(){
             stand:standDetails.current,
             relic:relic
         };
-
+        console.log(data);
         //利用深拷貝區分原有資料
         let oldHistory=JSON.parse(JSON.stringify(historyData));
         dispatch(addHistory(data));
@@ -215,7 +221,8 @@ function Simulator(){
         setPieNums(data.pieData);
         standDetails.current=data.stand;
         setRelic(data.relic);
-
+        isLock.current=data.relic.affixLock;
+        console.log(data);
         //清空模擬強化紀錄
         setSimulatorData({});
 
@@ -246,6 +253,7 @@ function Simulator(){
         //這邊複製出去一定得用深拷貝
         data.subaffix=JSON.parse(JSON.stringify(tempArr));
         data.type = parseInt(partsIndex);
+        data.affixLock = isLock.current;
 
         setRelic(data);
         setSubData(tempArr);
@@ -296,19 +304,31 @@ function Simulator(){
             if(s.value===''){
                 errors=true;
                 alert('加權指數不可為空或其他非法型式');
-            }
-                
+            }     
         });
 
         if(errors) return;
 
         //如果篩選有速度詞條 需給予0.5誤差計算 
-        let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
-        SubData.forEach(s=>{
-            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
-                deviation+=0.2;
-        });
-        
+        let deviation=(SubData.current.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        if(Lock){
+            SubData.current.forEach(s=>{
+                if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+                    deviation+=0.2;
+
+                let stand = selfStand.find((st)=>st.name === s.subaffix);
+                s.stand = (!stand)?0:stand.value;
+            });
+
+            // 找出stand最小的詞條
+            let LockAffix = SubData.current.reduce((min, curr) => curr.stand < min.stand ? curr : min);
+
+            // 設定該詞條lock為true
+            LockAffix.locked = true;
+        }else{ //如果現在是不鎖定 則強制取消所有鎖定
+            SubData.current.forEach((s)=>s.locked = false);
+        }
+
         //將運行結果丟到背景執行
         let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
         let postData={
@@ -335,8 +355,9 @@ function Simulator(){
             updateStatus('計算完畢!!','success');
             setPieNums(event.data.returnData);
             setRank(event.data.relicrank);
-            saveRelic();
             standDetails.current=selfStand;
+            isLock.current=Lock;
+            saveRelic();
             
             //恢復點擊
             setProcessBtn(true);
@@ -368,6 +389,7 @@ function Simulator(){
         simulatorData:simulatorData,
         relic:relic,
         isLoad:isLoad,
+        affixLock:isLock.current,
 
         mode:"Simulator",
 
@@ -462,6 +484,16 @@ function Simulator(){
                                     <span className='text-white'>Params 參數:</span>
                                 </div>
                                 <ShowStand />
+                            </div>
+                            <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
+                                <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
+                                    <span className='text-white whitespace-nowrap'>Lock 是否鎖定:</span>
+                                </div>
+                                <div className='flex flex-row items-center'>
+                                    <button className='bg-gray-400 text-black rounded-sm px-2' onClick={() => setLock(prev => !prev)}>
+                                        {Lock ? "啟用" : "不啟用"}
+                                    </button>
+                                </div>
                             </div>
                             <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
                                 <div className='flex flex-row mt-1'>
