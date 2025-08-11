@@ -30,7 +30,7 @@ const MainAffixSelect = React.memo(() => {
         }
     }, [range]);
 
-    if (!range) return <></>;
+    if (!range) return null;
 
     if (range.length === 1) {
         return <span className='text-white'>{range[0]}</span>;
@@ -89,7 +89,6 @@ const SubAffixSelect=React.memo(({index})=>{
         let range=AffixList.find((s)=>s.id===parseInt(partsIndex)).sub;
         let options=[<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
 
-        //如果被已經被選定了 則也不會出現在選項
         const filteredRange = range.filter((r) => {
             if (r === '' || r === 'undefined') return true; // 保留「請選擇」或空值選項
             if (r === MainSelectOptions) return false; //如果跟主詞條相同
@@ -102,8 +101,9 @@ const SubAffixSelect=React.memo(({index})=>{
 
 
         filteredRange.forEach((s,i)=>{
-            options.push(<option value={s} key={`Subaffix${s}`}>{s}</option>)
+            options.push(<option value={s} key={`Subaffix_${s}`}>{s}</option>)
         });
+        
         
         return(
             <div className='my-1' key={'SubAffixSelect'+index}>
@@ -270,7 +270,7 @@ const StandardSelect=React.memo(()=>{
                 </div>
         )
     }else{
-        return(<></>)
+        return null
     }
 });
 
@@ -380,7 +380,7 @@ const RelicSelect=React.memo(()=>{
             </div>
         )
     }else{
-        return(<></>)
+        return null
     }
 });
 

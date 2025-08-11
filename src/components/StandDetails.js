@@ -5,10 +5,9 @@ import Image from 'next/image';
 import { useStatusToast } from '@/context/StatusMsg';
 
 const StandDetails=React.memo(()=>{
-    const {standDetails,affixLock} = useContext(SiteContext);
+    const {standDetails} = useContext(SiteContext);
     if(standDetails!==undefined){
         let title = "標準加權";
-        if(affixLock) title = "標準加權(啟用鎖定)"
         const list=standDetails.map((s)=>{
             var IconName = AffixName.find((a)=>a.name===s.name).icon;
 

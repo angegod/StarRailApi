@@ -41,8 +41,38 @@ const RelicData=React.memo(({mode,button})=>{
         const list=[];
         const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
         
-        relic.sub_affix.forEach((s,i)=>{
+        let strikeThroughName = null;
+        let minIndex = 0;
+        let minValue = Infinity;
 
+        //如果有啟用鎖定功能在判定
+        if(affixLock){
+            //先找出哪個詞條需要加上刪除線
+            relic.sub_affix.forEach((s, i) => {
+                //先改名
+                let showAffix = '';
+                if(s.name === "攻擊力" && s.display.includes('%')){
+                    showAffix = "攻擊力%數";
+                } else if(s.name === "防禦力" && s.display.includes('%')){
+                    showAffix = "防禦力%數";
+                } else if(s.name === "生命值" && s.display.includes('%')){
+                    showAffix = "生命值%數";
+                }else
+                    showAffix = s.name ;
+                
+                const found = standDetails.find(st => st.name === showAffix);
+                const value = found ? found.value : 0; // 沒找到當 0
+
+                if (value < minValue) {
+                    minValue = value;
+                    minIndex = i; 
+                    strikeThroughName = showAffix;
+                }
+            });
+        }
+        
+        //遍歷所有副詞條渲染
+        relic.sub_affix.forEach((s,i)=>{
             let showAffix = '';
             if(s.name === "攻擊力" && s.display.includes('%')){
                 showAffix = "攻擊力%數";
@@ -54,13 +84,12 @@ const RelicData=React.memo(({mode,button})=>{
                 showAffix = s.name ;
 
             let markcolor="";
+            //判斷是否要標記為有效
             let isBold=(standDetails.find((st)=>st.name===showAffix)!==undefined)?true:false;
-            
             var IconName = AffixName.find((a)=>a.name===s.name).icon;
             
             var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
             
-
             switch(s.count-1){
                 case 0:
                     markcolor='rgb(122, 122, 122)';
@@ -96,11 +125,20 @@ const RelicData=React.memo(({mode,button})=>{
                         <div className='flex justify-center items-center'>
                             <img src={imglink} alt='555' width={24} height={24}/>
                         </div>
-                        <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{showAffix}</span>
+                        <span
+                            className={`${
+                                strikeThroughName === showAffix
+                                ? 'line-through text-stone-400'
+                                : isBold
+                                ? 'text-yellow-500 font-bold'
+                                : 'text-white'
+                            } text-left flex`}>
+                            {showAffix}
+                        </span>
                     </div>
                     <div className='flex w-[70px]'>
                         <span className='mr-1'>:</span>
-                        <span className='text-right text-white '>{s.display}</span>
+                        <span className={`text-right ${(showAffix === strikeThroughName)?'line-through text-stone-400':'text-white'} `}>{s.display}</span>
                     </div>
                 </div>
                 
@@ -158,7 +196,7 @@ const RelicData=React.memo(({mode,button})=>{
             </div>
         )
     }else{
-        return(<></>)
+        return null
     }
 });
 
