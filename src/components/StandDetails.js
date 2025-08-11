@@ -5,9 +5,11 @@ import Image from 'next/image';
 import { useStatusToast } from '@/context/StatusMsg';
 
 const StandDetails=React.memo(()=>{
-    const {standDetails} = useContext(SiteContext);
-
+    const {standDetails,affixLock} = useContext(SiteContext);
+    console.log(affixLock);
     if(standDetails!==undefined){
+        let title = "標準加權";
+        if(affixLock) title = "標準加權(啟用鎖定)"
         const list=standDetails.map((s)=>{
             var IconName = AffixName.find((a)=>a.name===s.name).icon;
 
@@ -27,24 +29,27 @@ const StandDetails=React.memo(()=>{
             )
         })
 
-        return(<>
+        return(
             <div className={`w-[100%] mb-5  my-1 max-[600px]:!min-w-[0px]`}>
                 <div>
-                    <span className='text-red-600 text-lg font-bold'>標準加權</span>
+                    <span className='text-red-600 text-lg font-bold'>
+                        {title}
+                    </span>
                 </div>
                 <div>
                     {list}
                 </div>
+                
             </div>
         
-        </>)
+        )
     }
 });
 
 
 //顯示你所輸入的標準
 const ShowStand=React.memo(()=>{
-    const {selfStand,setSelfStand,setStatusMsg,isChangeAble} = useContext(SiteContext);
+    const {selfStand,setSelfStand,isChangeAble} = useContext(SiteContext);
     // 共用statusMsg
     const {showStatus,updateStatus,hideStatus}=useStatusToast();
     if(selfStand !== null){
@@ -88,7 +93,7 @@ const ShowStand=React.memo(()=>{
                 setSelfStand((arr)=>arr.filter((item,i)=>i!==index));
             }   
         }
-    
+        //改變加權指數加成
         function changeVal(index,val){
             if(val>1||val<0){
                 val=1;
@@ -102,11 +107,11 @@ const ShowStand=React.memo(()=>{
             setSelfStand(stand);
         }
     
-        return(<>
+        return(
             <div className='flex flex-col'>
                 {list}
             </div>
-        </>)
+        )
     }
     
 });

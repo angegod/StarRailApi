@@ -1,8 +1,7 @@
-//強化詞條種類組合
-export function findCombinations(sum, length) {
+export function findCombinations(sum, length, mustBeZeroIndexes = []) {
   const result = [];
 
-  function generateCombination(arr, currentSum, index) {
+  function generateCombination(arr, currentSum) {
     if (arr.length === length) {
       if (currentSum === sum) {
         result.push([...arr]);
@@ -10,18 +9,19 @@ export function findCombinations(sum, length) {
       return;
     }
 
-    // 每個元素最少是 1，並且剩下的元素總和不能超過剩餘的 sum
-    for (let i = 0; i <= sum - currentSum ; i++) {
+    for (let i = 0; i <= sum - currentSum; i++) {
       arr.push(i);
-      generateCombination(arr, currentSum + i, arr.length);
+      generateCombination(arr, currentSum + i);
       arr.pop();
     }
   }
 
-  generateCombination([], 0, 0);
+  generateCombination([], 0);
 
-  return result;
+  // 🔽 過濾條件：指定的索引值必須為 0
+  return result.filter(arr => mustBeZeroIndexes.every(index => arr[index] === 0));
 }
+
 
 // 測試
 //console.log(findCombinations(4, 9));

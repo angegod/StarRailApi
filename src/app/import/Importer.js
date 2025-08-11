@@ -25,7 +25,7 @@ import HintImporter from '@/components/Hint/HintImporter';
 
 function Importer(){
     //版本序號
-    const version="1.4";
+    const version="1.5";
     const maxHistoryLength = 6;
     const LocalStorageLocation = "importData";
 
@@ -63,6 +63,10 @@ function Importer(){
     const [selfStand,setSelfStand]=useState([]);
     const standDetails=useRef([]);
 
+    //鎖定功能是否啟用
+    const [Lock,setLock]=useState(false);
+    const isLock = useRef(false);
+
     //router相關
     const pathname = usePathname();
 
@@ -99,6 +103,7 @@ function Importer(){
             setRank(RelicDataArr[relicIndex].Rank);
 
             standDetails.current=RelicDataArr[relicIndex].standDetails;
+            isLock.current = RelicDataArr[relicIndex].affixLock;
             //還原至初始狀態
             setIsChangeAble(true);
         }
@@ -153,7 +158,7 @@ function Importer(){
     }
     
 
-    //   獲得遺器資料
+    //獲得遺器資料
     async function getRecord(sendData = undefined ,standard = undefined){
         
         let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/relic/get`:`https://expressapi-o9du.onrender.com/relic/get`;
@@ -249,6 +254,7 @@ function Importer(){
         })
     }
 
+    //流程
     const process=useCallback(async(relicArr,standard = undefined)=>{
         let temparr = [];
         //檢查加權標準
@@ -271,7 +277,7 @@ function Importer(){
         //如果是剛查詢完的 則改成可以儲存
         updateStatus('資料顯示完畢',"success");
        
-    },[RelicDataArr,isSaveAble])
+    },[RelicDataArr,isSaveAble,Lock])
 
     //刪除紀錄
     function clearData(){
@@ -382,29 +388,40 @@ function Importer(){
         }, 0);
     },[historyData]);
 
+    //計算遺器分數
     function calscore(relic,standard){
         return new Promise((resolve)=>{
             let isCheck=true;
-            //將獲得到遺器先儲存起來
 
             //將運行結果丟到背景執行
             let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
             let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
             let SubData=[];
-
             relic.sub_affix.forEach((s,i)=>{
                 let typeName=AffixName.find((a)=>a.fieldName===s.type);
                 let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
+                //每個詞條的加權 如果找不到則為0
+                let stand = standard.find((s)=>s.name===typeName.name);
                 
                 let data={
                     index:i, 
                     subaffix:typeName.name,
                     data:val, //詞條數值    
-                    count:s.count-1//強化次數
+                    count:s.count-1,//強化次數
+                    stand:(!stand)?0:stand.value,
+                    locked:false
                 }
 
                 SubData.push(data);
             });
+            if(Lock){
+                // 找出stand最小的詞條
+                let LockAffix = SubData.reduce((min, curr) => curr.stand < min.stand ? curr : min);
+
+                // 設定該詞條lock為true
+                LockAffix.locked = true;
+            }
+            
             
             //如果篩選有速度詞條 需給予0.5誤差計算 
             let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
@@ -435,7 +452,8 @@ function Importer(){
                         Rscore:event.data.relicscore,
                         PieNums:event.data.returnData,
                         Rank:event.data.relicrank,
-                        standDetails:standard
+                        standDetails:standard,
+                        affixLock:Lock
                     };
 
                     resolve(returnData);
@@ -523,6 +541,7 @@ function Importer(){
         historyData:historyData,
         isChangeAble:isChangeAble,
         RelicDataArr:RelicDataArr,
+        affixLock:isLock.current,
         isLoad:isLoad,
         mode:"Importer",
         
@@ -533,7 +552,7 @@ function Importer(){
         ExpRate:ExpRate,
         PieNums:PieNums,
         relicIndex:relicIndex,
-
+  
         //方法
         deleteHistoryData:deleteHistoryData,
         checkDetails:checkDetails,
@@ -587,6 +606,16 @@ function Importer(){
                                 </div>
                                 <div className='flex flex-row items-center'>
                                     <StandardSelect />
+                                </div>
+                            </div>
+                            <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
+                                <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
+                                    <span className='text-white whitespace-nowrap'>Lock 是否鎖定:</span>
+                                </div>
+                                <div className='flex flex-row items-center'>
+                                    <button className='processBtn' onClick={() => setLock(prev => !prev)}>
+                                        {Lock ? "啟用" : "不啟用"}
+                                    </button>
                                 </div>
                             </div>
                             <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`}>
