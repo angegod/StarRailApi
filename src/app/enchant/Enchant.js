@@ -74,7 +74,6 @@ const Enchant=React.memo(()=>{
             alert('沒有任何模擬數據，即將導回至主頁');
             router.push('./');
         }
-
         //初始紀錄
         if(relicBackUp.current === null){
             relicBackUp.current=simulatorData.oldData;
@@ -243,25 +242,13 @@ const Enchant=React.memo(()=>{
         let MainAffix=AffixName.find((a)=>a.name===relic.main_affix);
         let SubData=[];
 
-
+        //將Subdata帶入 這邊會帶鎖定資訊，所以不需更改
         if(simulatorData.oldData===null){
-            relic.subaffix.forEach((s,i)=>{
-                let typeName=AffixName.find((a)=>a.name===s.subaffix);
-               
-                let data={
-                    index:i, 
-                    subaffix:typeName.name,
-                    data:s.data, //詞條數值    
-                    count:s.count//強化次數
-                }
-    
-                SubData.push(data);
-            });
-
+            //深拷貝一份Subdata數據
+            SubData = JSON.parse(JSON.stringify(relic.subaffix));
         }else{
             SubData = simulatorData.oldData.returnData;
         }
-        
 
         //檢查標準是否合法
         standDetails.forEach((s)=>{
@@ -291,7 +278,6 @@ const Enchant=React.memo(()=>{
 
             // 接收 Worker 返回的訊息
             worker.onmessage = function (event) {
-
                 setSimulatorData({
                     oldData:{
                         relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
@@ -353,16 +339,16 @@ const Enchant=React.memo(()=>{
 
     const ResultSection=(simulatorData.newData!==undefined&&simulatorData.oldData!==undefined)?(
         <div className='flex flex-row flex-wrap  max-[600px]:!flex-col'>
-            <DataList standDetails={standDetails} data={simulatorData.oldData} title={'重洗前'} />
+            <DataList standDetails={standDetails} data={simulatorData.oldData} title={'重洗前'} affixLock={affixLock}/>
             <div className={`flex my-auto w-[30px] moveAnimate moveAnimate2 max-[600px]:w-full h-[30px] ${(simulatorData.newData===null)?'hidden':''}`} >
                 <svg xmlns="http://www.w3.org/2000/svg" className='max-[600px]:hidden mx-auto'
                     height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/></svg>
                 <svg xmlns="http://www.w3.org/2000/svg" className='min-[600px]:hidden mx-auto'
                     height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-800v487L216-537l-56 57 320 320 320-320-56-57-224 224v-487h-80Z"/></svg>
             </div>
-            <DataList standDetails={standDetails} data={simulatorData.newData} title={'重洗後'} />          
+            <DataList standDetails={standDetails} data={simulatorData.newData} title={'重洗後'} affixLock={affixLock}/>          
         </div>
-    ):(<></>);
+    ):null;
 
     const EnchantStatus ={
         relic:relic,
@@ -429,14 +415,45 @@ const Enchant=React.memo(()=>{
 });
 
 //強化前後的數據顯示
-const DataList=React.memo(({standDetails,data,title})=>{
+const DataList=React.memo(({standDetails,data,title,affixLock})=>{
     let list=[];
     if(data!==null){
+        let strikeThroughName = null;
+        let minIndex = 0;
+        let minValue = Infinity;
+        //如果資料是有帶鎖定資訊的
+        if(affixLock){
+            //先找出哪個詞條需要加上刪除線
+            data.returnData.forEach((d, i) => {
+                //先改名
+                let showAffix = '';
+                let targetAffix = AffixName.find((a)=>a.name===d.subaffix);
+                 //檢查是否要顯示%數
+                if(targetAffix.percent&&!d.data.toString().includes('%'))
+                    showAffix = d.data+'%';
+                else 
+                    showAffix = d.data;
+                
+                const found = standDetails.find(st => st.name === d.subaffix);
+                const value = found ? found.value : 0; // 沒找到當 0
+
+                if (value < minValue) { 
+                    minValue = value;
+                    minIndex = i; 
+                    strikeThroughName = d.subaffix;
+                }
+            });
+        }
+
+
         data.returnData.map((d,i)=>{
             let markcolor="";
-            var targetAffix = AffixName.find((a)=>a.name===d.subaffix);
+            let targetAffix = AffixName.find((a)=>a.name===d.subaffix);
             let isBold=(standDetails.find((st)=>st.name===d.subaffix)!==undefined)?true:false;
             let showData = undefined;
+
+            //如果有啟用鎖定功能在判定
+        
             //檢查是否要顯示%數
             if(targetAffix.percent&&!d.data.toString().includes('%'))
                 showData = d.data+'%';
@@ -467,9 +484,8 @@ const DataList=React.memo(({standDetails,data,title})=>{
                 default:
                     break;
             }
-    
             list.push(
-                <div className='flex flex-row' key={'Subaffix_'+d.subaffix}>
+                <div className={`flex flex-row ${(strikeThroughName===d.subaffix)?'strikeLine':''}`} key={'Subaffix_'+d.subaffix}>
                     <div className='flex justify-center items-center'>
                         <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
                             flex justify-center items-center' style={{backgroundColor:markcolor}}>
@@ -480,9 +496,11 @@ const DataList=React.memo(({standDetails,data,title})=>{
                         <div className='flex justify-center items-center'>
                             <img src={imglink} alt='555' width={24} height={24}/>
                         </div>
-                        <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{d.subaffix}</span>
+                        <span className={`${(strikeThroughName === d.subaffix)?'text-stone-400':(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>
+                            {d.subaffix}
+                        </span>
                     </div>
-                    <span className='flex w-[70px]'>:<span className='ml-2 text-white '>{showData}</span></span>
+                    <span className='flex w-[70px]'>:<span className={`ml-2  ${(strikeThroughName === d.subaffix)?'text-stone-400':'text-white'}`}>{showData}</span></span>
                 </div>
                 
             )

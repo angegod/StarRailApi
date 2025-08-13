@@ -90,3 +90,20 @@ input[type="number"]::-webkit-outer-spin-button {
     justify-content: center;
     align-items: center;
 }
+
+/*刪除線*/
+.strikeLine{
+    position: relative; /* or absolute */
+}
+
+.strikeLine::before{
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;  /* 線的粗細 */
+    background: black; /* 線的顏色 */
+    pointer-events: none; /* 不阻擋點擊 */
+    transform: translateY(-50%);
+}

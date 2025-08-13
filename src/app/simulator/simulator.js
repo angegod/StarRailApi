@@ -45,7 +45,7 @@ function Simulator(){
     //const SubData=useRef([]);
     const [SubData,setSubData]=useState([]);
     const [charID,setCharID]=useState(undefined);
-    const [PieNums,setPieNums]=useState(undefined);
+    const [PieNums,setPieNums]=useState(undefined);  
 
     //自訂義標準
     const [selfStand,setSelfStand]=useState([]);
@@ -222,7 +222,6 @@ function Simulator(){
         standDetails.current=data.stand;
         setRelic(data.relic);
         isLock.current=data.relic.affixLock;
-        console.log(data);
         //清空模擬強化紀錄
         setSimulatorData({});
 
@@ -235,13 +234,13 @@ function Simulator(){
     }
 
     //整合並儲存遺器資訊
-    function saveRelic(){
+    function saveRelic(getSubData){
         let data={
             main_affix:MainSelectOptions,
             subaffix:[]
         }
 
-        let tempArr = JSON.parse(JSON.stringify(SubData));
+        let tempArr = JSON.parse(JSON.stringify(getSubData));
 
         tempArr.forEach((s,i)=>{
             if(!['生命值','攻擊力','防禦力','速度'].includes(s.subaffix))
@@ -265,15 +264,17 @@ function Simulator(){
         //先驗證選擇是否有誤
         //副詞條是否有空值?
         //副詞條是否有跟主詞條重複?
-        let errors=false;
 
+        let errors=false;
+        //複製一份Subdata做檢查
+        let getSubData = JSON.parse(JSON.stringify(SubData));
         if(!charID){
             errors=true;
             updateStatus("沒有選擇任何腳色!!",'error');
             return;
         }
 
-        SubData.some((s,i)=>{
+        getSubData.some((s,i)=>{
             if(s.subaffix===MainSelectOptions){
                 //alert(`第${i+1}個詞條選擇\n副詞條不可選擇與主詞條相同的詞條\n請再重新選擇!!`);
                 updateStatus(`第${i+1}個詞條:副詞條不可選擇與主詞條相同的詞條\n請再重新選擇!!`,'error');
@@ -290,7 +291,7 @@ function Simulator(){
         if(errors) return;
         //輸入的副詞條之間是否重複?
         const seen = new Set();
-        for (const obj of SubData) {
+        for (const obj of getSubData) {
             if (seen.has(obj['subaffix'])) {
                 alert(`副詞條之間不可以選擇重複\n請再重新選擇!!`);
                 errors=true;
@@ -310,10 +311,10 @@ function Simulator(){
         if(errors) return;
 
         //如果篩選有速度詞條 需給予0.5誤差計算 
-        let deviation=(SubData.current.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        let deviation=(getSubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
         if(Lock){
-            SubData.current.forEach(s=>{
-                if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+            getSubData.forEach(s=>{
+                if(s.subaffix!=='速度'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
                     deviation+=0.2;
 
                 let stand = selfStand.find((st)=>st.name === s.subaffix);
@@ -321,20 +322,19 @@ function Simulator(){
             });
 
             // 找出stand最小的詞條
-            let LockAffix = SubData.current.reduce((min, curr) => curr.stand < min.stand ? curr : min);
+            let LockAffix = getSubData.reduce((min, curr) => curr.stand < min.stand ? curr : min);
 
             // 設定該詞條lock為true
             LockAffix.locked = true;
         }else{ //如果現在是不鎖定 則強制取消所有鎖定
-            SubData.current.forEach((s)=>s.locked = false);
+            getSubData.forEach((s)=>s.locked = false);
         }
-
         //將運行結果丟到背景執行
         let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
         let postData={
             charID:charID,
             MainData:MainSelectOptions,
-            SubData:SubData,
+            SubData:getSubData,
             partsIndex:partsIndex,
             standard:selfStand,
             deviation:deviation
@@ -357,7 +357,8 @@ function Simulator(){
             setRank(event.data.relicrank);
             standDetails.current=selfStand;
             isLock.current=Lock;
-            saveRelic();
+            saveRelic(getSubData);
+            
             
             //恢復點擊
             setProcessBtn(true);
@@ -371,8 +372,7 @@ function Simulator(){
                 });
             })
 
-            //清空強化紀錄
-            setSimulatorData({});
+
         };
     }
 

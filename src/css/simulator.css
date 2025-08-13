@@ -95,3 +95,20 @@ input[type="number"]::-webkit-outer-spin-button {
 .shadowBox{
     box-shadow: 0 10px 30px #00000080;
 }
+
+/*刪除線*/
+.strikeLine{
+    position: relative; /* or absolute */
+}
+
+.strikeLine::before{
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;  /* 線的粗細 */
+    background: white; /* 線的顏色 */
+    pointer-events: none; /* 不阻擋點擊 */
+    transform: translateY(-50%);
+}

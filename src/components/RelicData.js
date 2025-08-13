@@ -7,7 +7,6 @@ import SiteContext from '../context/SiteContext';
 import RelicDataHint from './Hint/RelicDataHint';
 import { useSelector, useDispatch } from 'react-redux';
 import { setEnchantData } from '@/model/enchantDataSlice';
-import { jsx } from 'react/jsx-runtime';
 
 
 //顯示儀器分數區間
@@ -114,7 +113,7 @@ const RelicData=React.memo(({mode,button})=>{
             }
 
             list.push(
-                <div className='flex flex-row' key={`Subaffix_${s.name}_${i}`}>
+                <div className={`flex flex-row ${(strikeThroughName===showAffix)?'strikeLine':''}`} key={`Subaffix_${s.name}_${i}`}>
                     <div className='flex justify-center items-center'>
                         <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
                             flex justify-center items-center' style={{backgroundColor:markcolor}}>
@@ -128,7 +127,7 @@ const RelicData=React.memo(({mode,button})=>{
                         <span
                             className={`${
                                 strikeThroughName === showAffix
-                                ? 'line-through text-stone-400'
+                                ? 'text-stone-400'
                                 : isBold
                                 ? 'text-yellow-500 font-bold'
                                 : 'text-white'
@@ -138,7 +137,7 @@ const RelicData=React.memo(({mode,button})=>{
                     </div>
                     <div className='flex w-[70px]'>
                         <span className='mr-1'>:</span>
-                        <span className={`text-right ${(showAffix === strikeThroughName)?'line-through text-stone-400':'text-white'} `}>{s.display}</span>
+                        <span className={`text-right ${(showAffix === strikeThroughName)?' text-stone-400':'text-white'} `}>{s.display}</span>
                     </div>
                 </div>
                 
@@ -201,13 +200,12 @@ const RelicData=React.memo(({mode,button})=>{
 });
 
 const RelicData_simulate=React.memo(({mode,button})=>{
-    const {relic,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
+    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
     
     const router = useRouter();
 
     //儲存模擬數據
     const dispatch = useDispatch();
-    //const enchantData = useSelector(state => state.enchant.enchantData);
 
     //導航至模擬強化頁面
     function navEnchant(){
@@ -216,7 +214,8 @@ const RelicData_simulate=React.memo(({mode,button})=>{
             Rrank:Rrank,
             Rscore:Rscore,
             standDetails:standDetails,
-            mode:mode
+            mode:mode,
+            affixLock:affixLock
         }
 
         //next專案必須這麼寫
@@ -226,10 +225,29 @@ const RelicData_simulate=React.memo(({mode,button})=>{
 
     if(relic!==undefined){
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix).icon;
-
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
-
         const list=[];
+
+        let strikeThroughName = null;
+        let minIndex = 0;
+        let minValue = Infinity;
+
+        //如果有啟用鎖定功能在判定
+        if(affixLock){
+            //先找出哪個詞條需要加上刪除線
+            relic.subaffix.forEach((s, i) => {
+                
+                const found = standDetails.find(st => st.name === s.subaffix);
+                const value = found ? found.value : 0; // 沒找到當 0
+
+                if (value < minValue) {
+                    minValue = value;
+                    minIndex = i; 
+                    strikeThroughName = s.subaffix;
+                }
+            });
+        }
+
 
         relic.subaffix.forEach((s)=>{
             let isBold=(standDetails.find((st)=>st.name===s.subaffix)!==undefined)?true:false;
@@ -262,7 +280,7 @@ const RelicData_simulate=React.memo(({mode,button})=>{
                     break;
             }
             list.push(
-                <div className='flex flex-row' key={'Data'+s.subaffix}>
+                <div className={`flex flex-row ${(strikeThroughName===s.subaffix)?'strikeLine':''}`} key={`Subaffix_${s.subaffix}`}>
                     <div className='flex justify-center items-center'>
                         <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
                             flex justify-center items-center' style={{backgroundColor:markcolor}}>
@@ -273,7 +291,13 @@ const RelicData_simulate=React.memo(({mode,button})=>{
                         <div className='flex justify-center items-center'>
                             <img src={imglink} alt='555' width={24} height={24}/>
                         </div>
-                        <span className={`${(isBold)?'text-yellow-500 font-bold':'text-white'} text-left flex` }>{s.subaffix}</span>
+                        <span className={`${
+                                strikeThroughName === s.subaffix
+                                ? 'text-stone-400'
+                                : isBold
+                                ? 'text-yellow-500 font-bold'
+                                : 'text-white'
+                            }`}>{s.subaffix}</span>
                     </div>
                     <span className='flex w-[80px]'>:<span className='ml-2 text-white '>{s.display}</span></span>
                 </div>    
@@ -310,7 +334,7 @@ const RelicData_simulate=React.memo(({mode,button})=>{
                 </div>
                 {(button)?<div className='mt-3'>
                     <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
-                </div>:<></>}
+                </div>:null}
                 <Tooltip id="RelicDataHint"  
                         place="right-start"
                         render={()=>
@@ -319,7 +343,7 @@ const RelicData_simulate=React.memo(({mode,button})=>{
             </div>
         )
     }else{
-        return(<></>)
+        return null
     }
 })
 
