@@ -271,6 +271,7 @@ function Importer(){
             temparr.push(ExpData);
         }
         
+        setRelicIndex(0);
         setRelicDataArr(temparr);
         setIsSaveAble(true);
         RelicDataArrRef.current=temparr;
@@ -396,6 +397,8 @@ function Importer(){
             //將運行結果丟到背景執行
             let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
             let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
+
+            //從遺器資料提取副詞條並根據是否鎖定標註鎖定詞條
             let SubData=[];
             relic.sub_affix.forEach((s,i)=>{
                 let typeName=AffixName.find((a)=>a.fieldName===s.type);
@@ -424,11 +427,11 @@ function Importer(){
             
             
             //如果篩選有速度詞條 需給予0.5誤差計算 
-            let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+            let deviation=(SubData.includes((s)=>s.subaffix==='速度'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
             SubData.forEach(s=>{
-                if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+                if(s.subaffix!=='速度'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
                     deviation+=0.2;
-            })
+            });
 
             //制定送出資料格式
             let postData={
@@ -437,9 +440,10 @@ function Importer(){
                 SubData:SubData,
                 partsIndex:relic.type,
                 standard:standard,
-                deviation:0.5
+                deviation:Number(deviation.toFixed(2))
             };
-            
+            console.log(deviation);
+
             if(isCheck){
                 showStatus('數據計算處理中......','process');
                 worker.postMessage(postData);
@@ -455,7 +459,6 @@ function Importer(){
                         standDetails:standard,
                         affixLock:Lock
                     };
-
                     resolve(returnData);
                 };
             }

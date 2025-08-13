@@ -32,6 +32,7 @@ const RelicData=React.memo(({mode,button})=>{
     }
 
     if(relic!==undefined){
+        let getRelic = JSON.parse(JSON.stringify(relic));
         const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix.name).icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} 
@@ -47,7 +48,7 @@ const RelicData=React.memo(({mode,button})=>{
         //如果有啟用鎖定功能在判定
         if(affixLock){
             //先找出哪個詞條需要加上刪除線
-            relic.sub_affix.forEach((s, i) => {
+            getRelic.sub_affix.forEach((s, i) => {
                 //先改名
                 let showAffix = '';
                 if(s.name === "攻擊力" && s.display.includes('%')){
@@ -59,6 +60,9 @@ const RelicData=React.memo(({mode,button})=>{
                 }else
                     showAffix = s.name ;
                 
+                //複寫回去
+                s.name = showAffix;
+
                 const found = standDetails.find(st => st.name === showAffix);
                 const value = found ? found.value : 0; // 沒找到當 0
 
@@ -71,17 +75,9 @@ const RelicData=React.memo(({mode,button})=>{
         }
         
         //遍歷所有副詞條渲染
-        relic.sub_affix.forEach((s,i)=>{
-            let showAffix = '';
-            if(s.name === "攻擊力" && s.display.includes('%')){
-                showAffix = "攻擊力%數";
-            } else if(s.name === "防禦力" && s.display.includes('%')){
-                showAffix = "防禦力%數";
-            } else if(s.name === "生命值" && s.display.includes('%')){
-                showAffix = "生命值%數";
-            }else
-                showAffix = s.name ;
-
+        getRelic.sub_affix.forEach((s,i)=>{
+            let showAffix = s.name;
+            
             let markcolor="";
             //判斷是否要標記為有效
             let isBold=(standDetails.find((st)=>st.name===showAffix)!==undefined)?true:false;

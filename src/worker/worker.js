@@ -149,7 +149,7 @@ onmessage = function (event) {
             relicscore:score,//遺器分數
             relicrank:relicrank,//遺器區間
             returnData:returnData//區間機率        
-        })
+        });
         
     });
 };

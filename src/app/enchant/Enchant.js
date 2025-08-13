@@ -176,7 +176,7 @@ const Enchant=React.memo(()=>{
             });
         }
 
-        //如果需要鎖定
+        //如果有開啟鎖定模式
         if(affixLock){
             // 找出stand最小的詞條
             let LockAffix = SubData.reduce((min, curr) => curr.stand < min.stand ? curr : min);
@@ -195,7 +195,7 @@ const Enchant=React.memo(()=>{
         //如果篩選有速度詞條 需給予0.5誤差計算 
         let deviation=(SubData.includes((s)=>s.subaffix==='速度'))?0.5*(standDetails.find((s)=>s.name==='速度').value):0;
         SubData.forEach(s=>{
-            if(s.subaffix!=='spd'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
+            if(s.subaffix!=='速度'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
                 deviation+=0.2;
         });
 

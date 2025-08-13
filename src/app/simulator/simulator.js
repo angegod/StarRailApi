@@ -371,8 +371,6 @@ function Simulator(){
                     behavior: 'smooth'
                 });
             })
-
-
         };
     }
 
