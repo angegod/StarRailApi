@@ -69,6 +69,8 @@ const characters = [
     { charID: 1407, name: "遐蝶", eng_name: "Castorice" },
     { charID: 1408, name: "白厄", eng_name: "Phainon" },
     { charID: 1409, name: "風堇", eng_name: "Hyacine" },
+    { charID: 1410, name: "海瑟音", eng_name: "Hysilens"},
+    { charID: 1412, name: "刻律德菈", eng_name: "Cerydra"},
     { charID: 8001, name: "開拓者(男)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8002, name: "開拓者(女)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8003, name: "開拓者(男)(存護)", eng_name: "Trailblazer (Preservation)" },
