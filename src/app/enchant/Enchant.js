@@ -24,9 +24,6 @@ const Enchant=React.memo(()=>{
     //模擬強化相關數據
     const [simulatorData,setSimulatorData]=useState({oldData:null,newData:null});
     const [statics,setStatics]=useState(undefined);
-
-    //是否啟用鎖定詞條功能
-    const [Lock,setLock] = useState(false);
     
     //強化次數
     const [count,setCount]=useState(0);
@@ -48,6 +45,9 @@ const Enchant=React.memo(()=>{
     //從enchantstore獲取資料
     const simulateData = useSelector((state)=>state.enchant.enchantData);
     const router = useRouter();
+
+    //最高與最低分
+    const [MinMaxScore,setMinMaxScore] = useState({min:undefined,max:undefined});
 
     
     useEffect(()=>{
@@ -80,6 +80,9 @@ const Enchant=React.memo(()=>{
         }
         //新增強化紀錄
         addStatics();
+
+        //更新最高最低分數
+        changeMinMaxScore();
     },[simulatorData])
 
 
@@ -310,6 +313,29 @@ const Enchant=React.memo(()=>{
         }
     }
 
+    //判斷是否為最小或最大分數
+    function changeMinMaxScore(){
+        if(simulatorData.oldData!==null&&simulatorData.newData!==null){
+            //如果是初次計算 直接加入到min跟max
+            if(count === 1){
+                let minScore = Math.min(simulatorData.oldData.relicscore,simulatorData.newData.relicscore);
+                let maxScore = Math.max(simulatorData.oldData.relicscore,simulatorData.newData.relicscore);
+                setMinMaxScore({min:minScore,max:maxScore});
+            }else if(count > 1){
+                let score = simulatorData.newData.relicscore;
+                let stand = JSON.parse(JSON.stringify(MinMaxScore));
+
+                if(score > stand.max )
+                    stand.max = score;
+                else if(score < stand.min )
+                    stand.min = score
+
+                setMinMaxScore(stand);
+            }
+        }
+        
+    }
+
     function execute(){
         //根據傳入模式執行對應模擬
         switch(mode){
@@ -360,7 +386,9 @@ const Enchant=React.memo(()=>{
         partArr:partArr,
         PieNums:statics,
         successCount:successCount,
-        count:count
+        count:count,
+        MinMaxScore:MinMaxScore,
+        affixLock:affixLock
     };
     
     return(
@@ -531,7 +559,7 @@ const DataList=React.memo(({standDetails,data,title,affixLock})=>{
 });
 
 const Pie=React.memo(()=>{
-    const {PieNums,successCount,count} =useContext(SiteContext);
+    const {PieNums,successCount,count,MinMaxScore} =useContext(SiteContext);
 
     if(PieNums!==undefined){
         const pieParams = {
@@ -553,31 +581,31 @@ const Pie=React.memo(()=>{
                         }
                     ]}  {...pieParams} />
                 </div>
-                <div className={`flex-col w-2/5 max-[500px]:w-[100%] mt-2 hidden ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
-                    <div className='flex flex-col max-[600px]:w-3/5 max-[600px]:mx-auto'>
-                        <div>
-                            <span className='text-amber-700 font-bold text-lg'>模擬次數</span>
+                <div className={`flex-col w-2/5 max-[500px]:w-[100%] mt-2 ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
+                    <div className='flex-col justify-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                        <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                            <div className='flex justify-start'>
+                                <span className='text-stone-400'>翻盤次數</span>
+                            </div>
+                            <div className='flex justify-start text-center ml-2'>
+                                <span className='text-white'>{successCount}次</span>
+                            </div>
                         </div>
-                        <div className='flex flex-col justify-center '>
-                            {PieNums.map((p,i)=>{
-                                if(p.value!==0)
-                                    return(
-                                        <div className='my-1 flex flex-row' key={'pieNums'+i}>
-                                            <span className='w-1/4' style={{color:p.color}}>{p.tag}</span>
-                                            <span className='w-1/4' style={{color:p.color}}>{p.value}次</span>
-                                        </div>
-                                    )
-                                })
-                            }
+                        <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                            <div className='flex justify-start'>
+                                <span className='text-stone-400'>最高分數</span>
+                            </div>
+                            <div className='flex justify-start text-center ml-2'>
+                                <span className='text-white'>{MinMaxScore.max}</span>
+                            </div>
                         </div>
-                        
-                    </div>
-                    <div className='flex-col justify-center hidden max-[600px]:w-3/5 max-[600px]:mx-auto'>
-                        <div className='flex justify-start'>
-                            <span className='text-amber-700 font-bold text-lg'>翻盤次數</span>
-                        </div>
-                        <div className='flex justify-start text-center'>
-                            <span className='text-white'>{successCount}次</span>
+                        <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                            <div className='flex justify-start'>
+                                <span className='text-stone-400'>最低分數</span>
+                            </div>
+                            <div className='flex justify-start text-center ml-2'>
+                                <span className='text-white'>{MinMaxScore.min}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

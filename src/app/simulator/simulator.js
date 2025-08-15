@@ -23,6 +23,7 @@ import SiteContext from '@/context/SiteContext';
 import { useStatusToast } from '@/context/StatusMsg';
 import { useSelector, useDispatch } from 'react-redux';
 import { createHistory,addHistory,limitHistory,deleteHistory,resetHistory } from '../../model/historySlice';
+import HintAffixLock from '@/components/Hint/HintAffixLock';
 
 
 //遺器強化模擬器
@@ -103,10 +104,10 @@ function Simulator(){
         for(var i=0;i<=3;i++){
             let data={
                 index:i, 
-                subaffix:0,//詞條種類
-                data:0, //詞條數值
-                count:0, //強化次數
-                stand:0,//加權
+                subaffix:0, //詞條種類
+                data:0,     //詞條數值
+                count:0,    //強化次數
+                stand:0,    //加權
                 locked:false
             }
 
@@ -116,7 +117,10 @@ function Simulator(){
         
         let history=JSON.parse(localStorage.getItem('HistoryData'));
 
-        if(!history) return;
+        if(!history) {
+            updateStatus('尚未有任何操作紀錄!!','default');
+            return;
+        }
         showStatus('正在載入過往紀錄中......');
         
         //為了避免更新迭代而造成歷史紀錄格式上的問題 
@@ -491,6 +495,10 @@ function Simulator(){
                                     <button className='bg-gray-400 text-black rounded-sm px-2 font-bold' onClick={() => setLock(prev => !prev)}>
                                         {Lock ? "啟用" : "不啟用"}
                                     </button>
+                                    <div className='hintIcon ml-2 overflow-visible'
+                                        data-tooltip-id="AffixLockHint"> 
+                                        <span className='text-white'>?</span>
+                                    </div>
                                 </div>
                             </div>
                             <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
@@ -565,6 +573,9 @@ function Simulator(){
                     place='right-start'
                     render={()=><HintSimulator/>}
                     clickable={true}/>
+            <Tooltip id="AffixLockHint"
+                    place='right-start'
+                    render={()=><HintAffixLock/>} />
             
         </div>
     </SiteContext.Provider>)

@@ -8,7 +8,7 @@ function HintHistory(){
     return(
         <div className='flex flex-col max-w-[250px] p-1'>
             <div>
-                <span className='text-white'>此區塊可以查看過往查詢紀錄，下面為個別功能相關簡述。</span>
+                <span className='text-stone-400'>此區塊可以查看過往查詢紀錄，下面為個別功能相關簡述。</span>
             </div>
             <div className='mt-2 flex flex-col'>
                 <span className='text-md font-bold text-white'>檢視</span>

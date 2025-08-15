@@ -21,6 +21,7 @@ import { createHistory,addHistory,limitHistory,deleteHistory,updateHistory, rese
 
 import HintHistory from '@/components/Hint/HintHistory';
 import HintImporter from '@/components/Hint/HintImporter';
+import HintAffixLock from '@/components/Hint/HintAffixLock';
 
 
 function Importer(){
@@ -619,6 +620,10 @@ function Importer(){
                                     <button className='bg-gray-400 text-black rounded-sm px-2 font-bold' onClick={() => setLock(prev => !prev)}>
                                         {Lock ? "啟用" : "不啟用"}
                                     </button>
+                                    <div className='hintIcon ml-2 overflow-visible'
+                                        data-tooltip-id="AffixLockHint"> 
+                                        <span className='text-white'>?</span>
+                                    </div>
                                 </div>
                             </div>
                             <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`}>
@@ -690,6 +695,9 @@ function Importer(){
                     place='right-start'
                     render={()=><HintImporter/>}
                     clickable={true}/>
+            <Tooltip id="AffixLockHint"
+                    place='right-start'
+                    render={()=><HintAffixLock />} />
         </div>
             
     </SiteContext.Provider>)
