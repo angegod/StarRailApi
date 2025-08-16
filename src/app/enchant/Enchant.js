@@ -7,6 +7,7 @@ import '../../css/enchant.css';
 import { StandDetails } from '../../components/StandDetails';
 import { RelicData, RelicData_simulate } from '../../components/RelicData';
 import { PieChart } from '@mui/x-charts/PieChart';
+
 import SiteContext from '@/context/SiteContext';
 import { useSelector,useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
@@ -121,7 +122,6 @@ const Enchant=React.memo(()=>{
             //讀取既有統計
             let oldStatics = statics;
             let targetStatics = oldStatics.find((s)=>s.label === simulatorData.newData.relicrank.rank);
-            
             if (targetStatics === null || targetStatics === undefined) {
                 let data = {
                     label: simulatorData.newData.relicrank.rank,
@@ -129,7 +129,7 @@ const Enchant=React.memo(()=>{
                     color: scoreStand.find((s) => s.tag === simulatorData.newData.relicrank.rank).color,
                     tag: simulatorData.newData.relicrank.rank
                 };
-                setStatics((old) => [...old, data]); // 新陣列，觸發 re-render
+                setStatics((old) => [...old, data]); // 新陣列，觸發 re-render 
             } else {
                 setStatics((old) =>
                     old.map((item) =>
@@ -227,8 +227,11 @@ const Enchant=React.memo(()=>{
                 setCount((c)=>c+=1);
 
                 //如果該次強化超過原有分數 則成功次數+1
-                if(simulatorData.oldData!==null){
-                    if(parseInt(event.data.relicscore) > parseInt(simulatorData.oldData.relicscore))
+                if(simulatorData.oldData!==null){ //第二次強化以後
+                    if(parseInt(event.data.relicscore) > simulatorData.oldData.relicscore)
+                        setSuccessCount((c)=>c+=1);
+                }else{ //第一次模擬
+                    if(parseInt(event.data.relicscore) > Rscore)
                         setSuccessCount((c)=>c+=1);
                 }
             };
@@ -293,8 +296,11 @@ const Enchant=React.memo(()=>{
                 setCount((c)=>c+=1);
 
                 //如果該次強化超過原有分數 則成功次數+1
-                if(simulatorData.oldData!==null){
-                    if(parseInt(event.data.relicscore) > parseInt(simulatorData.oldData.relicscore))
+                if(simulatorData.oldData!==null){ //第二次強化以後
+                    if(parseInt(event.data.relicscore) > simulatorData.oldData.relicscore)
+                        setSuccessCount((c)=>c+=1);
+                }else{ //第一次模擬
+                    if(parseInt(event.data.relicscore) > Rscore)
                         setSuccessCount((c)=>c+=1);
                 }
             };
@@ -430,7 +436,9 @@ const Enchant=React.memo(()=>{
                         </div>
                     </div>
                 </div>
-                
+                <div className='bg-[rgba(0,0,0,0.5)] h-fit p-2 rounded-md w-fit'>
+                    
+                </div>
             </div>
             <Tooltip id="EnchantHint"  
                     place="right-start" 
@@ -617,6 +625,9 @@ const Pie=React.memo(()=>{
         return null
     }
 });
+
+
+
 
 export default Enchant;
 

@@ -5,39 +5,49 @@ import "@/css/intro.css";
 function Intro(){
     //之後intro頁面可能會改成json控管
     return(
-        <div className='w-4/5 mx-auto'>
-            <div className='intro p-[1rem] mb-3 rounded-md [&>div]:my-1 w-1/2 flex flex-col h-[90vh] justify-around max-[800px]:!w-[95%] max-[800px]:h-fit'>
-                <div className='flex flex-col'>
+        <div className='w-4/5 mx-auto max-[800px]:!w-[90%]'>
+            <div className='intro p-[1rem] mb-3 rounded-md w-fit flex flex-col flex-wrap h-[80vh] max-[800px]:!w-[95%] max-[800px]:h-fit'>
+                <div className='flex flex-col my-1'>
                     <span className='text-2xl text-red-500 font-bold'>常見Q&A</span>
-                    <span className='text-white'>這裡列出比較常見的幾個問題，如果有其他問題也歡迎利用巴哈私訊我</span>
+                    <span className='text-white'>這裡列出比較常見的幾個問題，如果有其他問題也歡迎進來群組討論</span>
+                    <div className='underline flex flex-row items-center'>
+                        <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/discord.png`}
+                            alt="icon"
+                            className="inline align-middle h-[25px] w-auto ml-1"/>
+                        <a href='https://discord.gg/R5f7Uz6wF3'target='_blank' className='text-indigo-500'>discord群組連結</a>     
+                    </div>
                 </div>
-                <div className='flex flex-col [&>div]:my-1'>
+                <div className='introSub'>
                     <div className='flex flex-row items-center'>
                         <span className='question'>Q:甚麼是重洗?</span>
                         <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/good.png`}
                             alt="icon"
                             className="inline align-middle h-[25px] w-auto ml-1"/>
                     </div>
-                    <div className='[&>span]:text-white flex flex-col'>
-                        <span>A:崩鐵2.7版本中推出了一個道具叫<span className='text-yellow-500 font-bold'>變量骰子</span></span>
-                        <span className="text-md leading-tight">
-                            此道具可以針對強化至滿等的五星遺器作詞條隨機重新分配的動作                        
-                        </span>
+                    <div className=' flex flex-col w-full'>
+                        <div className='[&>span]:text-white'>
+                            <span>A:崩鐵3.0版本中推出了一個道具叫<span className='text-yellow-500 font-bold'>變量骰子</span></span>
+                            <span className="text-md leading-tight">
+                                此道具可以針對強化至滿等的五星遺器作詞條隨機重新分配的動作</span>            
+                        </div>            
+                        <div className='[&>span]:text-white mt-2'>
+                            <span>此外崩鐵在3.6版本中推出了一個干涉密鑰，可以指定遺器中任一副詞條重洗過程中不會分配任何強化次數至該詞條中</span>
+                        </div>
                     </div>
                 </div>
-                <div className='flex flex-col [&>div]:my-1'>
+                <div className='introSub'>
                     <div className='flex flex-row items-center'>
                         <span className='question'>Q:為啥需要重洗?</span>
                         <img    src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/yulin.png`}
                                 alt="Good.png" width={25} height={25}
                                 className='inline'/>
                     </div>
-                    <div>
+                    <div className='p-1'>
                         <span className='text-white'>A:崩鐵的遺器沒有散件的概念，儘管說詞條配置不錯，但如果出錯套裝仍功虧一簣</span>
                         <span className='text-white flex flex-row items-center'>更何況強化結果有可能會不盡人意，這個道具可以給予遺器重生的機會</span>
                     </div>
                 </div>
-                <div className="flex flex-col [&>div]:my-1 ">
+                <div className="introSub">
                     <div className='flex flex-row items-center'>
                         <span className='question'>Q:這件適合重洗嗎?</span>
                         <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/feixiao.png`}
@@ -51,7 +61,7 @@ function Intro(){
                         </span>
                     </div>
                 </div>
-                <div className="flex flex-col [&>div]:my-1 ">
+                <div className="introSub">
                     <div className='flex flex-row items-center'>
                         <span className='question'>Q:目前變量骰子取得的管道?</span>
                         <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/feixiao.png`}
@@ -67,6 +77,17 @@ function Intro(){
                         </ol>                   
                     </div>
                 </div>
+                <div className="introSub">
+                    <div className='flex flex-row items-center'>
+                        <span className='question'>Q:干涉密鑰的取得管道?</span>
+                        <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/herta.png`}
+                                    alt="herta.png" width={25} height={25}/>
+                    </div>
+                    <div className='flex flex-col'>
+                        <p className='text-white'>A:干涉密鑰目前取得管道只有一個:通關異相仲裁王棋關卡，但不排除之後會有其他獲得管道</p>              
+                    </div>
+                </div>
+                
             </div>
         </div>
         

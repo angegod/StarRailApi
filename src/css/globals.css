@@ -114,7 +114,7 @@ body{
 .PastPreview {
     @apply flex flex-row flex-wrap max-[400px]:flex-nowrap;
 
-    @apply min-w-[100px] max-w-[300px] max-[800px]:max-w-[280px];
+    @apply min-w-[100px] max-w-[300px] max-[800px]:max-w-[300px];
     @apply max-[800px]:w-4/5 max-[400px]:w-[85%];
 
     @apply max-h-[120px] bg-slate-700 rounded-md p-2 m-2;
