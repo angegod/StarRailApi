@@ -3,31 +3,31 @@ import { usePathname } from 'next/navigation';
 import { Menu, MainMenu } from '@/components/Menu';
 import { Provider } from 'react-redux';
 import store from '@/model/reducer';
+import { UpdatedSection } from '@/components/UpdatedSection';
 
 export default function LayoutClient({ children }) {
-  const pathname = usePathname();
+    const pathname = usePathname();
 
-  const isHome = pathname === '/' || pathname === '/StarRailApi/';
+    const isHome = pathname === '/' || pathname === '/StarRailApi/';
 
-  let backgroundClass = isHome ? 'MainBackGround' : 'SubBackGround';
-  if (process.env.NODE_ENV === 'production') {
-    backgroundClass += '-release';
-  }
+    let backgroundClass = isHome ? 'MainBackGround' : 'SubBackGround';
+    if (process.env.NODE_ENV === 'production') {
+        backgroundClass += '-release';
+    }
 
-  return (
-    <div className={backgroundClass}>
-      {isHome ? (
-        <MainMenu />
-      ) : (
-        <>
-          <Menu />
-          <div className="min-h-[100vh]">
-              <Provider store={store}>
-                  {children}
-              </Provider>
-          </div>
-        </>
-      )}
-    </div>
-  );
+    return (
+      <div className={backgroundClass}>
+          <UpdatedSection />
+          {isHome ? (<MainMenu />) : (
+              <>
+                <Menu />
+                <div className="min-h-[100vh]">
+                    <Provider store={store}>
+                        {children}
+                    </Provider>
+                </div>
+              </>
+          )}
+      </div>
+    );
 }
