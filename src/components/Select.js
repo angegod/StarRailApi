@@ -69,29 +69,61 @@ const MainAffixSelect = React.memo(() => {
     }
 });
 
-//副詞條選擇
-const SubAffixSelect=React.memo(({index})=>{
-    const {SubData,setSubData,MainSelectOptions,partsIndex,isChangeAble}=useContext(SiteContext);
+const SubAffixSelect = React.memo(({ index }) => {
+    const { SubData, setSubData, MainSelectOptions, partsIndex, isChangeAble } = useContext(SiteContext);
+
+    //詞條數值
+    const [inputValue, setInputValue] = useState(SubData[index]?.data ??0);
+    
+    //詞條強化次數
+    const [inputCount, setInputCount] = useState(SubData[index]?.count ??0);
 
     function updateSubAffix(val, index) {
-        setSubData(prev => prev.map((item, i) => i === +index ? { ...item, subaffix: val } : item));
+        setSubData(prev => prev.map((item, i) =>
+            i === +index ? { ...item, subaffix: val } : item
+        ));
     }
 
-    function updateSubData(val, index) {
-        setSubData(prev => prev.map((item, i) => i === +index ? { ...item, data: Number(val) } : item));
+    function handleBlurValue(index) {
+        const num = Number(inputValue);
+
+        if (inputValue === "" || isNaN(num)) {
+            // 顯示 0，但不存入 SubData
+            setInputValue("0");
+            return;
+        }
+
+        setSubData(prev => {
+            const next = [...prev];
+            next[index] = { ...next[index], data: num };
+            return next;
+        });
     }
 
-    function updateSubCount(val, index) {
-        setSubData(prev => prev.map((item, i) => i === +index ? { ...item, count: Number(val) } : item));
+    function handleBlurCount(index) {
+        let num = Number(inputCount);
+
+        if (inputCount === "" || isNaN(num)) {
+            setInputCount("0");
+            return;
+        }
+
+        num = Math.min(Math.max(num, 0), 5);
+
+        setSubData(prev => {
+            const next = [...prev];
+            next[index] = { ...next[index], count: num };
+            return next;
+        });
     }
 
-    if(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined){
-        let range=AffixList.find((s)=>s.id===parseInt(partsIndex)).sub;
-        let options=[<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
+    if (MainSelectOptions !== undefined && MainSelectOptions !== 'undefined' && partsIndex !== undefined) {
+        let range = AffixList.find((s) => s.id === parseInt(partsIndex)).sub;
+        let options = [<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
 
         const filteredRange = range.filter((r) => {
-            if (r === '' || r === 'undefined') return true; // 保留「請選擇」或空值選項
-            if (r === MainSelectOptions) return false; //如果跟主詞條相同
+            if (r === '' || r === 'undefined') return true;
+            if (r === MainSelectOptions) return false;
             const foundIndex = SubData.findIndex((s) => s.subaffix === r);
             if (foundIndex === -1) return true;
             if (foundIndex === index) return true;
@@ -99,33 +131,47 @@ const SubAffixSelect=React.memo(({index})=>{
             return false;
         });
 
-
-        filteredRange.forEach((s,i)=>{
+        filteredRange.forEach((s) => {
             options.push(<option value={s} key={`Subaffix_${s}`}>{s}</option>)
         });
-        
-        
-        return(
-            <div className='my-1' key={'SubAffixSelect'+index}>
-                <select defaultValue={SubData[index].subaffix} 
-                        onChange={(event)=>updateSubAffix(event.target.value,index)} 
-                        className='graySelect'
-                        disabled={!isChangeAble}>
-                            {options}
+
+        return (
+            <div className='my-1' key={'SubAffixSelect' + index}>
+                <select
+                    value={SubData[index].subaffix}
+                    onChange={(event) => updateSubAffix(event.target.value, index)}
+                    className='graySelect'
+                    disabled={!isChangeAble}>
+                    {options}
                 </select>
-                <input type='number' defaultValue={SubData[index].data}
-                        onChange={(event)=>updateSubData(event.target.value,index)}
-                        className='ml-2 max-w-[50px] bgInput text-center' 
-                        disabled={!isChangeAble} min={0} title='詞條數值' />
-                <input type='number' defaultValue={SubData[index].count}
-                        onChange={(event)=>updateSubCount(event.target.value,index)}
-                        className='ml-2 text-center bgInput' disabled={!isChangeAble}
-                        min={0} max={5} title='強化次數' />
-            </div>)
-    }else{
+
+                <input
+                    type='number'
+                    value={inputValue} // 保證不是 NaN
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onBlur={() => handleBlurValue(index)}
+                    className='ml-2 max-w-[50px] bgInput text-center'
+                    disabled={!isChangeAble}
+                    min={0}
+                    title='詞條數值'/>
+
+                <input
+                    type='number'
+                    value={inputCount} // 保證不是 NaN
+                    onChange={(e) => setInputCount(e.target.value)}
+                    onBlur={() => handleBlurCount(index)}
+                    className='ml-2 text-center bgInput'
+                    disabled={!isChangeAble}
+                    min={0}
+                    max={5}
+                    title='強化次數'/>
+            </div>
+        )
+    } else {
         return null
-    }   
+    }
 });
+
 
 //部位選擇器
 const PartSelect=React.memo(()=>{

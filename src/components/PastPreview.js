@@ -79,21 +79,21 @@ const PastPreview_simulator=React.memo(({data,index})=>{
             </div>
             <div className='flex flex-col min-w-[200px] max-[900px]:min-w-[150px]'>
                 <div className='flex justify-start [&>span]:max-[400px]:text-sm'>
-                    <span className='w-[70px] max-[400px]:w-[60px] break-keep text-stone-400 font-bold'>部位:</span>
+                    <span className='w-[60px] max-[400px]:w-[60px] break-keep text-stone-400 font-bold'>部位:</span>
                     <span className='text-white'>{data.part}</span>
                 </div>
                 <div className='flex justify-start [&>span]:max-[400px]:text-sm'>
-                    <span className='w-[70px] max-[400px]:w-[60px] break-keep text-stone-400 font-bold'>主詞條:</span>
+                    <span className='w-[60px] max-[400px]:w-[60px] break-keep text-stone-400 font-bold'>主詞條:</span>
                     <div className='flex flex-row'>
                         <img src={MainAffixLink} alt="icon" width={24} height={24} />
-                        <span className='w-[100px] text-white whitespace-nowrap overflow-hidden text-ellipsis'
+                        <span className='w-[110px] text-white whitespace-nowrap overflow-hidden text-ellipsis'
                                 title={data.mainaffix}>
                             {data.mainaffix}
                         </span>
                     </div>
                 </div>
                 <div className='flex justify-start [&>span]:max-[400px]:text-sm'>
-                    <span className='w-[70px] max-[400px]:w-[60px] break-keep text-stone-400 font-bold'>機率:</span>
+                    <span className='w-[60px] max-[400px]:w-[60px] break-keep text-stone-400 font-bold'>機率:</span>
                     <span style={{color:textColor}} className='pl-1 font-bold text-white'>{(data.expRate*100).toFixed(1)}%</span>
                 </div>
                 <div className='[&>button]:max-[400px]:text-sm'>
@@ -115,12 +115,12 @@ function formatRelativeDate(dateString) {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
     let relative = "";
-    if (diffDays > 0) {
-        relative = `${diffDays} 天前`;
-    } else if (diffHours > 0) {
-        relative = `${diffHours} 小時前`;
+    if (diffDays === 0) {
+        relative = "今天";
+    } else if (diffDays === 1) {
+        relative = "昨天";
     } else {
-        relative = "剛剛";
+        relative = `${diffDays} 天前`;
     }
 
     // 格式化日期 → YYYY/MM/DD
@@ -128,7 +128,7 @@ function formatRelativeDate(dateString) {
         String(date.getMonth() + 1).padStart(2, "0")
     }/${String(date.getDate()).padStart(2, "0")}`;
 
-    return `${relative}`;
+    return `${formattedDate}`;
 }
 
 

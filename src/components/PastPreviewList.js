@@ -2,7 +2,6 @@ import React, { Component,useCallback,useContext,useMemo } from 'react';
 import {PastPreview, PastPreview_simulator} from './PastPreview';
 import SiteContext from '../context/SiteContext';
 import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 
 const PastPreviewList=React.memo(()=>{

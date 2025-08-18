@@ -328,14 +328,15 @@ const RelicData_simulate=React.memo(({mode,button})=>{
                         {list}
                     </div>
                 </div>
-                {(button)?<div className='mt-3'>
-                    <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
-                </div>:null}
+                {
+                    (button)?
+                        <div className='mt-3'>
+                            <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
+                        </div>:null
+                }
                 <Tooltip id="RelicDataHint"  
                         place="right-start"
-                        render={()=>
-                            <RelicDataHint />
-                        }/>
+                        render={()=><RelicDataHint />}/>
             </div>
         )
     }else{

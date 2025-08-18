@@ -24,6 +24,7 @@ import { useStatusToast } from '@/context/StatusMsg';
 import { useSelector, useDispatch } from 'react-redux';
 import { createHistory,addHistory,limitHistory,deleteHistory,resetHistory } from '../../model/historySlice';
 import HintAffixLock from '@/components/Hint/HintAffixLock';
+import { PiecewiseColorLegend } from '@mui/x-charts';
 
 
 //遺器強化模擬器
@@ -416,7 +417,7 @@ function Simulator(){
     return(
     <SiteContext.Provider value={SimulatorStatus}>
         <div className='w-4/5 mx-auto max-[600px]:w-[90%] flex flex-row flex-wrap'>
-            <div className='flex flex-col w-2/5 bg-[rgba(0,0,0,0.5)] p-2 rounded-md max-[1200px]:w-full'>
+            <div className='flex flex-col w-2/5 bg-black/50 p-2 rounded-md max-[1200px]:w-full'>
                 <div className='flex flex-row items-center'>
                     <h1 className='text-red-600 font-bold text-2xl'>遺器重洗模擬器</h1>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -473,20 +474,26 @@ function Simulator(){
                                     </div>  
                                 </div>
                             </div>
-                            <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col ${(partsIndex===undefined)?'hidden':''}`}>
-                                <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
-                                    <span className='text-white'>Affix 有效詞條:</span>
-                                </div>
-                                <div className='flex flex-row items-center'>
-                                    <StandardSelect />
-                                </div>
-                            </div>
-                            <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`} >
-                                <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
-                                    <span className='text-white'>Params 參數:</span>
-                                </div>
-                                <ShowStand />
-                            </div>
+                            {
+                                (partsIndex)?
+                                <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col`}>
+                                    <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
+                                        <span className='text-white'>Affix 有效詞條:</span>
+                                    </div>
+                                    <div className='flex flex-row items-center'>
+                                        <StandardSelect />
+                                    </div>
+                                </div>:null
+                            }
+                            {
+                                (selfStand.length!==0)?
+                                <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`} >
+                                    <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
+                                        <span className='text-white'>Params 參數:</span>
+                                    </div>
+                                    <ShowStand />
+                                </div>:null
+                            }
                             <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-white whitespace-nowrap'>Lock 是否鎖定:</span>
@@ -515,7 +522,7 @@ function Simulator(){
                     
                 </div>
             </div>
-            <div className={`w-[55%] ml-2 bg-[rgba(0,0,0,0.5)] rounded-md p-2 h-fit max-[1200px]:w-[100%] max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
+            <div className={`w-[55%] ml-2 bg-black/50 rounded-md p-2 h-fit max-[1200px]:w-[100%] max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
                 <div className='flex flex-row items-baseline px-2 max-[600px]:justify-center'>
                     <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -527,19 +534,23 @@ function Simulator(){
                     <PastPreviewList_simulator />
                 </div>
             </div>
-            <div className={`flex flex-row my-3 flex-wrap shadowBox bg-[rgba(0,0,0,0.5)] w-full p-2 ${(PieNums===undefined)?'hidden':''} rounded-md`}>
-                <div className={`w-full flex flex-row flex-wrap ${(PieNums===undefined)?'hidden':''}`}>
-                    <div className={`flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
-                        <RelicData  mode={'Simulator'} button={true}/>
+            {
+                (PieNums)?
+                <div className={`flex flex-row my-3 flex-wrap shadowBox bg-black/50 w-full p-2 rounded-md`}>
+                    <div className={`w-full flex flex-row flex-wrap`}>
+                        <div className={`flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
+                            <RelicData  mode={'Simulator'} button={true}/>
+                        </div>
+                        <div className={`w-1/4 max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
+                            <StandDetails />
+                        </div>
+                        <div className='flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] max-[500px]:w-4/5 max-[500px]:mx-auto ' id="resultDetails">
+                            <Result />
+                        </div>
                     </div>
-                    <div className={`w-1/4 max-[700px]:w-[50%] ${(PieNums===undefined)?'hidden':''} max-[500px]:w-4/5 max-[500px]:mx-auto`} >
-                        <StandDetails />
-                    </div>
-                    <div className='flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] max-[500px]:w-4/5 max-[500px]:mx-auto ' id="resultDetails">
-                        <Result />
-                    </div>
-                </div>
-            </div>
+                </div>:null
+            }
+            
         </div>
         <div>
             <Tooltip id="CharHint"  
