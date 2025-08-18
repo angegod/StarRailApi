@@ -41,9 +41,8 @@ const PastPreviewList=React.memo(()=>{
 const PastPreviewList_simulator=React.memo(()=>{
     const {isLoad} = useContext(SiteContext);//是否處理完reset?
     const historyData = useSelector(state => state.history.historyData);
-    let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}/`:'../'
-    introPath = introPath +'/intro';
-
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+    const introPath = `${basePath}/intro`;
 
     if(historyData&&historyData.length>0&&isLoad){
         return(

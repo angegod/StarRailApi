@@ -130,7 +130,7 @@ function Importer(){
 
         let history=JSON.parse(localStorage.getItem(LocalStorageLocation));
         if(history===null){
-            updateStatus("尚未有任何操作紀錄","default");
+            updateStatus("尚未有任何操作紀錄!!","default");
             setIsLoad(true);
             return;
         }

@@ -47,7 +47,7 @@ function Footer(){
             <div className='w-2/5 mx-auto text-stone-500 flex flex-col [&>span]:text-left [&>span]:text-sm [&>span]:font-bold [&>span]:mt-1 py-2 max-[600px]:[&>span]:!text-sm'>
                 <span>&copy; 2025 <a href="https://home.gamer.com.tw/profile/index.php?&owner=ange0733" className="underline">Ange</a></span>
                 <span>Website created by Ange. All rights reserved.</span>
-                <span>Data latest Updated at 2025/07/25</span>
+                <span>Data latest Updated at 2025/08/18</span>
             </div>
         </div>
     )
