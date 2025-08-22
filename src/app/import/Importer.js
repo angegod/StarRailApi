@@ -575,7 +575,7 @@ function Importer(){
         <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[95%] rounded-md '>
             <div className='rounded-md'>
                 <div className='flex flex-row flex-wrap max-[600px]:w-[95%] '>
-                    <div className='flex flex-col w-2/5 bg-black/50 rounded-md max-[1250px]:w-[100%] test'>
+                    <div className='flex flex-col w-2/5 bg-black/50 rounded-md max-[1250px]:w-full test'>
                         <div className='flex flex-row items-center ml-2 mt-2'>
                             <h1 className='text-red-600 font-bold text-2xl'>遺器匯入</h1>
                             <div className='hintIcon ml-2 overflow-visible' 
@@ -639,7 +639,7 @@ function Importer(){
                             
                         </div>
                     </div>
-                    <div className={`w-[55%] pb-3 pt-1 h-fit flex-wrap max-[1250px]:w-[100%] max-[1250px]:mb-5 ml-2 bg-black/50 rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
+                    <div className={`w-[55%] pb-3 pt-1 h-fit flex-wrap max-[1250px]:w-full max-[1250px]:mb-5 ml-2 bg-black/50 rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
                         <div className='flex flex-row items-center px-2 max-[600px]:justify-center'>
                             <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                             <div className='hintIcon ml-2 overflow-visible'
@@ -655,8 +655,8 @@ function Importer(){
             </div>
             {
                 (PieNums)?
-                <div className={`flex flex-row flex-wrap mt-2 w-[100%] bg-black/50 shadowBox px-2 mb-5 rounded-md`} >
-                    <div className={`w-[100%] max-[500px]:justify-center`}>
+                <div className={`flex flex-row flex-wrap mt-2 w-full bg-black/50 shadowBox px-2 mb-5 rounded-md`} >
+                    <div className={`w-full max-[500px]:justify-center`}>
                         <RelicSelect />
                     </div>
                     <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`}>
@@ -665,7 +665,7 @@ function Importer(){
                     <div className={`mt-3 w-1/4 max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                         <StandDetails />
                     </div>
-                    <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] max-[500px]:w-4/5 max-[500px]:mx-auto`} id="resultDetails">
+                    <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-full max-[500px]:w-4/5 max-[500px]:mx-auto`} id="resultDetails">
                         <Result />
                     </div>
                 </div>:null

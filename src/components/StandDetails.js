@@ -28,7 +28,7 @@ const StandDetails=React.memo(()=>{
         })
 
         return(
-            <div className={`w-[100%] mb-5  my-1 max-[600px]:!min-w-[0px]`}>
+            <div className={`w-full mb-5  my-1 max-[600px]:!min-w-[0px]`}>
                 <div>
                     <span className='text-red-600 text-lg font-bold'>
                         {title}

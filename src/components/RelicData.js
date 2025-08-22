@@ -142,7 +142,7 @@ const RelicData=React.memo(({mode,button})=>{
 
         
         return(
-            <div className={`w-[100%] my-1 ${(relic!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-[100%]`}>
+            <div className={`w-full my-1 ${(relic!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-full`}>
                 <div className='flex flex-row items-center'>
                     <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                     <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="RelicDataHint">
@@ -301,7 +301,7 @@ const RelicData_simulate=React.memo(({mode,button})=>{
         })
         
         return(
-            <div className={`w-[100%] my-1 max-[500px]:min-w-[250px]`}>
+            <div className={`w-full my-1 max-[500px]:min-w-[250px]`}>
                 <div className='flex flex-row items-center'>
                     <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                     <div className='hintIcon ml-2 overflow-visible'

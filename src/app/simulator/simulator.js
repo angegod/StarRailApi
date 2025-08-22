@@ -426,7 +426,7 @@ function Simulator(){
                     </div>
                 </div>
                 <div className='flex flex-row flex-wrap'>
-                    <div className='flex flex-row flex-wrap w-1/2 max-[1200px]:w-[100%]'>
+                    <div className='flex flex-row flex-wrap w-1/2 max-[1200px]:w-full'>
                         <div className='flex flex-col mt-2'>
                             <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col max-[400px]:items-start'>
                                 <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
@@ -459,7 +459,7 @@ function Simulator(){
                                 </div>
                             </div>
                             <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center max-[400px]:text-left`}>
-                                <div className='text-right w-[200px] max-[600px]:w-[100%] max-[600px]:text-center max-[400px]:text-left'>
+                                <div className='text-right w-[200px] max-[600px]:w-full max-[600px]:text-center max-[400px]:text-left'>
                                     <span className='text-white'>SubAffix 副屬性:</span>
                                 </div>
                                 <div className='flex flex-row items-start justify-center'>
@@ -522,7 +522,7 @@ function Simulator(){
                     
                 </div>
             </div>
-            <div className={`w-[55%] ml-2 bg-black/50 rounded-md p-2 h-fit max-[1200px]:w-[100%] max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
+            <div className={`w-[55%] ml-2 bg-black/50 rounded-md p-2 h-fit max-[1200px]:w-full max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
                 <div className='flex flex-row items-baseline px-2 max-[600px]:justify-center'>
                     <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -544,7 +544,7 @@ function Simulator(){
                         <div className={`w-1/4 max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                             <StandDetails />
                         </div>
-                        <div className='flex flex-row flex-wrap w-1/2 max-[700px]:w-[100%] max-[500px]:w-4/5 max-[500px]:mx-auto ' id="resultDetails">
+                        <div className='flex flex-row flex-wrap w-1/2 max-[700px]:w-full max-[500px]:w-4/5 max-[500px]:mx-auto ' id="resultDetails">
                             <Result />
                         </div>
                     </div>

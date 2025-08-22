@@ -21,7 +21,7 @@ const list=[{
 
 function Menu({children}) {
     return (
-        <div className='sticky top-0 w-[100%] z-[100] py-3 '>
+        <div className='sticky top-0 w-full z-[100] py-3 '>
             <div className='flex flex-row w-4/5 mx-auto max-[600px]:w-[95%]'>
               {list.map((m, i) => (
                   <div
@@ -47,7 +47,7 @@ function Menu({children}) {
 
 function MainMenu(){
     return(
-        <div className={`w-[100%] h-[80vh] relative max-[900vh]:h-[100vh] `}>
+        <div className={`w-full h-[80vh] relative max-[900vh]:h-[100vh] `}>
             <div className='w-4/5 flex flex-col top-[10vh] relative mx-auto max-[900px]:w-[90%] max-[900px]:top-[5vh]'>
                 <div className='text-center h-fit flex flex-col'>
                     <div className='flex flex-col mt-5'>
@@ -58,7 +58,7 @@ function MainMenu(){
                         <span>能夠根據每件遺器的初始屬性，完整模擬及統計所有可能的強化組合，讓你了解該遺器潛力!</span>
                     </div>
                 </div>
-                <div className='flex flex-row justify-evenly mx-auto w-[100%] mt-[5vh]'>
+                <div className='flex flex-row justify-evenly mx-auto w-full mt-[5vh]'>
                     {list.map((m, i) => (
                         <div key={'menu' + i} className='w-2/5 flex flex-col max-[900px]:w-[45%]'>
                             <div className='subMenu arrow-down-box'>

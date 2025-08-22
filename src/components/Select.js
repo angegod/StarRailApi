@@ -412,7 +412,7 @@ const RelicSelect=React.memo(()=>{
         })
     
         return(
-            <div className='w-4/5 flex flex-col pt-1 max-[500px]:w-[100%]'>
+            <div className='w-4/5 flex flex-col pt-1 max-[500px]:w-full'>
                 <div className='flex flex-row items-baseline max-[500px]:w-4/5 max-[500px]:mx-auto'>
                     <span className='text-red-600 font-bold text-lg'>遺器匹配結果</span>
                     <div className='hintIcon ml-2 overflow-visible'
@@ -420,7 +420,7 @@ const RelicSelect=React.memo(()=>{
                         <span className='text-white'>?</span>
                     </div>
                 </div>
-                <div className='flex flex-row flex-wrap max-[500px]:justify-center my-2 max-[900px]:w-[100%]'>
+                <div className='flex flex-row flex-wrap max-[500px]:justify-center my-2 max-[900px]:w-full'>
                     {list}
                 </div>
             </div>
