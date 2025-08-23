@@ -16,6 +16,8 @@ const PastPreview=React.memo(({index,data})=>{
 
     const bgColor =`hsl(${(data.avgRate/100)*120}, 100%, 50%)`;
 
+    const isLock =data.isLock;
+
     return(
         <div className={`PastPreview clip-both-corners`}>
             <div className='flex flex-col'>
@@ -40,6 +42,14 @@ const PastPreview=React.memo(({index,data})=>{
                 </div>
                 <div className='flex flex-row justify-start [&>span]:max-[400px]:text-sm'>
                     <span className='w-[70px] max-[400px]:w-[60px] break-keep text-stone-400 font-bold'>平均期望:</span>
+                    {
+                        (isLock)?
+                        <Image 
+                            src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/lock.svg`}
+                            alt="Logo"
+                            width={20}
+                            height={20}/>:null
+                    }
                     <span className='pl-1 font-bold text-white' style={{color:bgColor}}>{data.avgRate}%</span>
                 </div>
                 <div className='[&>button]:max-[400px]:text-sm flex flex-row max-[400px]:justify-evenly'>
@@ -57,9 +67,10 @@ const PastPreview_simulator=React.memo(({data,index})=>{
     const {checkDetails,deleteHistoryData,isChangeAble} = useContext(SiteContext);
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
-    let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
     const MainAffix =AffixName.find((a)=>a.name === data.mainaffix).icon;
+    const isLock =data.isLock;
 
+    let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
     let MainAffixLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${MainAffix}.png`;
     const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
     return(
@@ -94,6 +105,14 @@ const PastPreview_simulator=React.memo(({data,index})=>{
                 </div>
                 <div className='flex justify-start [&>span]:max-[400px]:text-sm'>
                     <span className='w-[60px] max-[400px]:w-[60px] break-keep text-stone-400 font-bold'>機率:</span>
+                    {
+                        (isLock)?
+                        <Image 
+                            src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/lock.svg`}
+                            alt="Logo"
+                            width={20}
+                            height={20}/>:null
+                    }
                     <span style={{color:textColor}} className='pl-1 font-bold text-white'>{(data.expRate*100).toFixed(1)}%</span>
                 </div>
                 <div className='[&>button]:max-[400px]:text-sm'>

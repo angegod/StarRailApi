@@ -18,6 +18,7 @@ import SiteContext from '@/context/SiteContext';
 import { useStatusToast } from '@/context/StatusMsg';
 import { useSelector, useDispatch } from 'react-redux';
 import { createHistory,addHistory,limitHistory,deleteHistory,updateHistory, resetHistory } from '../../model/historySlice';
+import { openWindow } from '@/model/updateDetailsSlice';
 
 import HintHistory from '@/components/Hint/HintHistory';
 import HintImporter from '@/components/Hint/HintImporter';
@@ -122,6 +123,7 @@ function Importer(){
         }
     },[relic]);
 
+    //當使用者UID或者腳色有變更時不予儲存
     useEffect(()=>{
         setIsSaveAble(false);
     },[charID,userID])
@@ -293,7 +295,6 @@ function Importer(){
     //檢視過往紀錄
     const checkDetails=useCallback((index)=>{
         let data=historyData[index];
-        
         setRelicDataArr([...data.dataArr]);
         setRelicIndex(0);
         setIsSaveAble(false); 
@@ -443,7 +444,6 @@ function Importer(){
                 standard:standard,
                 deviation:Number(deviation.toFixed(2))
             };
-            console.log(deviation);
 
             if(isCheck){
                 showStatus('數據計算處理中......','process');
@@ -519,7 +519,8 @@ function Importer(){
             dataArr:RelicDataArr,
             avgScore:avgScore,
             avgRank:avgRank,
-            avgRate:avgRate
+            avgRate:avgRate,
+            isLock:isLock.current
         };
 
         //針對原紀錄做深拷貝
@@ -581,6 +582,9 @@ function Importer(){
                             <div className='hintIcon ml-2 overflow-visible' 
                                 data-tooltip-id="ImporterHint">
                                 <span className='text-white'>?</span>
+                            </div>
+                            <div className='relative ml-auto mr-3' onClick={()=>dispatch(openWindow())}>
+                                <span className='text-white underline cursor-pointer'>最新更新</span>
                             </div>
                         </div>
                         <div className='flex flex-col px-2 rounded-md'>

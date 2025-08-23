@@ -28,7 +28,7 @@ function Intro(){
                         <div className='[&>span]:text-white'>
                             <span>A:崩鐵3.0版本中推出了一個道具叫<span className='text-yellow-500 font-bold'>變量骰子</span></span>
                             <span className="text-md leading-tight">
-                                此道具可以針對強化至滿等的五星遺器作詞條隨機重新分配的動作</span>            
+                                此道具可以針對強化至滿等的五星遺器作詞條隨機重新分配的動作，這個動作我會簡稱為重洗</span>            
                         </div>            
                         <div className='[&>span]:text-white mt-2'>
                             <span>此外崩鐵在3.6版本中推出了一個干涉密鑰，可以指定遺器中任一副詞條重洗過程中不會分配任何強化次數至該詞條中</span>

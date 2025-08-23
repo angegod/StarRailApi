@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import '@/css/simulator.css';
 import '@/css/intro.css';
-import AffixName from '@/data/AffixName';
 
 import Result from '@/components/Result';
 import { StandDetails ,ShowStand } from '@/components/StandDetails';
@@ -17,14 +16,15 @@ import { CharSelect,PartSelect,StandardSelect,MainAffixSelect,SubAffixSelect } f
 import SubAffixHint from '@/components/Hint/SubAffixHint';
 import HintSimulator from '@/components/Hint/HintSimulator';
 import HintHistory from '@/components/Hint/HintHistory';
+import HintAffixLock from '@/components/Hint/HintAffixLock';
 import { Tooltip } from 'react-tooltip';
 
 import SiteContext from '@/context/SiteContext';
 import { useStatusToast } from '@/context/StatusMsg';
 import { useSelector, useDispatch } from 'react-redux';
 import { createHistory,addHistory,limitHistory,deleteHistory,resetHistory } from '../../model/historySlice';
-import HintAffixLock from '@/components/Hint/HintAffixLock';
-import { PiecewiseColorLegend } from '@mui/x-charts';
+import { openWindow } from '@/model/updateDetailsSlice';
+
 
 
 //遺器強化模擬器
@@ -55,9 +55,6 @@ function Simulator(){
     //鎖定功能是否啟用
     const [Lock,setLock]=useState(false);
     const isLock = useRef(false);
-
-    //模擬強化相關數據
-    const [simulatorData,setSimulatorData]=useState({});
 
     //共用statusMsg
     const {showStatus,updateStatus,hideStatus}=useStatusToast();
@@ -199,9 +196,10 @@ function Simulator(){
             rank:Rrank,
             pieData:PieNums,
             stand:standDetails.current,
-            relic:relic
+            relic:relic,
+            isLock:isLock.current
         };
-        console.log(data);
+
         //利用深拷貝區分原有資料
         let oldHistory=JSON.parse(JSON.stringify(historyData));
         dispatch(addHistory(data));
@@ -209,7 +207,6 @@ function Simulator(){
         const targetElement = document.getElementById('historyData');
         targetElement.scrollIntoView({ behavior: 'smooth' });
         
-
         //將歷史紀錄合併至緩存數據中
         oldHistory.push(data);
         localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
@@ -224,11 +221,9 @@ function Simulator(){
         setRscore(data.score);
         updateStatus('資料替換完畢!!','success');
         setPieNums(data.pieData);
-        standDetails.current=data.stand;
         setRelic(data.relic);
-        isLock.current=data.relic.affixLock;
-        //清空模擬強化紀錄
-        setSimulatorData({});
+        standDetails.current=data.stand;
+        isLock.current=data.isLock;
 
         requestAnimationFrame(()=>{
             window.scrollTo({
@@ -389,11 +384,10 @@ function Simulator(){
         partsIndex:partsIndex,
         MainSelectOptions:MainSelectOptions,
         SubData:SubData,
-        simulatorData:simulatorData,
         relic:relic,
         isLoad:isLoad,
         affixLock:isLock.current,
-
+        
         mode:"Simulator",
 
         //RelicData for Result
@@ -423,6 +417,9 @@ function Simulator(){
                     <div className='hintIcon ml-2 overflow-visible'
                         data-tooltip-id="SimulatorHint">
                         <span className='text-white'>?</span>
+                    </div>
+                    <div className='relative ml-auto mr-3' onClick={()=>dispatch(openWindow())}>
+                        <span className='text-white underline cursor-pointer'>最新更新</span>
                     </div>
                 </div>
                 <div className='flex flex-row flex-wrap'>

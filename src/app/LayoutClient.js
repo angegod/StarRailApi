@@ -17,12 +17,13 @@ export default function LayoutClient({ children }) {
 
     return (
       <div className={backgroundClass}>
-          <UpdatedSection />
+          
           {isHome ? (<MainMenu />) : (
               <>
                 <Menu />
                 <div className="min-h-[100vh]">
                     <Provider store={store}>
+                        <UpdatedSection />
                         {children}
                     </Provider>
                 </div>

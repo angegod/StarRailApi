@@ -2,11 +2,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import historyReducer from './historySlice';
 import enchantReducer from './enchantDataSlice';
+import updateDetailsWindowReducer from './updateDetailsSlice';
 
 const store = configureStore({
     reducer: {
         history: historyReducer,
-        enchant:enchantReducer
+        enchant: enchantReducer,
+        updateDetailsWindow: updateDetailsWindowReducer
     }
 });
 
