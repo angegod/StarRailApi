@@ -1,14 +1,21 @@
-
 import { useRef,useState } from "react";
 
+interface LazyImageProps{
+    BaseLink:string,
+    LoadImg:string,
+    style:string,
+    width:number,
+    height:number
+}
+
 //圖片延遲載入元件
-function LazyImage({BaseLink,LoadImg,style,width,height}){
-    const imageRef = useRef();
+function LazyImage({BaseLink,LoadImg,style,width,height}:LazyImageProps){
+    const imageRef = useRef<HTMLImageElement | null>(null);
     const [show,setShow] = useState(false);
 
     //圖片延遲載入
     function ImageLoad(){
-        if(imageRef.current.complete&&!imageRef.current.error){
+        if(imageRef.current && imageRef.current.complete){
             setTimeout(()=>{
                 setShow(true);
             },200)   
@@ -16,6 +23,10 @@ function LazyImage({BaseLink,LoadImg,style,width,height}){
         else{
             setShow(false);
         }
+    }
+
+    function handleError() {
+        setShow(false);
     }
 
     return(
@@ -28,6 +39,7 @@ function LazyImage({BaseLink,LoadImg,style,width,height}){
                 src={BaseLink} 
                 ref={imageRef}
                 onLoad={()=>ImageLoad()}
+                onError={handleError}
                 alt='icon' width={width} height={height}
                 className={`${style} ${(!show)?'hidden':''}`}/>
         </div>

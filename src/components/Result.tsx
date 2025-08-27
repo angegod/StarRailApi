@@ -2,9 +2,18 @@ import React,{useContext, useMemo} from 'react';
 import { Tooltip } from 'react-tooltip';
 import { PieChart } from '@mui/x-charts/PieChart';
 import SiteContext from '@/context/SiteContext';
+import { PieNumsItem, relicRank } from '@/interface/global';
+
+interface ResultType{
+    ExpRate:number,
+    Rrank:relicRank,
+    PieNums:PieNumsItem[],
+    Rscore:string
+}
+
 
 const Result = React.memo(() => {
-    const { ExpRate, Rrank, PieNums, Rscore } = useContext(SiteContext);
+    const { ExpRate, Rrank, PieNums, Rscore } = useContext<ResultType>(SiteContext);
 
     const hue = ExpRate * 120;
     const bgColor =`hsl(${hue}, 100%, 50%)`;
@@ -90,46 +99,44 @@ const Result = React.memo(() => {
 
 
 //圓餅圖
-const Pie=React.memo(({PieNums})=>{;
-    if(PieNums!==undefined){
-        const pieParams = {
-            height: 200,
-            margin:{ top: 10, right: 0, bottom: 0, left: 0 },
-            slotProps: { legend: { hidden: true } },
-        };
+const Pie = React.memo(({ PieNums }: { PieNums: PieNumsItem[] }) => {
+    if (PieNums.length === 0) return null;
 
-        return(
-           <div className='w-fit flex flex-row mx-auto max-[500px]:flex-col-reverse'>
-                <div className='w-[200px]'>
-                    <PieChart  
+    const pieParams = {
+        height: 200,
+        margin: { top: 10, right: 0, bottom: 0, left: 0 },
+        hideLegend: true, // ✅ 更乾淨
+    };
+
+    return (
+        <div className="w-fit flex flex-row mx-auto max-[500px]:flex-col-reverse">
+            <div className="w-[200px]">
+                <PieChart
                     series={[
                         {
                             innerRadius: 20,
                             arcLabelMinAngle: 35,
-                            arcLabel: (item) => `${item.value}%`,
+                            arcLabel: (item: any) => `${item.value}%`, // ✅ 型別正確
                             data: PieNums,
-                        }
-                    ]}  {...pieParams} />
-                </div>
-                    <div className='flex flex-col w-fit max-[500px]:mx-auto'>
-                        {PieNums.map((p,i)=>{
-                            if(p.value!==0)
-                                return(
-                                    <div className='my-1 w-fit flex flex-row [&>*]:max-[500px]:text-center' key={'pieNums'+i}>
-                                        <div style={{color:p.color}} className='w-[30px] text-right '>{`${p.tag}`}</div>
-                                        <div style={{color:p.color}} className='w-[70px] ml-2'>{`${p.value}%`}</div>
-                                    </div>
-                                )
-                        })}
+                        },
+                    ]}{...pieParams}/>
+            </div>
+            <div className="flex flex-col w-fit max-[500px]:mx-auto">
+                {PieNums.filter(p => p.value !== 0).map((p, i) => (
+                    <div className="my-1 w-fit flex flex-row [&>*]:max-[500px]:text-center" key={"pieNums" + i}>
+                        <div style={{ color: p.color }} className="w-[30px] text-right ">
+                            {p.tag}
+                        </div>
+                        <div style={{ color: p.color }} className="w-[70px] ml-2">
+                            {p.value}%
+                        </div>
                     </div>
-               
-           </div>
-        );
-
-    }else{
-        return(<></>)
-    }
+                ))}
+            </div>
+        </div>
+    );
 });
+
 
 
 export default Result;

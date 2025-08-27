@@ -7,11 +7,25 @@ import SiteContext from '../context/SiteContext';
 import RelicDataHint from './Hint/RelicDataHint';
 import { useSelector, useDispatch } from 'react-redux';
 import { setEnchantData } from '@/model/enchantDataSlice';
+import { AffixItem, relicRank, standDetails, standDetailsItem } from '@/interface/global';
+import { relicSubData } from '@/interface/simulator';
 
+
+interface RelicDataType{
+    relic:any,
+    affixLock:boolean,
+    Rrank:relicRank,
+    Rscore:string,
+    standDetails:standDetails,
+    isChangeAble:boolean,
+    partArr:string[],
+    mode:"Importer"|"Simulator",
+    relicDataButton:boolean
+}
 
 //顯示儀器分數區間
-const RelicData=React.memo(({mode,button})=>{
-    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
+const RelicData=React.memo(()=>{
+    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr,mode,relicDataButton} = useContext<RelicDataType>(SiteContext);
     const router = useRouter();
     //儲存模擬數據
     const dispatch = useDispatch();
@@ -33,22 +47,24 @@ const RelicData=React.memo(({mode,button})=>{
 
     if(relic!==undefined){
         let getRelic = JSON.parse(JSON.stringify(relic));
-        const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix.name).icon;
+
+        const mainAffix = AffixName.find((a)=>a.name===relic.main_affix.name) as AffixItem;
+        const mainaffixImglink=mainAffix.icon;
 
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} 
             width={24} height={24} />
 
-        const list=[];
+        const list:React.ReactElement[]=[];
         const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
         
-        let strikeThroughName = null;
+        let strikeThroughName = "";
         let minIndex = 0;
         let minValue = Infinity;
 
         //如果有啟用鎖定功能在判定
         if(affixLock){
             //先找出哪個詞條需要加上刪除線
-            getRelic.sub_affix.forEach((s, i) => {
+            getRelic.sub_affix.forEach((s:any, i:number) => {
                 //先改名
                 let showAffix = '';
                 if(s.name === "攻擊力" && s.display.includes('%')){
@@ -63,7 +79,7 @@ const RelicData=React.memo(({mode,button})=>{
                 //複寫回去
                 s.name = showAffix;
 
-                const found = standDetails.find(st => st.name === showAffix);
+                const found = standDetails.find((st) => st.name === showAffix);
                 const value = found ? found.value : 0; // 沒找到當 0
 
                 if (value < minValue) {
@@ -75,15 +91,17 @@ const RelicData=React.memo(({mode,button})=>{
         }
         
         //遍歷所有副詞條渲染
-        getRelic.sub_affix.forEach((s,i)=>{
+        getRelic.sub_affix.forEach((s:any,i:number)=>{
             let showAffix = s.name;
             
             let markcolor="";
             //判斷是否要標記為有效
             let isBold=(standDetails.find((st)=>st.name===showAffix)!==undefined)?true:false;
-            var IconName = AffixName.find((a)=>a.name===s.name).icon;
+
+            let subAffix = AffixName.find((a)=>a.name===s.name) as AffixItem
+            let IconName = subAffix.icon;
             
-            var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
+            let imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
             
             switch(s.count-1){
                 case 0:
@@ -179,7 +197,7 @@ const RelicData=React.memo(({mode,button})=>{
                         {list}
                     </div>
                 </div>
-                {(button)?
+                {(relicDataButton)?
                     <div className='mt-3'>
                         <button className='processBtn' onClick={()=>navEnchant()} disabled={!isChangeAble}>重洗模擬</button>
                     </div>:null}
@@ -195,8 +213,8 @@ const RelicData=React.memo(({mode,button})=>{
     }
 });
 
-const RelicData_simulate=React.memo(({mode,button})=>{
-    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr} = useContext(SiteContext);
+const RelicData_simulate=React.memo(()=>{
+    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr,mode,relicDataButton} = useContext<RelicDataType>(SiteContext);
     
     const router = useRouter();
 
@@ -220,20 +238,21 @@ const RelicData_simulate=React.memo(({mode,button})=>{
     }
 
     if(relic!==undefined){
-        const mainaffixImglink=AffixName.find((a)=>a.name===relic.main_affix).icon;
+        const mainAffix = AffixName.find((a)=>a.name===relic.main_affix) as AffixItem
+        const mainaffixImglink=mainAffix.icon;
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
-        const list=[];
+        const list:React.ReactElement[]=[];
 
-        let strikeThroughName = null;
+        let strikeThroughName = "";
         let minIndex = 0;
         let minValue = Infinity;
 
         //如果有啟用鎖定功能在判定
         if(affixLock){
             //先找出哪個詞條需要加上刪除線
-            relic.subaffix.forEach((s, i) => {
+            relic.subaffix.forEach((s:relicSubData, i:number) => {
                 
-                const found = standDetails.find(st => st.name === s.subaffix);
+                const found = standDetails.find((st) => st.name === s.subaffix);
                 const value = found ? found.value : 0; // 沒找到當 0
 
                 if (value < minValue) {
@@ -245,14 +264,15 @@ const RelicData_simulate=React.memo(({mode,button})=>{
         }
 
 
-        relic.subaffix.forEach((s)=>{
-            let isBold=(standDetails.find((st)=>st.name===s.subaffix)!==undefined)?true:false;
+        relic.subaffix.forEach((s:relicSubData)=>{
+            let isBold=(standDetails.find((st:standDetailsItem)=>st.name===s.subaffix)!==undefined)?true:false;
             
             let markcolor="";
 
-            var IconName = AffixName.find((a)=>a.name===s.subaffix).icon;
+            let subaffix = AffixName.find((a)=>a.name===s.subaffix) as AffixItem
+            let IconName = subaffix.icon;
 
-            var imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
+            let imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
             switch(s.count){
                 case 0:
                     markcolor='rgb(122, 122, 122)';
@@ -329,7 +349,7 @@ const RelicData_simulate=React.memo(({mode,button})=>{
                     </div>
                 </div>
                 {
-                    (button)?
+                    (relicDataButton)?
                         <div className='mt-3'>
                             <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
                         </div>:null

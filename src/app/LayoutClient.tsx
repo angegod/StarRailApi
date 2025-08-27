@@ -4,8 +4,13 @@ import { Menu, MainMenu } from '@/components/Menu';
 import { Provider } from 'react-redux';
 import store from '@/model/reducer';
 import { UpdatedSection } from '@/components/UpdatedSection';
+import { ReactNode } from 'react';
 
-export default function LayoutClient({ children }) {
+interface ClientProps {
+    children?:ReactNode
+}
+
+export default function LayoutClient({ children }:ClientProps) {
     const pathname = usePathname();
 
     const isHome = pathname === '/' || pathname === '/StarRailApi/';

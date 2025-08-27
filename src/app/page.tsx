@@ -8,8 +8,5 @@ export const metadata = {
 
 
 export default function Page() {
-  return (
-      <></>
-
-  );
+  return null
 }

@@ -23,6 +23,9 @@ import { openWindow } from '@/model/updateDetailsSlice';
 import HintHistory from '@/components/Hint/HintHistory';
 import HintImporter from '@/components/Hint/HintImporter';
 import HintAffixLock from '@/components/Hint/HintAffixLock';
+import { dataArrItem, ImporterHistory, ImporterRelicSubDataType, ImportRelic, sendDataType } from '@/interface/importer';
+import { AffixItem, PieNumsItem, relicRank, selfStand, standDetails } from '@/interface/global';
+import { RootState } from '@/model/reducer';
 
 
 function Importer(){
@@ -33,41 +36,41 @@ function Importer(){
 
     //玩家ID跟腳色ID
     //const userID=useRef('');
-    const [userID,setUserId]=useState('');
-    const [charID,setCharID]=useState(undefined);
+    const [userID,setUserId]=useState<string>('');
+    const [charID,setCharID]=useState<number>();
 
     //部位代碼
     const partsIndex=7;
 
     //找到的遺器陣列以及目前檢視索引，預設為0
-    const [relic,setRelic]=useState();
-    const [relicIndex,setRelicIndex] = useState(0);
+    const [relic,setRelic]=useState<ImportRelic|null>();
+    const [relicIndex,setRelicIndex] = useState<number>(0);
     
 
     //期望值、儀器分數、評級、圖表資料
-    const [ExpRate,setExpRate]=useState(undefined);
-    const [Rscore,setRscore]=useState(undefined);
-    const [Rrank,setRank]=useState({color:undefined,rank:undefined});
-    const [PieNums,setPieNums]=useState(undefined);
+    const [ExpRate,setExpRate]=useState<number|undefined>(undefined);
+    const [Rscore,setRscore]=useState<string|undefined>(undefined);
+    const [Rrank,setRank]=useState<relicRank|null>(null);
+    const [PieNums,setPieNums]=useState<PieNumsItem[]|undefined>(undefined);
 
     // 找到所有遺器後計算的所有數據，包含期望值、分數等
-    const [RelicDataArr,setRelicDataArr]=useState([]);
-    const RelicDataArrRef = useRef(null);
+    const [RelicDataArr,setRelicDataArr]=useState<dataArrItem[]>([]);
+    const RelicDataArrRef = useRef<dataArrItem[]>(null);
     
     // 共用statusMsg
     const {showStatus,updateStatus,hideStatus}=useStatusToast();
 
     const dispatch = useDispatch();
-    const historyData = useSelector(state => state.history.historyData);
-    const [isLoad,setIsLoad] = useState(false);
+    const historyData = useSelector((state:RootState) => state.history.historyData);
+    const [isLoad,setIsLoad] = useState<boolean>(false);
 
     //自訂義標準
-    const [selfStand,setSelfStand]=useState([]);
-    const standDetails=useRef([]);
+    const [selfStand,setSelfStand]=useState<selfStand>([]);
+    const standDetails=useRef<standDetails>([]);
 
     //鎖定功能是否啟用
-    const [Lock,setLock]=useState(false);
-    const isLock = useRef(false);
+    const [Lock,setLock]=useState<boolean>(false);
+    const isLock = useRef<boolean>(false);
 
     //router相關
     const pathname = usePathname();
@@ -136,12 +139,14 @@ function Importer(){
         //清空redux儲存的歷史紀錄
         dispatch(resetHistory());
 
-        let history=JSON.parse(localStorage.getItem(LocalStorageLocation));
-        if(history===null){
+        let getHistory=localStorage.getItem(LocalStorageLocation);
+        if(getHistory===null){
             updateStatus("尚未有任何操作紀錄!!","default");
             setIsLoad(true);
             return;
         }
+
+        let history:ImporterHistory[] = JSON.parse(getHistory);
 
         showStatus('正在載入過往紀錄中.....','process');
         
@@ -162,7 +167,7 @@ function Importer(){
     
 
     //獲得遺器資料
-    async function getRecord(sendData = undefined ,standard = undefined){
+    async function getRecord(sendData:sendDataType|undefined = undefined ,standard:selfStand|undefined = undefined){
         
         let apiLink=(window.location.origin==='http://localhost:3000')?`http://localhost:5000/relic/get`:`https://expressapi-o9du.onrender.com/relic/get`;
 
@@ -258,18 +263,18 @@ function Importer(){
     }
 
     //流程
-    const process=useCallback(async(relicArr,standard = undefined)=>{
-        let temparr = [];
+    const process=useCallback(async(relicArr:ImportRelic[],standard:selfStand)=>{
+        let temparr:dataArrItem[] = [];
         //檢查加權標準
-        standard.forEach((s)=>{
+        /*standard.forEach((s)=>{
             if(s.value===''){
                 updateStatus('加權指數不可為空或其他非法型式','error');
                 return;
             }
-        });
+        });*/
 
         for (const r of relicArr) {
-            const ExpData = await calscore(r,standard);  // 等這個做完
+            const ExpData = await calscore(r,standard) as dataArrItem;  // 等這個做完
             
             temparr.push(ExpData);
         }
@@ -286,15 +291,15 @@ function Importer(){
     //刪除紀錄
     function clearData(){
         setExpRate(undefined);
-        setRank({color:undefined,rank:undefined});
+        setRank(null);
         setPieNums(undefined);
         setRscore(undefined);
-        setRelic();
+        setRelic(null);
     }
 
     //檢視過往紀錄
-    const checkDetails=useCallback((index)=>{
-        let data=historyData[index];
+    const checkDetails=useCallback((index:number)=>{
+        let data=historyData[index] as ImporterHistory;
         setRelicDataArr([...data.dataArr]);
         setRelicIndex(0);
         setIsSaveAble(false); 
@@ -310,12 +315,12 @@ function Importer(){
     },[historyData]);
 
     //更新紀錄
-    const updateDetails=useCallback(async (index)=>{
+    const updateDetails=useCallback(async (index:number)=>{
         showStatus('正在更新資料中......','process');
         let originData = JSON.parse(JSON.stringify(historyData));
-        let data = originData[index];
+        let data = originData[index] as ImporterHistory;
 
-        let sendData={
+        let sendData:sendDataType={
             uid:data.userID,
             charID:data.char.charID,            
             partsIndex:7
@@ -323,8 +328,7 @@ function Importer(){
 
         let cloneDetails = data.dataArr[0].standDetails.map(item => ({ ...item }));
 
-        await getRecord(sendData,cloneDetails)
-        .then(()=>{
+        await getRecord(sendData,cloneDetails).then(()=>{
             console.log(RelicDataArrRef.current);
             //計算平均分數與平均機率
 
@@ -336,10 +340,10 @@ function Importer(){
                     sum +=Number(r.Rscore);
                     sum2 += r.ExpRate;
                 });
-                let avgScore = Number(parseFloat(sum/RelicDataArrRef.current.length).toFixed(1));
+                let avgScore = parseFloat((sum / RelicDataArrRef.current.length).toFixed(1));
                 let calDate=new Date();
-                let avgRank = undefined;
-                let avgRate = Number((sum2*100/RelicDataArrRef.current.length).toFixed(1));
+                let avgRank:relicRank|undefined = undefined;
+                let avgRate = (sum2*100/RelicDataArrRef.current.length).toFixed(1);
                 
                 scoreStand.forEach((stand)=>{
                     //接著去找尋這個分數所屬的區間
@@ -376,10 +380,9 @@ function Importer(){
     },[historyData]);
 
     //刪除過往紀錄 
-    const deleteHistoryData=useCallback((index)=>{
+    const deleteHistoryData=useCallback((index:number)=>{
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
-        let oldHistory=historyData;
-        console.log(index);
+        let oldHistory=historyData as ImporterHistory[];
         dispatch(deleteHistory(index));
 
         oldHistory=oldHistory.filter((item,i)=>i!==index);
@@ -392,18 +395,18 @@ function Importer(){
     },[historyData]);
 
     //計算遺器分數
-    function calscore(relic,standard){
+    function calscore(relic:ImportRelic,standard:selfStand){
         return new Promise((resolve)=>{
             let isCheck=true;
 
             //將運行結果丟到背景執行
             let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
-            let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
+            let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type) as AffixItem;
 
             //從遺器資料提取副詞條並根據是否鎖定標註鎖定詞條
-            let SubData=[];
-            relic.sub_affix.forEach((s,i)=>{
-                let typeName=AffixName.find((a)=>a.fieldName===s.type);
+            let SubData=[] as ImporterRelicSubDataType[];
+            relic.sub_affix.forEach((s,i:number)=>{
+                let typeName=AffixName.find((a)=>a.fieldName===s.type)!;
                 let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
                 //每個詞條的加權 如果找不到則為0
                 let stand = standard.find((st)=>st.name===typeName.name);
@@ -429,7 +432,11 @@ function Importer(){
             
             
             //如果篩選有速度詞條 需給予0.5誤差計算 
-            let deviation=(SubData.includes((s)=>s.subaffix==='速度'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+            let deviation = SubData.some(s => s.subaffix === '速度')
+                ? 0.5 * (selfStand.find(s => s.name === '速度')?.value ?? 0)
+                : 0;
+
+
             SubData.forEach(s=>{
                 if(s.subaffix!=='速度'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
                     deviation+=0.2;
@@ -498,9 +505,9 @@ function Importer(){
             sum +=Number(r.Rscore);
             sum2 += r.ExpRate;
         });
-        let avgScore = Number(parseFloat(sum/RelicDataArr.length).toFixed(1));
+        let avgScore = parseFloat((sum / RelicDataArr.length).toFixed(1));
         let calDate=new Date();
-        let avgRank = undefined;
+        let avgRank:relicRank|undefined = undefined;
         let avgRate = Number((sum2*100/RelicDataArr.length).toFixed(1));
         
         scoreStand.forEach((stand)=>{
@@ -549,6 +556,7 @@ function Importer(){
         affixLock:isLock.current,
         isLoad:isLoad,
         mode:"Importer",
+        relicDataButton:true,
         
         //RelicData
         relic:relic,
@@ -664,7 +672,7 @@ function Importer(){
                         <RelicSelect />
                     </div>
                     <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`}>
-                        <RelicData  mode={'Importer'} button={true}/>
+                        <RelicData />
                     </div>
                     <div className={`mt-3 w-1/4 max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                         <StandDetails />
@@ -685,7 +693,7 @@ function Importer(){
                         </div>
                     }/>
             <Tooltip id="HistoryHint"  
-                    place="top-center"
+                    place="top-start"
                     render={()=>
                         <HintHistory />
                     }/>

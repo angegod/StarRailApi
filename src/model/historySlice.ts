@@ -1,8 +1,10 @@
+import { ImporterHistory } from '@/interface/importer';
+import { SimulatorHistory } from '@/interface/simulator';
 import { createSlice } from '@reduxjs/toolkit';
 
 
 const initialState = {
-    historyData: []
+    historyData: [] as SimulatorHistory[]|ImporterHistory[]
 };
 
 const historySlice = createSlice({

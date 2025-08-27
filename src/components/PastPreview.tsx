@@ -3,14 +3,31 @@ import '../css/simulator.css';
 import SiteContext from '../context/SiteContext';
 import Image from 'next/image';
 import LazyImage from './LazyImage';
-import AffixList from '@/data/AffixList';
 import AffixName from '@/data/AffixName';
+import { ImporterHistory } from '@/interface/importer';
+import { SimulatorHistory } from '@/interface/simulator';
 
+interface PastPreviewType{
+    checkDetails:(index:number)=>void,
+    updateDetails:(index:number)=>void,
+    deleteHistoryData:(index:number)=>void,
+    isChangeAble:Boolean
+}
+
+interface PastPreviewProps{
+    index:number,
+    data:ImporterHistory
+}
+
+interface PastPreview_SimulatorProps{
+    index:number,
+    data:SimulatorHistory
+}
 
 //簡易瀏覽
-const PastPreview=React.memo(({index,data})=>{
-    const {checkDetails,updateDetails,deleteHistoryData,isChangeAble} = useContext(SiteContext);
-    const hue = data.expRate * 120;
+const PastPreview=React.memo(({index,data}:PastPreviewProps)=>{
+    console.log(data);
+    const {checkDetails,updateDetails,deleteHistoryData,isChangeAble} = useContext<PastPreviewType>(SiteContext);
     const BaseLink =  `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
     const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
 
@@ -63,11 +80,12 @@ const PastPreview=React.memo(({index,data})=>{
 });
 
 //簡易瀏覽_模擬器版本
-const PastPreview_simulator=React.memo(({data,index})=>{
-    const {checkDetails,deleteHistoryData,isChangeAble} = useContext(SiteContext);
+const PastPreview_simulator=React.memo(({data,index}:PastPreview_SimulatorProps)=>{
+    const {checkDetails,deleteHistoryData,isChangeAble} = useContext<PastPreviewType>(SiteContext);
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
-    const MainAffix =AffixName.find((a)=>a.name === data.mainaffix).icon;
+
+    const MainAffix =AffixName.find((a)=>a.name === data.mainaffix)!.icon;
     const isLock =data.isLock;
 
     let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
@@ -126,14 +144,15 @@ const PastPreview_simulator=React.memo(({data,index})=>{
 });
 
 
-function formatRelativeDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+function formatRelativeDate(dateString: string): string {
+    const date: Date = new Date(dateString);
+    const now: Date = new Date();
 
-    let relative = "";
+    const diffMs: number = now.getTime() - date.getTime();
+    const diffDays: number = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours: number = Math.floor(diffMs / (1000 * 60 * 60));
+
+    let relative: string = "";
     if (diffDays === 0) {
         relative = "今天";
     } else if (diffDays === 1) {
@@ -143,11 +162,15 @@ function formatRelativeDate(dateString) {
     }
 
     // 格式化日期 → YYYY/MM/DD
-    const formattedDate = `${date.getFullYear()}/${
+    const formattedDate: string = `${date.getFullYear()}/${
         String(date.getMonth() + 1).padStart(2, "0")
     }/${String(date.getDate()).padStart(2, "0")}`;
 
-    return `${formattedDate}`;
+    // 如果你要回傳相對時間 + 格式化日期可以這樣：
+    // return `${relative} (${formattedDate})`;
+
+    // 如果只回傳格式化日期
+    return formattedDate;
 }
 
 

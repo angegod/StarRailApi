@@ -24,6 +24,9 @@ import { useStatusToast } from '@/context/StatusMsg';
 import { useSelector, useDispatch } from 'react-redux';
 import { createHistory,addHistory,limitHistory,deleteHistory,resetHistory } from '../../model/historySlice';
 import { openWindow } from '@/model/updateDetailsSlice';
+import { relicSubData, SimulatorHistory, simulatorRelic } from '@/interface/simulator';
+import { characterItem, PieNumsItem, relicRank, selfStand, standDetails } from '@/interface/global';
+import { RootState } from '@/model/reducer';
 
 
 
@@ -35,44 +38,44 @@ function Simulator(){
     const maxHistoryLength = 6;
 
     //部位選擇 跟主詞條選擇
-    const [partsIndex,setPartsIndex]=useState(undefined);
-    const [MainSelectOptions,setMainSelectOptions]=useState();
+    const [partsIndex,setPartsIndex]=useState<number|undefined>(undefined);
+    const [MainSelectOptions,setMainSelectOptions]=useState<string>();
     
-    const [ExpRate,setExpRate]=useState(undefined);
-    const [Rscore,setRscore]=useState(undefined);
-    const [Rrank,setRank]=useState({color:undefined,rank:undefined});
-    const [processBtn,setProcessBtn]=useState(true);
-    const standDetails=useRef([]);
+    const [ExpRate,setExpRate]=useState<number|undefined>(undefined);
+    const [Rscore,setRscore]=useState<string|undefined>(undefined);
+    const [Rrank,setRank]=useState<relicRank|null>(null);
+    const [processBtn,setProcessBtn]=useState<boolean>(true);
+    const standDetails=useRef<standDetails>([]);
 
     //const SubData=useRef([]);
-    const [SubData,setSubData]=useState([]);
-    const [charID,setCharID]=useState(undefined);
-    const [PieNums,setPieNums]=useState(undefined);  
+    const [SubData,setSubData]=useState<relicSubData[]>([]);
+    const [charID,setCharID]=useState<number|undefined>(undefined);
+    const [PieNums,setPieNums]=useState<PieNumsItem[]|undefined>(undefined);  
 
     //自訂義標準
-    const [selfStand,setSelfStand]=useState([]);
+    const [selfStand,setSelfStand]=useState<selfStand>([]);
 
     //鎖定功能是否啟用
-    const [Lock,setLock]=useState(false);
-    const isLock = useRef(false);
+    const [Lock,setLock]=useState<boolean>(false);
+    const isLock = useRef<boolean>(false);
 
     //共用statusMsg
     const {showStatus,updateStatus,hideStatus}=useStatusToast();
 
     //找到的遺器
-    const [relic,setRelic]=useState();
+    const [relic,setRelic]=useState<simulatorRelic>();
 
     //歷史紀錄
     const dispatch = useDispatch();
-    const historyData = useSelector(state => state.history.historyData);
-    const [isLoad,setIsLoad] = useState(false);
+    const historyData = useSelector((state:RootState) => state.history.historyData);
+    const [isLoad,setIsLoad] = useState<boolean>(false);
 
     //部位
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
     
     //是否可以儲存(防呆用)、是否可以立馬變更
-    const [isSaveAble,setIsSaveAble]=useState(false);
-    const [isChangeAble,setIsChangeAble]=useState(true);
+    const [isSaveAble,setIsSaveAble]=useState<boolean>(false);
+    const [isChangeAble,setIsChangeAble]=useState<boolean>(true);
 
     const pathname = usePathname();
 
@@ -82,7 +85,9 @@ function Simulator(){
 
     useEffect(() => {
         if(partsIndex!==undefined&&Number.isInteger(partsIndex)){
-            let range=AffixList.find((s)=>s.id===(parseInt(partsIndex))).main;
+            const foundRange = AffixList.find(s => s.id === partsIndex);
+            if (!foundRange) return;
+            let range = foundRange.main;
             const targetAffix = range[0];
             setMainSelectOptions(targetAffix); 
         }
@@ -98,11 +103,11 @@ function Simulator(){
         setIsLoad(false);
         dispatch(resetHistory());
 
-        let tempArr = [];
+        let tempArr:relicSubData[] = [];
         for(var i=0;i<=3;i++){
             let data={
                 index:i, 
-                subaffix:0, //詞條種類
+                subaffix:'', //詞條種類
                 data:0,     //詞條數值
                 count:0,    //強化次數
                 stand:0,    //加權
@@ -113,9 +118,9 @@ function Simulator(){
         }
         setSubData(tempArr);
         
-        let history=JSON.parse(localStorage.getItem('HistoryData'));
+        let localhistory=localStorage.getItem('HistoryData');
 
-        if(!history) {
+        if(!localhistory) {
             updateStatus('尚未有任何操作紀錄!!','default');
             return;
         }
@@ -124,6 +129,7 @@ function Simulator(){
         //為了避免更新迭代而造成歷史紀錄格式上的問題 
         //必須要核對重大版本代號 如果版本不一致也不予顯示並且刪除
         
+        let history:SimulatorHistory[] = JSON.parse(localhistory);
         if(history!=null&&history.length>0){
             history=history.filter((h)=>h.version===version);
             localStorage.setItem('HistoryData',JSON.stringify(history));
@@ -139,21 +145,20 @@ function Simulator(){
     }
 
     //刪除過往紀錄
-    function deleteHistoryData(index){
+    function deleteHistoryData(index:number){
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
-        let newHistory = historyData.filter((item,i)=>i!==index);
         dispatch(deleteHistory(index));
         showStatus('正在處理中......');
         //強制觸發刷新紀錄
         setTimeout(() => {
-            updateStatus('成功刪除該紀錄!!','success')
+            updateStatus('成功刪除該紀錄!!','success');
+            localStorage.setItem('HistoryData',JSON.stringify(historyData));
         }, 0);
-        localStorage.setItem('HistoryData',JSON.stringify(newHistory));
     }
     //清除相關資料
     function clearData(){
         setExpRate(undefined);
-        setRank({color:undefined,rank:undefined});
+        setRank(null);
         setPieNums(undefined);
         setRscore(undefined);
         setRelic(undefined);
@@ -161,8 +166,8 @@ function Simulator(){
 
     //儲存紀錄
     function saveRecord(){
-        let partName=partArr[partsIndex-1];
-        let selectChar=characters.find((c)=>c.charID===charID);
+        let partName=partArr[partsIndex!-1];
+        let selectChar=characters.find((c)=>c.charID===charID) as characterItem;
 
         //如果目前則沒有紀錄 則初始化
         if(!historyData)
@@ -182,8 +187,8 @@ function Simulator(){
         }
         
         //將部位資料丟進遺器資料中
-        let savedRelic = relic;
-        savedRelic.type=parseInt(partsIndex);
+        let savedRelic = relic!;
+        savedRelic.type = partsIndex!;
 
         //儲存紀錄
         let data={
@@ -201,21 +206,21 @@ function Simulator(){
         };
 
         //利用深拷貝區分原有資料
-        let oldHistory=JSON.parse(JSON.stringify(historyData));
         dispatch(addHistory(data));
         updateStatus("已儲存",'success');
         const targetElement = document.getElementById('historyData');
-        targetElement.scrollIntoView({ behavior: 'smooth' });
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' });
+        }
         
         //將歷史紀錄合併至緩存數據中
-        oldHistory.push(data);
-        localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
+        localStorage.setItem('HistoryData',JSON.stringify(historyData));
         setIsSaveAble(false);
     }
 
     //檢視過往紀錄
-    function checkDetails(index){
-        let data=historyData[index];
+    function checkDetails(index:number){
+        let data=historyData[index] as SimulatorHistory;
         setRank(data.rank);
         setExpRate(data.expRate);
         setRscore(data.score);
@@ -234,24 +239,26 @@ function Simulator(){
     }
 
     //整合並儲存遺器資訊
-    function saveRelic(getSubData){
+    function saveRelic(getSubData:relicSubData[]){
         let data={
-            main_affix:MainSelectOptions,
-            subaffix:[]
+            main_affix:MainSelectOptions!,
+            subaffix:[],
+            type:0,
+            affixLock:false
         }
 
         let tempArr = JSON.parse(JSON.stringify(getSubData));
 
-        tempArr.forEach((s,i)=>{
+        tempArr.forEach((s:relicSubData)=>{
             if(!['生命值','攻擊力','防禦力','速度'].includes(s.subaffix))
-                s.display=s.data+'%';
+                s.display=s.data.toString()+'%';
             else
-                s.display=s.data;
+                s.display=s.data.toString();
         });
 
         //這邊複製出去一定得用深拷貝
         data.subaffix=JSON.parse(JSON.stringify(tempArr));
-        data.type = parseInt(partsIndex);
+        data.type = partsIndex!;
         data.affixLock = isLock.current;
 
         setRelic(data);
@@ -267,21 +274,21 @@ function Simulator(){
 
         let errors=false;
         //複製一份Subdata做檢查
-        let getSubData = JSON.parse(JSON.stringify(SubData));
+        let getSubData:relicSubData[] = JSON.parse(JSON.stringify(SubData));
         if(!charID){
             errors=true;
             updateStatus("沒有選擇任何腳色!!",'error');
             return;
         }
 
-        getSubData.some((s,i)=>{
+        getSubData.some((s:relicSubData,i:number)=>{
             if(s.subaffix===MainSelectOptions){
                 //alert(`第${i+1}個詞條選擇\n副詞條不可選擇與主詞條相同的詞條\n請再重新選擇!!`);
                 updateStatus(`第${i+1}個詞條:副詞條不可選擇與主詞條相同的詞條\n請再重新選擇!!`,'error');
                 errors=true;
                 return true;
             }
-            else if(s.subaffix==='undefined'||s.subaffix===0){
+            else if(s.subaffix==='undefined'||!s.subaffix){
                 updateStatus(`您還有副詞條沒有選擇\n請再重新選擇!!`,'error');
                 errors=true;
                 return true;
@@ -301,17 +308,20 @@ function Simulator(){
         }
 
         //檢查標準是否合法
-        selfStand.forEach((s)=>{
+        /*selfStand.forEach((s)=>{
             if(s.value===''){
                 errors=true;
                 alert('加權指數不可為空或其他非法型式');
             }     
-        });
+        });*/
 
         if(errors) return;
 
         //如果篩選有速度詞條 需給予0.5誤差計算 
-        let deviation=(getSubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
+        let deviation = getSubData.some((s) => s.subaffix === 'spd')
+            ? 0.5 * (selfStand.find((s) => s.name === '速度')?.value ?? 0)
+            : 0;
+
         if(Lock){
             getSubData.forEach(s=>{
                 if(s.subaffix!=='速度'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
@@ -389,7 +399,8 @@ function Simulator(){
         affixLock:isLock.current,
         
         mode:"Simulator",
-
+        relicDataButton:true,
+        
         //RelicData for Result
         Rscore:Rscore,
         Rrank:Rrank,
@@ -447,7 +458,7 @@ function Simulator(){
                                     </div>   
                                 </div>
                             </div>
-                            <div className={`my-1 ${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:items-start max-[400px]:!flex-col`}>
+                            <div className={`my-1 ${(partsIndex)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:items-start max-[400px]:!flex-col`}>
                                 <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
                                     <span className='text-white'>Main 主屬性:</span>
                                 </div>
@@ -505,7 +516,7 @@ function Simulator(){
                                     </div>
                                 </div>
                             </div>
-                            <div className={`${(Number.isInteger(parseInt(partsIndex)))?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
+                            <div className={`${(partsIndex)?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
                                 <div className='flex flex-row mt-1'>
                                     <button className='processBtn mr-2 whitespace-nowrap' 
                                         onClick={()=>calScore()} 
@@ -536,7 +547,7 @@ function Simulator(){
                 <div className={`flex flex-row my-3 flex-wrap shadowBox bg-black/50 w-full p-2 rounded-md`}>
                     <div className={`w-full flex flex-row flex-wrap`}>
                         <div className={`flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
-                            <RelicData  mode={'Simulator'} button={true}/>
+                            <RelicData />
                         </div>
                         <div className={`w-1/4 max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                             <StandDetails />
@@ -573,7 +584,7 @@ function Simulator(){
                         <SubAffixHint />
                     }/>
             <Tooltip id="HistoryHint"  
-                place="top-center"
+                place="top-start"
                 render={()=>
                     <HintHistory />
                 }/>

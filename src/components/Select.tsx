@@ -3,23 +3,27 @@ import React,{useContext, useState,useEffect, useRef} from 'react';
 import AffixList from '../data/AffixList';
 import characters from '../data/characters';
 import dynamic from "next/dynamic";
-const Select = dynamic(() => import("react-select"), { ssr: false });
+import { StylesConfig,SingleValue } from 'react-select';
 import SiteContext from '../context/SiteContext';
 import { Tooltip } from 'react-tooltip';
-import Image from 'next/image';
 import LazyImage from './LazyImage';
+import { relicSubData } from '@/interface/simulator';
+import { AffixListItem, CharacterOption, selfStand, standDetailsItem } from '@/interface/global';
+
+const Select = dynamic(() => import("react-select"), { ssr: false }) as unknown as
+    React.ComponentType<import("react-select").Props<CharacterOption, false>>;
 
 //主詞條選擇
 const MainAffixSelect = React.memo(() => {
     const { partsIndex, MainSelectOptions, setMainSelectOptions, isChangeAble } = useContext(SiteContext);
-    const [range, setRange] = useState(null);
+    const [range, setRange] = useState<string[]>([]);
 
     useEffect(() => {
         if (Number.isInteger(parseInt(partsIndex)) && partsIndex !== undefined) {
             const found = AffixList.find((s) => s.id === parseInt(partsIndex));
             if (found) setRange(found.main);
         } else {
-            setRange(null);
+            setRange([]);
         }
     }, [partsIndex]);
 
@@ -30,7 +34,7 @@ const MainAffixSelect = React.memo(() => {
         }
     }, [range]);
 
-    if (!range) return null;
+    if (range.length === 0) return null;
 
     if (range.length === 1) {
         return <span className='text-white'>{range[0]}</span>;
@@ -69,22 +73,26 @@ const MainAffixSelect = React.memo(() => {
     }
 });
 
-const SubAffixSelect = React.memo(({ index }) => {
+const SubAffixSelect = React.memo(({ index }:{index:number}) => {
     const { SubData, setSubData, MainSelectOptions, partsIndex, isChangeAble } = useContext(SiteContext);
 
-    //詞條數值
-    const [inputValue, setInputValue] = useState(SubData[index]?.data ??0);
-    
-    //詞條強化次數
-    const [inputCount, setInputCount] = useState(SubData[index]?.count ??0);
+    // 詞條數值（用字串存，才可以退格成空）
+    const [inputValue, setInputValue] = useState<string>(
+        SubData[index]?.data?.toString() ?? "0"
+    );
 
-    function updateSubAffix(val, index) {
-        setSubData(prev => prev.map((item, i) =>
+    // 詞條強化次數（同樣用字串）
+    const [inputCount, setInputCount] = useState<string>(
+        SubData[index]?.count?.toString() ?? "0"
+    );
+
+    function updateSubAffix(val:string, index:number) {
+        setSubData((prev:relicSubData[]) => prev.map((item:relicSubData, i:number) =>
             i === +index ? { ...item, subaffix: val } : item
         ));
     }
 
-    function handleBlurValue(index) {
+    function handleBlurValue(index:number) {
         const num = Number(inputValue);
 
         if (inputValue === "" || isNaN(num)) {
@@ -93,14 +101,14 @@ const SubAffixSelect = React.memo(({ index }) => {
             return;
         }
 
-        setSubData(prev => {
+        setSubData((prev:relicSubData[]) => {
             const next = [...prev];
             next[index] = { ...next[index], data: num };
             return next;
         });
     }
 
-    function handleBlurCount(index) {
+    function handleBlurCount(index:number) {
         let num = Number(inputCount);
 
         if (inputCount === "" || isNaN(num)) {
@@ -110,7 +118,7 @@ const SubAffixSelect = React.memo(({ index }) => {
 
         num = Math.min(Math.max(num, 0), 5);
 
-        setSubData(prev => {
+        setSubData((prev:relicSubData[]) => {
             const next = [...prev];
             next[index] = { ...next[index], count: num };
             return next;
@@ -118,13 +126,13 @@ const SubAffixSelect = React.memo(({ index }) => {
     }
 
     if (MainSelectOptions !== undefined && MainSelectOptions !== 'undefined' && partsIndex !== undefined) {
-        let range = AffixList.find((s) => s.id === parseInt(partsIndex)).sub;
+        let range = AffixList.find((s) => s.id === parseInt(partsIndex))!.sub;
         let options = [<option value={'undefined'} key={`SubaffixUndefined`}>請選擇</option>];
 
         const filteredRange = range.filter((r) => {
             if (r === '' || r === 'undefined') return true;
             if (r === MainSelectOptions) return false;
-            const foundIndex = SubData.findIndex((s) => s.subaffix === r);
+            const foundIndex = SubData.findIndex((s:relicSubData) => s.subaffix === r);
             if (foundIndex === -1) return true;
             if (foundIndex === index) return true;
 
@@ -148,7 +156,7 @@ const SubAffixSelect = React.memo(({ index }) => {
                 <input
                     type='number'
                     value={inputValue} // 保證不是 NaN
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(event) => setInputValue(event.target.value)}
                     onBlur={() => handleBlurValue(index)}
                     className='ml-2 max-w-[50px] bgInput text-center'
                     disabled={!isChangeAble}
@@ -158,7 +166,7 @@ const SubAffixSelect = React.memo(({ index }) => {
                 <input
                     type='number'
                     value={inputCount} // 保證不是 NaN
-                    onChange={(e) => setInputCount(e.target.value)}
+                    onChange={(event) => setInputCount(event.target.value)}
                     onBlur={() => handleBlurCount(index)}
                     className='ml-2 text-center bgInput'
                     disabled={!isChangeAble}
@@ -179,7 +187,7 @@ const PartSelect=React.memo(()=>{
     const {partArr,partsIndex,setPartsIndex,setIsSaveAble,isChangeAble}=useContext(SiteContext);
     let options=[<option value={'undefined'} key={'PartsUndefined'}>請選擇</option>];
 
-    partArr.forEach((a,i)=>{
+    partArr.forEach((a:string,i:number)=>{
         options.push(
             <option value={i+1} key={`PartSelect${i}`} >{a}</option>       
         )
@@ -205,15 +213,18 @@ const StandardSelect=React.memo(()=>{
     const {partsIndex,selfStand,setSelfStand,isChangeAble}=useContext(SiteContext);
     const [expand,setExpand]=useState(false);
 
-    const selectContainer = useRef(null);
+    const selectContainer = useRef<HTMLDivElement>(null);
 
     //偵測點擊位置 如果點擊非本元件 則直接展開設為false
     useEffect(()=>{
-        function handleClickOutside(event) {
+        function handleClickOutside(event:MouseEvent) {
             // 如果 containerRef 有值，且點擊目標不在 container 裡面
-            if (selectContainer.current && !selectContainer.current.contains(event.target)) {
-                setExpand(false);
+            if(event.target){
+                if (selectContainer.current &&  event.target instanceof Node &&!selectContainer.current.contains(event.target)) {
+                    setExpand(false);
+                }
             }
+            
         }
 
         if (expand&&isChangeAble) {
@@ -229,10 +240,9 @@ const StandardSelect=React.memo(()=>{
     },[expand])
 
     //添加標準 目前設定先不超過六個有效 且不重複
-    function addAffix(selectAffix){
-        console.log()
+    function addAffix(selectAffix:string){
         //如果該詞條沒有出現在arr裡則加入 反之則移除
-        if(!selfStand.some((s) => s.name === selectAffix)){
+        if(!selfStand.some((s:standDetailsItem) => s.name === selectAffix)){
             //如果為預設選項則不予選擇
             if(selectAffix===undefined)
                 return;
@@ -240,23 +250,23 @@ const StandardSelect=React.memo(()=>{
                 name:selectAffix,
                 value:1
             }
-            if(selfStand.length<6&&!(selfStand.findIndex((item)=>item.name===selectAffix)>=0))
-                setSelfStand((old)=>[...old,newItem]);
+            if(selfStand.length<6&&!(selfStand.findIndex((item:standDetailsItem)=>item.name===selectAffix)>=0))
+                setSelfStand((old:selfStand)=>[...old,newItem]);
         }else{
-            setSelfStand((arr)=>arr.filter((s)=>s.name!==selectAffix));
+            setSelfStand((arr:selfStand)=>arr.filter((s)=>s.name!==selectAffix));
         }
     }
 
     if(partsIndex!==undefined){
         //依據所選部位 給出不同的選澤
-        let target=AffixList.find((a)=>a.id===parseInt(partsIndex));
+        let target=AffixList.find((a)=>a.id===parseInt(partsIndex)) as AffixListItem;
         //合併所有選項 並且移除重複值
         let mergedArray = [...new Set([...target.main, ...target.sub])];
         mergedArray=mergedArray.filter((item)=>item!=='生命值'&&item!=='攻擊力'&&item!=='防禦力')
 
         //模仿原生select標籤 渲染每個option之div
         let optionsList=mergedArray.map((m, i) => {
-            const exists = selfStand.some(s => s.name === m);
+            const exists = selfStand.some((s:standDetailsItem) => s.name === m);
             
             return(
                 <div className='my-0.5 mx-1 hover:bg-stone-500 hover:text-white cursor-pointer flex flex-row items-center'
@@ -265,7 +275,7 @@ const StandardSelect=React.memo(()=>{
                     <div className='mr-1 flex items-center'>
                         <input  type='checkbox' checked={exists} 
                                 className='border-[0px] w-4 h-4 accent-[dimgrey]' 
-                                onChange={(event)=>console.log(event.target.vaue)}
+                                onChange={(event)=>console.log(event.target.value)}
                                 disabled={!exists&&selfStand.length===6}/>
                     </div>
                     <div>
@@ -323,26 +333,26 @@ const StandardSelect=React.memo(()=>{
 //腳色選擇器
 const CharSelect=React.memo(()=>{
     const {charID,setCharID,setIsSaveAble,isChangeAble}=useContext(SiteContext)
-    let options=[];
+    let options:CharacterOption[]=[];
 
-    const customStyles={
+    const customStyles: StylesConfig<CharacterOption, false> = {
         control: (provided) => ({
             ...provided,
             backgroundColor: 'inherit', // 繼承背景顏色
-            outline:'none',
+            outline: 'none',
         }),
         input: (provided) => ({
             ...provided,
             color: 'white', // 這裡設定 input 文字的顏色為白色
-            backgroundColor:'inherit'
+            backgroundColor: 'inherit'
         }),
         option: (provided, state) => ({
             ...provided,
             backgroundColor: state.isSelected
-              ? 'darkgray'
-              : state.isFocused
-              ? 'gray'
-              : 'rgb(36, 36, 36)',
+                ? 'darkgray'
+                : state.isFocused
+                    ? 'gray'
+                    : 'rgb(36, 36, 36)',
             color: state.isSelected ? 'white' : 'black'
         }),
         menu: (provided) => ({
@@ -361,7 +371,7 @@ const CharSelect=React.memo(()=>{
     })
 
     //自訂義篩選
-    const customFilterOption = (option, inputValue) => {
+    const customFilterOption = (option:{ data: CharacterOption }, inputValue:string) => {
         const lowerInput = inputValue.toLowerCase();
         return option.data.label.toLowerCase().includes(lowerInput) || option.data.engLabel.toLowerCase().includes(lowerInput);
     };
@@ -371,11 +381,16 @@ const CharSelect=React.memo(()=>{
 
     return(<Select options={options} 
                 className='w-[200px]' 
-                onChange={(option)=>{setCharID(option.value);setIsSaveAble(false);}}
+                onChange={(option: SingleValue<CharacterOption>) => {
+                        if (option) {
+                            setCharID(option.value);
+                            setIsSaveAble(false);
+                        }
+                    }}
                 value={selectedOption} 
                 isDisabled={!isChangeAble}
                 styles={customStyles}
-                getOptionLabel={(e) => (
+                formatOptionLabel={(e) => (
                     <div style={{ display: "flex", alignItems: "center"  }}>
                         <LazyImage 
                             BaseLink={e.icon}
@@ -394,7 +409,7 @@ const RelicSelect=React.memo(()=>{
     const {RelicDataArr,relicIndex,setRelicIndex}=useContext(SiteContext);
     const unknowRelicImg = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknownRelic.png`;
     if(RelicDataArr.length !==0){
-        let list = RelicDataArr.map((r,i)=>{  
+        let list = RelicDataArr.map((r:any,i:number)=>{  
             const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/${r.relic.icon}`;
     
             return(
@@ -429,7 +444,5 @@ const RelicSelect=React.memo(()=>{
         return null
     }
 });
-
-
 
 export {PartSelect,StandardSelect,CharSelect,MainAffixSelect,SubAffixSelect,RelicSelect}
