@@ -13,24 +13,39 @@ import { useSelector,useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { Tooltip } from 'react-tooltip';
 import HintEnchant from '@/components/Hint/HintEnchant';
+import { enchantData, enchantDataItem, MinMaxScoreItem, simulatorDataItem, StaticsItem } from '@/interface/enchant';
+import { AffixItem, PieNumsItem, relicRank, standDetails, standDetailsItem } from '@/interface/global';
+import { relicSubData, simulatorRelic } from '@/interface/simulator';
+import { ImportRelic, ImportRelicAffix } from '@/interface/importer';
+import { RootState } from '@/model/reducer';
+
+interface enchantProps{
+    relic:simulatorRelic|ImportRelic,
+    standDetails:standDetails,
+    Rscore:string,
+    Rrank:relicRank,
+    mode:"Importer"|"Simulator",
+    affixLock:boolean
+}
+
 
 //此物件為單次模擬隨機強化後的結果
 const Enchant=React.memo(()=>{
 
-    const [data,setData] = useState();//從其他頁面記錄在localstorage的資料
-    const {relic,standDetails,Rscore,Rrank,mode,affixLock}=data || {};
+    const [data,setData] = useState<enchantProps>();//從其他頁面記錄在localstorage的資料
+    const {relic,standDetails,Rscore,Rrank,mode,affixLock}= data || {};
     
     const relicBackUp =useRef(null);
-    const [isChangeAble,setIsChangeAble]=useState(true);
+    const [isChangeAble,setIsChangeAble]=useState<boolean>(true);
     //模擬強化相關數據
-    const [simulatorData,setSimulatorData]=useState({oldData:null,newData:null});
-    const [statics,setStatics]=useState(undefined);
+    const [simulatorData,setSimulatorData]=useState<simulatorDataItem>({oldData:null,newData:null});
+    const [statics,setStatics]=useState<StaticsItem[]|undefined>(undefined);
     
     //強化次數
-    const [count,setCount]=useState(0);
+    const [count,setCount]=useState<number>(0);
 
     //成功翻盤次數
-    const [successCount,setSuccessCount]=useState(0);
+    const [successCount,setSuccessCount]=useState<number>(0);
 
     const scoreStand=[
         {rank:'S+',stand:85,color:'rgb(239, 68, 68)',tag:'S+'},
@@ -44,11 +59,11 @@ const Enchant=React.memo(()=>{
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
 
     //從enchantstore獲取資料
-    const simulateData = useSelector((state)=>state.enchant.enchantData);
+    const simulateData = useSelector((state:RootState)=>state.enchant.enchantData) as enchantData;
     const router = useRouter();
 
     //最高與最低分
-    const [MinMaxScore,setMinMaxScore] = useState({min:undefined,max:undefined});
+    const [MinMaxScore,setMinMaxScore] = useState<MinMaxScoreItem>();
 
     
     useEffect(()=>{
@@ -69,7 +84,7 @@ const Enchant=React.memo(()=>{
 
     useEffect(()=>{
         //偵測初始化數據是否帶有指定屬性
-        if(simulateData.relic !== undefined)
+        if(simulateData)
             setData(simulateData);
         else{
             alert('沒有任何模擬數據，即將導回至主頁');
@@ -77,7 +92,7 @@ const Enchant=React.memo(()=>{
         }
         //初始紀錄
         if(relicBackUp.current === null){
-            relicBackUp.current=simulatorData.oldData;
+            relicBackUp.current!=simulatorData.oldData;
         }
         //新增強化紀錄
         addStatics();
@@ -89,7 +104,7 @@ const Enchant=React.memo(()=>{
 
     //初始化統計數據
     function initStatics(){
-        let arr = [];
+        let arr = [] as StaticsItem[];
         scoreStand.forEach((s)=>{
             arr.push({
                 label:s.rank,
@@ -104,14 +119,14 @@ const Enchant=React.memo(()=>{
 
     //增加統計數據
     function addStatics(){
-        if(simulatorData.newData!==null){
+        if(simulatorData.newData){
             //如果數據統計尚未初始化
             if(statics === undefined){
                 let arr=[];
                 let data={
                     label:simulatorData.newData.relicrank.rank,
                     value:1,
-                    color:scoreStand.find((s)=>s.tag === simulatorData.newData.relicrank.rank).color,
+                    color:scoreStand.find((s)=>s.tag === simulatorData.newData!.relicrank.rank)!.color,
                     tag:simulatorData.newData.relicrank.rank
                 }
                 arr.push(data);
@@ -120,20 +135,20 @@ const Enchant=React.memo(()=>{
             }
 
             //讀取既有統計
-            let oldStatics = statics;
-            let targetStatics = oldStatics.find((s)=>s.label === simulatorData.newData.relicrank.rank);
+            let oldStatics = statics as StaticsItem[];
+            let targetStatics = oldStatics.find((s)=>s.label === simulatorData.newData!.relicrank.rank);
             if (targetStatics === null || targetStatics === undefined) {
                 let data = {
                     label: simulatorData.newData.relicrank.rank,
                     value: 1,
-                    color: scoreStand.find((s) => s.tag === simulatorData.newData.relicrank.rank).color,
+                    color: scoreStand.find((s) => s.tag === simulatorData.newData!.relicrank.rank)!.color,
                     tag: simulatorData.newData.relicrank.rank
                 };
-                setStatics((old) => [...old, data]); // 新陣列，觸發 re-render 
+                setStatics((old) => [...(old??[]), data]); // 新陣列，觸發 re-render 
             } else {
                 setStatics((old) =>
-                    old.map((item) =>
-                        item.tag === simulatorData.newData.relicrank.rank
+                    (old??[]).map((item) =>
+                        item.tag === simulatorData.newData!.relicrank.rank
                             ? { ...item, value: item.value + 1 }
                             : item
                     )
@@ -145,17 +160,17 @@ const Enchant=React.memo(()=>{
     //模擬強化--Importer
     function simulate(){
         let isCheck=true;
-        
+        let ImporterRelic = relic as ImportRelic;
         //將運行結果丟到背景執行 跟模擬所有組合的worker分開
         let worker=new Worker(new URL('../../worker/worker2.js', import.meta.url));
-        let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type);
-        let SubData=[];
+        let MainAffix=AffixName.find((a)=>a.fieldName===ImporterRelic.main_affix.type) as AffixItem;
+        let SubData=[] as relicSubData[];
           
         if(simulatorData.oldData===null){
-            relic.sub_affix.forEach((sb,i)=>{
-                let typeName=AffixName.find((a)=>a.fieldName===sb.type);
+            ImporterRelic.sub_affix.forEach((sb,i)=>{
+                let typeName=AffixName.find((a)=>a.fieldName===sb.type) as AffixItem;
                 let val=(!typeName.percent)?Number(sb.value.toFixed(0)):Number((sb.value*100).toFixed(1));
-                let stand = standDetails.find((s)=>s.name===typeName.name);
+                let stand = standDetails!.find((s)=>s.name===typeName.name);
 
                 let data={
                     index:i, 
@@ -173,7 +188,7 @@ const Enchant=React.memo(()=>{
             SubData = simulatorData.oldData.returnData;
             //重新給予stand跟locked
             SubData.forEach((sb)=>{
-                let stand = standDetails.find((s)=>s.name===sb.subaffix);
+                let stand = standDetails!.find((s)=>s.name===sb.subaffix);
                 sb.stand=(!stand)?0:stand.value;
                 sb.locked=false;
             });
@@ -188,15 +203,11 @@ const Enchant=React.memo(()=>{
             LockAffix.locked = true;
         }
         
-        //檢查標準是否合法
-        standDetails.forEach((s)=>{
-            if(s.value===''){
-                isCheck=false;
-            }
-        });
         
         //如果篩選有速度詞條 需給予0.5誤差計算 
-        let deviation=(SubData.includes((s)=>s.subaffix==='速度'))?0.5*(standDetails.find((s)=>s.name==='速度').value):0;
+        let deviation = SubData.some(s => s.subaffix === '速度')
+                ? 0.5 * (standDetails!.find(s => s.name === '速度')?.value ?? 0)
+                : 0;
         SubData.forEach(s=>{
             if(s.subaffix!=='速度'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
                 deviation+=0.2;
@@ -206,7 +217,7 @@ const Enchant=React.memo(()=>{
         let postData={
             MainData:MainAffix.name,
             SubData:SubData,
-            partsIndex:relic.type,
+            partsIndex:ImporterRelic.type,
             standard:standDetails,
             deviation:0
         };
@@ -217,8 +228,8 @@ const Enchant=React.memo(()=>{
             worker.onmessage = function (event) {
                 setSimulatorData({
                     oldData:{
-                        relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
-                        relicrank:(simulatorData.oldData===null)?Rrank:simulatorData.oldData.relicrank,
+                        relicscore:(simulatorData.oldData===null)?Rscore!:simulatorData.oldData.relicscore,
+                        relicrank:(simulatorData.oldData===null)?Rrank!:simulatorData.oldData.relicrank,
                         returnData:SubData
                     },
                     newData:event.data
@@ -228,10 +239,10 @@ const Enchant=React.memo(()=>{
 
                 //如果該次強化超過原有分數 則成功次數+1
                 if(simulatorData.oldData!==null){ //第二次強化以後
-                    if(parseInt(event.data.relicscore) > simulatorData.oldData.relicscore)
+                    if(parseInt(event.data.relicscore) > parseInt(simulatorData.oldData.relicscore))
                         setSuccessCount((c)=>c+=1);
                 }else{ //第一次模擬
-                    if(parseInt(event.data.relicscore) > Rscore)
+                    if(parseInt(event.data.relicscore) > parseInt(Rscore!))
                         setSuccessCount((c)=>c+=1);
                 }
             };
@@ -243,25 +254,19 @@ const Enchant=React.memo(()=>{
     //模擬強化--Simulator
     function simulate2(){
         let isCheck=true;
+        let simulatorRelic = relic as simulatorRelic;
         //將運行結果丟到背景執行 跟模擬所有組合的worker分開
         let worker=new Worker(new URL('../../worker/worker2.js', import.meta.url));
-        let MainAffix=AffixName.find((a)=>a.name===relic.main_affix);
+        let MainAffix=AffixName.find((a)=>a.name===simulatorRelic.main_affix) as AffixItem;
         let SubData=[];
 
         //將Subdata帶入 這邊會帶鎖定資訊，所以不需更改
         if(simulatorData.oldData===null){
             //深拷貝一份Subdata數據
-            SubData = JSON.parse(JSON.stringify(relic.subaffix));
+            SubData = JSON.parse(JSON.stringify(simulatorRelic.subaffix));
         }else{
             SubData = simulatorData.oldData.returnData;
         }
-
-        //檢查標準是否合法
-        standDetails.forEach((s)=>{
-            if(s.value===''){
-                isCheck=false;
-            }
-        });
         
         //如果篩選有速度詞條 需給予0.5誤差計算 
         /*let deviation=(SubData.includes((s)=>s.subaffix==='spd'))?0.5*(selfStand.find((s)=>s.name==='速度').value):0;
@@ -274,7 +279,7 @@ const Enchant=React.memo(()=>{
         let postData={
             MainData:MainAffix.name,
             SubData:SubData,
-            partsIndex:relic.type,
+            partsIndex:simulatorRelic.type,
             standard:standDetails,
             deviation:0.5
         };
@@ -286,8 +291,8 @@ const Enchant=React.memo(()=>{
             worker.onmessage = function (event) {
                 setSimulatorData({
                     oldData:{
-                        relicscore:(simulatorData.oldData===null)?Rscore:simulatorData.oldData.relicscore,
-                        relicrank:(simulatorData.oldData===null)?Rrank:simulatorData.oldData.relicrank,
+                        relicscore:(simulatorData.oldData===null)?Rscore!:simulatorData.oldData.relicscore,
+                        relicrank:(simulatorData.oldData===null)?Rrank!:simulatorData.oldData.relicrank,
                         returnData:SubData
                     },
                     newData:event.data
@@ -297,10 +302,10 @@ const Enchant=React.memo(()=>{
 
                 //如果該次強化超過原有分數 則成功次數+1
                 if(simulatorData.oldData!==null){ //第二次強化以後
-                    if(parseInt(event.data.relicscore) > simulatorData.oldData.relicscore)
+                    if(parseInt(event.data.relicscore) > parseInt(simulatorData.oldData.relicscore))
                         setSuccessCount((c)=>c+=1);
                 }else{ //第一次模擬
-                    if(parseInt(event.data.relicscore) > Rscore)
+                    if(parseInt(event.data.relicscore) > parseInt(Rscore!))
                         setSuccessCount((c)=>c+=1);
                 }
             };
@@ -324,8 +329,8 @@ const Enchant=React.memo(()=>{
         if(simulatorData.oldData!==null&&simulatorData.newData!==null){
             //如果是初次計算 直接加入到min跟max
             if(count === 1){
-                let minScore = Math.min(simulatorData.oldData.relicscore,simulatorData.newData.relicscore);
-                let maxScore = Math.max(simulatorData.oldData.relicscore,simulatorData.newData.relicscore);
+                let minScore = Math.min(parseInt(simulatorData.oldData.relicscore),parseInt(simulatorData.newData.relicscore));
+                let maxScore = Math.max(parseInt(simulatorData.oldData.relicscore),parseInt(simulatorData.newData.relicscore));
                 setMinMaxScore({min:minScore,max:maxScore});
             }else if(count > 1){
                 let score = simulatorData.newData.relicscore;
@@ -371,14 +376,14 @@ const Enchant=React.memo(()=>{
 
     const ResultSection=(simulatorData.newData!==undefined&&simulatorData.oldData!==undefined)?(
         <div className='flex flex-row flex-wrap  max-[600px]:!flex-col'>
-            <DataList standDetails={standDetails} data={simulatorData.oldData} title={'重洗前'} affixLock={affixLock}/>
+            <DataList standDetails={standDetails!} data={simulatorData.oldData!} title={'重洗前'} affixLock={affixLock}/>
             <div className={`flex my-auto w-[30px] moveAnimate moveAnimate2 max-[600px]:w-full h-[30px] ${(simulatorData.newData===null)?'hidden':''}`} >
                 <svg xmlns="http://www.w3.org/2000/svg" className='max-[600px]:hidden mx-auto'
                     height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/></svg>
                 <svg xmlns="http://www.w3.org/2000/svg" className='min-[600px]:hidden mx-auto'
                     height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-800v487L216-537l-56 57 320 320 320-320-56-57-224 224v-487h-80Z"/></svg>
             </div>
-            <DataList standDetails={standDetails} data={simulatorData.newData} title={'重洗後'} affixLock={affixLock}/>          
+            <DataList standDetails={standDetails!} data={simulatorData.newData!} title={'重洗後'} affixLock={affixLock}/>          
         </div>
     ):null;
 
@@ -388,7 +393,6 @@ const Enchant=React.memo(()=>{
         Rscore:Rscore,
         standDetails:standDetails,
         isChangeAble:isChangeAble,
-        standDetails:standDetails,
         partArr:partArr,
         PieNums:statics,
         successCount:successCount,
@@ -396,7 +400,6 @@ const Enchant=React.memo(()=>{
         MinMaxScore:MinMaxScore,
         affixLock:affixLock
     };
-    
     return(
         <SiteContext.Provider value={EnchantStatus}>
             <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
@@ -428,9 +431,12 @@ const Enchant=React.memo(()=>{
                         <div className='my-2'>
                             <span>目前重洗次數:<span className='text-white ml-1'>{count}</span></span>
                         </div>
-                        <div>
-                            {ResultSection}
-                        </div>
+                        {
+                            (MinMaxScore!==undefined)?
+                            <div>
+                                {ResultSection}
+                            </div>:null
+                        }
                         <div>
                             <Pie /> 
                         </div>
@@ -450,11 +456,20 @@ const Enchant=React.memo(()=>{
      
 });
 
+
+interface DataListProps{
+    standDetails:standDetails|undefined,
+    data:enchantDataItem|undefined,
+    title:string,
+    affixLock:boolean|undefined
+}
+
+
 //強化前後的數據顯示
-const DataList=React.memo(({standDetails,data,title,affixLock})=>{
-    let list=[];
-    if(data!==null){
-        let strikeThroughName = null;
+const DataList=React.memo(({standDetails,data,title,affixLock}:DataListProps)=>{
+    let list=[] as React.ReactNode[];
+    if(data&&standDetails){
+        let strikeThroughName = '';
         let minIndex = 0;
         let minValue = Infinity;
         //如果資料是有帶鎖定資訊的
@@ -463,14 +478,14 @@ const DataList=React.memo(({standDetails,data,title,affixLock})=>{
             data.returnData.forEach((d, i) => {
                 //先改名
                 let showAffix = '';
-                let targetAffix = AffixName.find((a)=>a.name===d.subaffix);
+                let targetAffix = AffixName.find((a)=>a.name===d.subaffix) as AffixItem;
                  //檢查是否要顯示%數
                 if(targetAffix.percent&&!d.data.toString().includes('%'))
                     showAffix = d.data+'%';
                 else 
-                    showAffix = d.data;
+                    showAffix = d.data.toString();
                 
-                const found = standDetails.find(st => st.name === d.subaffix);
+                const found = standDetails.find(st => st.name === d.subaffix) as standDetailsItem;
                 const value = found ? found.value : 0; // 沒找到當 0
 
                 if (value < minValue) { 
@@ -484,7 +499,7 @@ const DataList=React.memo(({standDetails,data,title,affixLock})=>{
 
         data.returnData.map((d,i)=>{
             let markcolor="";
-            let targetAffix = AffixName.find((a)=>a.name===d.subaffix);
+            let targetAffix = AffixName.find((a)=>a.name===d.subaffix) as AffixItem;
             let isBold=(standDetails.find((st)=>st.name===d.subaffix)!==undefined)?true:false;
             let showData = undefined;
 
@@ -559,35 +574,39 @@ const DataList=React.memo(({standDetails,data,title,affixLock})=>{
         )
     }else{
         return null
-    }
-    
-    
-    
-    
+    } 
 });
 
+
+interface PieProps{
+    PieNums:PieNumsItem[],
+    successCount:number,
+    count:number,
+    MinMaxScore:MinMaxScoreItem
+}
+
 const Pie=React.memo(()=>{
-    const {PieNums,successCount,count,MinMaxScore} =useContext(SiteContext);
+    const {PieNums,successCount,count,MinMaxScore} =useContext<PieProps>(SiteContext);
 
     if(PieNums!==undefined){
         const pieParams = {
             height: (count === 0)?0:200,
             margin:{ top: 10, right: 0, bottom: 0, left: 0 },
-            slotProps: { legend: { hidden: true } },
+            hideLegend: true,
         };
 
         return(
            <div className='w-full flex flex-row flex-wrap'>
                 <div className='min-w-[300px]'>
                     <PieChart  
-                    series={[
-                        {
-                            innerRadius: 20,
-                            arcLabelMinAngle: 35,
-                            arcLabel: (item) => `${item.value}次`,
-                            data: PieNums,
-                        }
-                    ]}  {...pieParams} />
+                        series={[
+                            {
+                                innerRadius: 20,
+                                arcLabelMinAngle: 35,
+                                arcLabel: (item :any) => `${item.value}次`,
+                                data: PieNums,
+                            }
+                        ]}  {...pieParams} />
                 </div>
                 <div className={`flex-col w-2/5 max-[500px]:w-full mt-2 ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
                     <div className='flex-col justify-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
@@ -599,22 +618,27 @@ const Pie=React.memo(()=>{
                                 <span className='text-white'>{successCount}次</span>
                             </div>
                         </div>
-                        <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
-                            <div className='flex justify-start'>
-                                <span className='text-stone-400'>最高分數</span>
-                            </div>
-                            <div className='flex justify-start text-center ml-2'>
-                                <span className='text-white'>{MinMaxScore.max}</span>
-                            </div>
-                        </div>
-                        <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
-                            <div className='flex justify-start'>
-                                <span className='text-stone-400'>最低分數</span>
-                            </div>
-                            <div className='flex justify-start text-center ml-2'>
-                                <span className='text-white'>{MinMaxScore.min}</span>
-                            </div>
-                        </div>
+                        {
+                            (MinMaxScore)?
+                            <>
+                                <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                                    <div className='flex justify-start'>
+                                        <span className='text-stone-400'>最高分數</span>
+                                    </div>
+                                    <div className='flex justify-start text-center ml-2'>
+                                        <span className='text-white'>{MinMaxScore.max}</span>
+                                    </div>
+                                </div>
+                                <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                                    <div className='flex justify-start'>
+                                        <span className='text-stone-400'>最低分數</span>
+                                    </div>
+                                    <div className='flex justify-start text-center ml-2'>
+                                        <span className='text-white'>{MinMaxScore.min}</span>
+                                    </div>
+                                </div>
+                            </>:null
+                        }
                     </div>
                 </div>
                

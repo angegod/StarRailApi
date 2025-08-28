@@ -159,7 +159,7 @@ onmessage = function (event) {
 
         });
         this.postMessage({
-            relicscore:Number(result.toFixed(1)),//遺器分數
+            relicscore:result.toFixed(1),//遺器分數
             relicrank:relicrank,//遺器區間
             returnData:newSubaffix //該次模擬強化後各項數據
         })

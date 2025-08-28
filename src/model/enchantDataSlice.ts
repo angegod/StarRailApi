@@ -1,8 +1,9 @@
+import { enchantData } from '@/interface/enchant';
 import { createSlice } from '@reduxjs/toolkit';
 
 
 const initialState = {
-    enchantData: {} // 要模擬的資料原版數據
+    enchantData: {} as enchantData|{} // 要模擬的資料原版數據
 };
 
 const enchantDataSlice = createSlice({
@@ -14,14 +15,14 @@ const enchantDataSlice = createSlice({
             state.enchantData = action.payload;
         },
         //獲得模擬數據原版資料
-        getEnchantData:(state)=>{
+        /*getEnchantData:(state)=>{
             return state.enchantData;
-        },
+        },*/
         deleteEnchantData:(state)=>{
             state.enchantData = {};
         }
     }
 });
 
-export const {setEnchantData,getEnchantData,deleteEnchantData} = enchantDataSlice.actions;
+export const {setEnchantData,deleteEnchantData} = enchantDataSlice.actions;
 export default enchantDataSlice.reducer;
