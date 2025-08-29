@@ -1,20 +1,22 @@
 import standard from '../data/standard';
-import weight from '../data/weight';
+import weight, { StatKey } from '../data/weight';
 import AffixName from '../data/AffixName';
 import {findCombinations,EnchanceAllCombinations} from '../data/combination';
+import { relicSubData } from '@/interface/simulator';
+import { AffixItem, PieNumsItem, relicRank, standDetails } from '@/interface/global';
+import { calTypeItem, coeEfficentItem } from '@/interface/worker';
 
 
 onmessage = function (event) {
     //宣告變數
-    let SubData=event.data.SubData;
-    let partsIndex=parseInt(event.data.partsIndex);
-    let MainAffix=AffixName.find((a)=>a.name===event.data.MainData);
+    let SubData=event.data.SubData as relicSubData[];
+    let partsIndex=parseInt(event.data.partsIndex) as number;
+    let MainAffix=AffixName.find((a)=>a.name===event.data.MainData) as AffixItem;
     let deviation=(event.data.deviation!==undefined)?event.data.deviation:0;
     
-
     //計算可用強化次數
     let enchanceCount=0;
-    let lockArr = [];
+    let lockArr:number[] = [];
     SubData.forEach(sb=>{    
         enchanceCount=enchanceCount+Number(sb.count);
         if(sb.locked)
@@ -28,28 +30,27 @@ onmessage = function (event) {
     let charStandard=calStand(event.data.standard);
     //分數誤差 目前先預設少半個有效詞條
 
-    let coeEfficent=[];//當前遺器係數arr
+    let coeEfficent=[] as coeEfficentItem[];//當前遺器係數arr
     SubData.forEach((sub)=>{
-        let SubAffixType=AffixName.find((s)=>s.name===sub.subaffix);
+        let SubAffixType=AffixName.find((s)=>s.name===sub.subaffix) as AffixItem;
         coeEfficent.push({
             type:SubAffixType.type,
             fieldName:SubAffixType.fieldName,
-            num:Number(charStandard[SubAffixType.type]),
-            locked:(sub.lock)?true:false
+            num:Number(charStandard[SubAffixType.type])
         });
     });
 
     //將沒有被鎖住不可計算的詞條倒裝
 
     let MainData=charStandard[MainAffix.type];
-    let result =[];
+    let result =[] as number[];
     let origin=relicScore(partsIndex,charStandard,SubData,MainData);
     //先算原本的遺器的分數
 
     let p1=new Promise(async (resolve,reject)=>{
         combination.forEach((c,i)=>{
             //計算各種強化程度的組合
-            let subcombination=EnchanceAllCombinations(c);
+            let subcombination=EnchanceAllCombinations(c) as number[][][];
 
             subcombination.forEach((s)=>{
                 let res=0;
@@ -57,12 +58,12 @@ onmessage = function (event) {
                     res=3*MainData;
                 
                 let total=0;
-                let caltype=[];//已經計算過的詞條種類
+                let caltype=[] as calTypeItem[];//已經計算過的詞條種類
 
                 s.forEach((el,i) => {//對每個屬性詞條開始進行模擬計算
                     let sub=coeEfficent[i];
                     
-                    let targetRange=AffixName.find((st)=>st.fieldName===sub.fieldName).range;
+                    let targetRange=AffixName.find((st)=>st.fieldName===sub.fieldName)!.range!;
 
                     //如果該詞條所獲得的強化次數為0 可以推測該數值為初始詞條數值 則直接繼承使用
                     if(SubData[i].count===0)
@@ -73,11 +74,11 @@ onmessage = function (event) {
                     el.forEach((num)=>total+=targetRange[num]);
 
                     //計算有效詞條數
-                    let affixStandard=standard.find((t)=>t.type==='sub').data.find((d)=>d.name===sub.fieldName).data;
-                    let cal=parseFloat(total/affixStandard).toFixed(2);
+                    let affixStandard=standard.find((t)=>t.type==='sub')!.data.find((d)=>d.name===sub.fieldName)!.data;
+                    let cal=parseFloat((total/affixStandard).toFixed(2));
 
                     //獲得加權有效詞條數 並加上去
-                    let affixmutl=parseFloat(charStandard[sub.type]*cal);
+                    let affixmutl=charStandard[sub.type]*cal;
                     
                     
                     //如果沒有計算過此種類詞條
@@ -95,7 +96,10 @@ onmessage = function (event) {
                 
 
                 //理想分數
-                let IdealyScore=Number((parseFloat(res/calPartWeights(charStandard,partsIndex))*100).toFixed(2));
+                const IdealyScore: number = Number(
+                    ((res / calPartWeights(charStandard, partsIndex)) * 100).toFixed(2)
+                );
+
                 result.push(IdealyScore);
                 
             });
@@ -114,22 +118,22 @@ onmessage = function (event) {
             {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},
             {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
         ];
-        let overScoreList=JSON.parse(JSON.stringify(result)).filter((num)=>num-deviation>Number(origin));
-        let expRate=(overScoreList.length)/(result.length).toFixed(2);
-        let copy=JSON.parse(JSON.stringify(result));
-        let relicrank=undefined;
-        let returnData=[]
+        let overScoreList=(JSON.parse(JSON.stringify(result)) as number[]).filter((num)=>num-deviation>Number(origin));
+        let expRate=((overScoreList.length)/(result.length)).toFixed(4);
+        let copy=JSON.parse(JSON.stringify(result)) as number[];
+        let relicrank:relicRank|undefined=undefined;
+        let returnData=[] as PieNumsItem[];
         
         //console.log(result);
         //根據標準去分類
         scoreStand.forEach((stand,i)=>{
             //區分符合區間跟不符合的 並一步步拿掉前面篩選過的區間
-            let match=copy.filter((num)=>num>=stand.stand);
-            copy=copy.filter((num)=>num<stand.stand);
+            let match=copy.filter((num)=>num>=stand.stand) as number[];
+            copy=copy.filter((num)=>num<stand.stand) as number[];
 
             returnData.push({
                 label:stand.tag,
-                value:Number((parseFloat(match.length/result.length)*100).toFixed(2)),
+                value:Number(((match.length / result.length) * 100).toFixed(2)),
                 color:stand.color,
                 tag:stand.rank
             });
@@ -154,10 +158,10 @@ onmessage = function (event) {
     });
 };
 
-function relicScore(partsIndex,charStandard,SubData,MainData){
+function relicScore(partsIndex:number,charStandard:Record<string,number>,SubData:relicSubData[],MainData:number){
     let weight = 0
     var mutl=3*MainData;//直接默認強化至滿等
-    let caltype=[];
+    let caltype=[] as calTypeItem[];
 
     //如果是手跟頭則不套用主詞條加分
     if(partsIndex!==1&&partsIndex!==2){
@@ -165,15 +169,15 @@ function relicScore(partsIndex,charStandard,SubData,MainData){
     }
     SubData.forEach(a => {
         //去除%數
-        var affix=parseFloat(a.data).toFixed(2);//實際數值
-        let SubAffixType=AffixName.find((s)=>s.name===a.subaffix);
+        let affix=Number(a.data.toFixed(2));//實際數值
+        let SubAffixType=AffixName.find((s)=>s.name===a.subaffix) as AffixItem;
         
         //計算有效詞條數
-        var affixStandard=standard.find((t)=>t.type==='sub').data.find((d)=>d.name===SubAffixType.fieldName).data;
-        var cal=parseFloat(affix/affixStandard).toFixed(2);
+        let affixStandard=standard.find((t)=>t.type==='sub')!.data.find((d)=>d.name===SubAffixType.fieldName)!.data;
+        let cal=Number(parseFloat((affix/affixStandard).toFixed(2)));
         
         //獲得有效詞條
-        let affixmutl=parseFloat(charStandard[SubAffixType.type]*cal);
+        let affixmutl=charStandard[SubAffixType.type]*cal;
 
         caltype.push({
             type:SubAffixType.fieldName,
@@ -188,63 +192,72 @@ function relicScore(partsIndex,charStandard,SubData,MainData){
             weight+=ms.affixmutl;
     });
 
-    let relicscore=0;
+    let relicscore:number = 0;
 
     //接下來根據部位調整分數
     //假設最大有效詞條數為10 實際只拿8個 代表你這件有80分以上的水準
-    relicscore=parseFloat(weight/calPartWeights(charStandard,partsIndex))*100;
-    return parseFloat(relicscore).toFixed(1);
+    relicscore = Number(
+        (weight / calPartWeights(charStandard, partsIndex)).toFixed(2)
+    ) * 100;
+
+    return Number(relicscore.toFixed(1));
     
 }
 
 //計算裝備權重
-function calPartWeights(charstandard,partIndex){
-    let partWeight = 5;//起始分數為5
-    let mainkey='';
-   
-    //先將標準倒序
-    charstandard=Object.entries(charstandard)
-    .sort((a, b) => b[1] - a[1]);
+function calPartWeights(charstandard:Record<StatKey,number>,partIndex: number){
+    let partWeight = 5; // 起始分數為5
+    let mainkey: string | null = null;
 
-    //主詞條 抓最大*3 剩下依序遞補 最多四個
-    //頭跟手會跳過
-    if(partIndex!==1&&partIndex!==2){
+    // 先將標準倒序 (由大到小)
+    const entries:[string, number][] = Object.entries(charstandard).sort((a, b) => b[1] - a[1]);
 
-        charstandard.forEach(([key,value])=>{
-            let unique=!weight[partIndex].sub.includes(key);
-            //要優先計算只出現在主詞條的
-            if(weight[partIndex].main.includes(key)&&mainkey===''&&unique&&value!==0){
-                mainkey=key;
-                partWeight=partWeight+value*3;
+    // 主詞條：抓最大*3，剩下依序遞補，最多四個
+    // partIndex = 1(頭) 或 2(手) 會跳過
+    if (partIndex !== 1 && partIndex !== 2) {
+        for (const [key, value] of entries) {
+            const stat = key as StatKey; // 確保 key 是合法 StatKey
+            const unique = !weight[partIndex as 1|2|3|4|5|6].sub.includes(stat);
+
+            if (weight[partIndex as 1|2|3|4|5|6].main.includes(stat) && !mainkey && unique && value !== 0) {
+                mainkey = stat;
+                partWeight += value * 3;
+                break;
             }
-        });
+        }
+    }
 
-        if(mainkey===''){
-            charstandard.forEach(([key,value])=>{
-                if(weight[partIndex].main.includes(key)&&mainkey===''){
-                    mainkey=key;
-                    partWeight=partWeight+value*3;
-                }
-            });
+    // 如果沒有找到符合的，就隨便抓一個 mainkey
+    if (!mainkey) {
+        for (const [key, value] of entries) {
+            const stat = key as StatKey; // 確保 key 是合法 StatKey
+            if (weight[partIndex as 1|2|3|4|5|6].main.includes(stat)) {
+                mainkey = key;
+                partWeight += value * 3;
+                break;
+            }
         }
     }
     
-    //計算副詞條最大權重 最多計入四個
-    let calcount=0
-    charstandard.forEach(([key,value])=>{
-        if(key!==mainkey && calcount<4 && weight[partIndex].sub.includes(key)){
-            partWeight=partWeight+value;
-            calcount+=1;
+
+    // 計算副詞條最大權重，最多計入四個
+    let calcount = 0;
+    for (const [key, value] of entries) {
+        const stat = key as StatKey; // 確保 key 是合法 StatKey
+        if (stat !== mainkey && calcount < 4 && weight[partIndex as 1|2|3|4|5|6 ].sub.includes(stat)) {
+            partWeight += value;
+            calcount++;
         }
-    });
+    }
+
     return partWeight;
 }
 
 //製作標準
-function calStand(stand){
+function calStand(stand:standDetails){
 
     //設立一個模板 根據使用者填入參數更改
-    let model={
+    let model:Record<string,number>={
         hp: 0,
         atk: 0,
         def: 0,
@@ -267,9 +280,12 @@ function calStand(stand){
 
     //根據有效詞條關鍵字
     stand.forEach((s)=>{
-        let target=AffixName.find((a)=>a.name===s.name).type;
-        model[target]=parseFloat(s.value);
+        let target=AffixName.find((a)=>a.name===s.name) as AffixItem;
+        let targetType = target.type;
+        model[targetType]=s.value;
     });
+
+    console.log(stand);
 
     return model;
 }

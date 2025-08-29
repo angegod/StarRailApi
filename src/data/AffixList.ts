@@ -1,4 +1,6 @@
-let AffixList=[{
+import { AffixListItem } from "@/interface/global";
+
+let AffixList:AffixListItem[]=[{
     id:1,
     main:["生命值"],
     sub:['生命值%數','攻擊力','攻擊力%數','防禦力','防禦力%數','速度', '暴擊率', '暴擊傷害', '效果抗性', '效果命中', '擊破特攻']   

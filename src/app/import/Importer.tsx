@@ -400,7 +400,7 @@ function Importer(){
             let isCheck=true;
 
             //將運行結果丟到背景執行
-            let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
+            let worker=new Worker(new URL('../../worker/worker.ts', import.meta.url));
             let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type) as AffixItem;
 
             //從遺器資料提取副詞條並根據是否鎖定標註鎖定詞條

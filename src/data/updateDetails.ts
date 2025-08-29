@@ -1,6 +1,7 @@
+import { updateDetailsItem } from "@/interface/global";
 
 //最新公告訊息
-let updateDetails = {
+let updateDetails:updateDetailsItem = {
     type:"Importer",
     updateKey:'StarRailApi_20250823',
     updateType:'StarRailApiUpdateDetails',

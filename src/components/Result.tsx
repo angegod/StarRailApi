@@ -25,7 +25,7 @@ const Result = React.memo(() => {
                         <div className={`${(ExpRate !== undefined) ? '' : 'hidden'} mt-2 flex flex-row items-center`}>     
                             <div className='text-white flex flex-row'>
                                 <span>遺器評級:</span>
-                                <span style={{ color: Rrank.color }} className='pl-2'>{Rrank.rank} &nbsp; {Rscore}/100 </span>
+                                <span style={{ color: Rrank.color }} className='pl-2'>{Rrank.rank} &nbsp; {Number(Rscore).toFixed(1)}/100 </span>
                             </div>
                             <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="ScoreHint">
                                 <span className='text-white'>?</span>

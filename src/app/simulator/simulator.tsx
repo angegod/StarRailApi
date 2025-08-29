@@ -340,7 +340,7 @@ function Simulator(){
             getSubData.forEach((s)=>s.locked = false);
         }
         //將運行結果丟到背景執行
-        let worker=new Worker(new URL('../../worker/worker.js', import.meta.url));
+        let worker=new Worker(new URL('../../worker/worker.ts', import.meta.url));
         let postData={
             charID:charID,
             MainData:MainSelectOptions,

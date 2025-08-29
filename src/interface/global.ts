@@ -60,3 +60,12 @@ export interface CharacterOption {
     icon: string;
 }
 
+export interface updateDetailsItem{
+    type:string,
+    updateKey:string,
+    updateType:string,
+    updateDate: Date,
+    updateTitle: string,
+    updateContent:string[]
+}
+

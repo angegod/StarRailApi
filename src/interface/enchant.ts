@@ -36,3 +36,4 @@ export interface MinMaxScoreItem{
     min:number,
     max:number
 }
+

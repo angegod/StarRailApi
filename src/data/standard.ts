@@ -1,4 +1,6 @@
-let standard=[{
+import { standardItem } from "@/interface/worker";
+
+let standard:standardItem[]=[{
     type:'main',
     data:[{
         name:'HPDelta',

@@ -4,11 +4,12 @@ import { useEffect } from "react";
 import updateDetails from "@/data/updateDetails";
 import { useDispatch, useSelector } from "react-redux";
 import { openWindow, closeWindow } from "@/model/updateDetailsSlice";
+import { RootState } from "@/model/reducer";
 
 export const UpdatedSection = () => {
     const dispatch = useDispatch();
     
-    const status = useSelector((state) => state.updateDetailsWindow.status); // 監聽狀態
+    const status = useSelector((state:RootState) => state.updateDetailsWindow.status); // 監聽狀態
     const handleOpenWindow = () => dispatch(openWindow());
     const handleCloseWindow = () => dispatch(closeWindow());
 

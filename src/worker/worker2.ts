@@ -1,21 +1,24 @@
 import standard from '../data/standard';
-import weight from '../data/weight';
+import weight, { StatKey } from '../data/weight';
 import AffixName from '../data/AffixName';
 import {findCombinations,EnchanceAllCombinations} from '../data/combination';
+import { relicSubData } from '@/interface/simulator';
+import { AffixItem, relicRank, standDetails } from '@/interface/global';
+import { calTypeItem, coeEfficentItem, enchantNewSubAffixItem } from '@/interface/worker';
 
 
 //模擬計算在用的
 onmessage = function (event) {
     //宣告變數
-    let SubData=event.data.SubData;
-    let partsIndex=parseInt(event.data.partsIndex);
-    let MainAffix=AffixName.find((a)=>a.name===event.data.MainData);
+    let SubData=event.data.SubData as relicSubData[];
+    let partsIndex=parseInt(event.data.partsIndex) as number;
+    let MainAffix=AffixName.find((a)=>a.name===event.data.MainData) as AffixItem;
     //let deviation=(event.data.deviation!==undefined)?event.data.deviation:0;
     
 
     //計算可用強化次數
     let enchanceCount=0;
-    let lockArr = [];//被排除的詞條
+    let lockArr = [] as number[];//被排除的詞條
     SubData.forEach(sb=>{    
         enchanceCount=enchanceCount+Number(sb.count);
         if(sb.locked)
@@ -32,14 +35,13 @@ onmessage = function (event) {
     let charStandard=calStand(event.data.standard);
     //分數誤差 目前先預設少半個有效詞條
 
-    let coeEfficent=[];//當前遺器係數arr
+    let coeEfficent=[] as coeEfficentItem[];//當前遺器係數arr
     SubData.forEach((sub)=>{
-        let SubAffixType=AffixName.find((s)=>s.name===sub.subaffix);
+        let SubAffixType=AffixName.find((s)=>s.name===sub.subaffix) as AffixItem;
         coeEfficent.push({
             type:SubAffixType.type,
             fieldName:SubAffixType.fieldName,
-            num:Number(charStandard[SubAffixType.type]),
-            locked:(sub.locked)?true:false
+            num:Number(charStandard[SubAffixType.type])
         });
     });
 
@@ -57,22 +59,23 @@ onmessage = function (event) {
         //獲取隨機一種強化幅度的組合
         let randomNum2 =Math.floor(Math.random() * subcombination.length);
 
-        let ran_subcombination=subcombination[randomNum2];
+        let ran_subcombination=subcombination[randomNum2] as number[][];
 
         let res=0;
         if(partsIndex!==1&&partsIndex!==2)
             res=3*MainData;
         
         
-        let caltype=[];//已經計算過的詞條種類
+        let caltype=[] as calTypeItem[];//已經計算過的詞條種類
 
-        let newSubaffix=[];
+        let newSubaffix=[] as enchantNewSubAffixItem[];
 
         ran_subcombination.forEach((el,i) => {//對每個屬性詞條開始進行模擬計算
             let total=0;
             let sub=coeEfficent[i];
             
-            let targetRange=AffixName.find((st)=>st.fieldName===sub.fieldName).range;
+            let targetAffix = AffixName.find((st)=>st.fieldName===sub.fieldName) as AffixItem;
+            let targetRange=targetAffix.range!;
 
             //如果該詞條所獲得的強化次數為0 可以推測該數值為初始詞條數值 則直接繼承使用
             if(SubData[i].count===0)
@@ -83,11 +86,11 @@ onmessage = function (event) {
             el.forEach((num)=>total+=targetRange[num]);
 
             //計算有效詞條數
-            let affixStandard=standard.find((t)=>t.type==='sub').data.find((d)=>d.name===sub.fieldName).data;
-            let cal=parseFloat(total/affixStandard).toFixed(2);
+            let affixStandard=standard.find((t)=>t.type==='sub')!.data.find((d)=>d.name===sub.fieldName)!.data;
+            let cal=parseFloat((total/affixStandard).toFixed(2));
 
             //獲得加權有效詞條數 並加上去
-            let affixmutl=parseFloat(charStandard[sub.type]*cal);
+            let affixmutl=charStandard[sub.type]*cal;
             
             
             //如果沒有計算過此種類詞條
@@ -112,7 +115,9 @@ onmessage = function (event) {
         
 
         //理想分數
-        let IdealyScore=Number((parseFloat(res/calPartWeights(charStandard,partsIndex))*100).toFixed(2));
+        const IdealyScore: number = Number(
+            ((res / calPartWeights(charStandard, partsIndex)) * 100).toFixed(2)
+        );
         result=IdealyScore;
 
         resolve(newSubaffix);
@@ -131,9 +136,8 @@ onmessage = function (event) {
         //標準排序顛倒
         scoreStand.reverse();
        
-        
-        let relicrank=undefined;
-        let match = true;
+        let relicrank:relicRank|undefined = undefined;
+        let match = true; 
         
         //console.log(result);
         //根據標準去分類
@@ -151,10 +155,8 @@ onmessage = function (event) {
                 relicrank=scoreStand[i];
             }
            
-
-
             //接著去找尋這個分數所屬的區間
-            if(stand.stand<=origin&&relicrank===undefined)
+            if(stand.stand<=Number(origin)&&relicrank===undefined)
                 relicrank=stand;
 
         });
@@ -162,59 +164,66 @@ onmessage = function (event) {
             relicscore:result.toFixed(1),//遺器分數
             relicrank:relicrank,//遺器區間
             returnData:newSubaffix //該次模擬強化後各項數據
-        })
+        });
         
     });
 };
 
 //計算裝備權重
-function calPartWeights(charstandard,partIndex){
-    let partWeight = 5;//起始分數為5
-    let mainkey='';
-   
-    //先將標準倒序
-    charstandard=Object.entries(charstandard)
-    .sort((a, b) => b[1] - a[1]);
+//計算裝備權重
+function calPartWeights(charstandard:Record<StatKey,number>,partIndex: number){
+    let partWeight = 5; // 起始分數為5
+    let mainkey: string | null = null;
 
-    //主詞條 抓最大*3 剩下依序遞補 最多四個
-    //頭跟手會跳過
-    if(partIndex!==1&&partIndex!==2){
+    // 先將標準倒序 (由大到小)
+    const entries:[string, number][] = Object.entries(charstandard).sort((a, b) => b[1] - a[1]);
 
-        charstandard.forEach(([key,value])=>{
-            let unique=!weight[partIndex].sub.includes(key);
-            //要優先計算只出現在主詞條的
-            if(weight[partIndex].main.includes(key)&&mainkey===''&&unique&&value!==0){
-                mainkey=key;
-                partWeight=partWeight+value*3;
+    // 主詞條：抓最大*3，剩下依序遞補，最多四個
+    // partIndex = 1(頭) 或 2(手) 會跳過
+    if (partIndex !== 1 && partIndex !== 2) {
+        for (const [key, value] of entries) {
+            const stat = key as StatKey; // 確保 key 是合法 StatKey
+            const unique = !weight[partIndex as 1|2|3|4|5|6].sub.includes(stat);
+
+            if (weight[partIndex as 1|2|3|4|5|6].main.includes(stat) && !mainkey && unique && value !== 0) {
+                mainkey = stat;
+                partWeight += value * 3;
+                break;
             }
-        });
+        }
+    }
 
-        if(mainkey===''){
-            charstandard.forEach(([key,value])=>{
-                if(weight[partIndex].main.includes(key)&&mainkey===''){
-                    mainkey=key;
-                    partWeight=partWeight+value*3;
-                }
-            });
+    // 如果沒有找到符合的，就隨便抓一個 mainkey
+    if (!mainkey) {
+        for (const [key, value] of entries) {
+            const stat = key as StatKey; // 確保 key 是合法 StatKey
+            if (weight[partIndex as 1|2|3|4|5|6].main.includes(stat)) {
+                mainkey = key;
+                partWeight += value * 3;
+                break;
+            }
         }
     }
     
-    //計算副詞條最大權重 最多計入四個
-    let calcount=0
-    charstandard.forEach(([key,value])=>{
-        if(key!==mainkey && calcount<4 && weight[partIndex].sub.includes(key)){
-            partWeight=partWeight+value;
-            calcount+=1;
+
+    // 計算副詞條最大權重，最多計入四個
+    let calcount = 0;
+    for (const [key, value] of entries) {
+        const stat = key as StatKey; // 確保 key 是合法 StatKey
+        if (stat !== mainkey && calcount < 4 && weight[partIndex as 1|2|3|4|5|6 ].sub.includes(stat)) {
+            partWeight += value;
+            calcount++;
         }
-    });
+    }
+
     return partWeight;
 }
 
 //製作標準
-function calStand(stand){
+function calStand(stand:standDetails){
 
     //設立一個模板 根據使用者填入參數更改
-    let model={
+    let model:Record<string,number>={
         hp: 0,
         atk: 0,
         def: 0,
@@ -237,8 +246,9 @@ function calStand(stand){
 
     //根據有效詞條關鍵字
     stand.forEach((s)=>{
-        let target=AffixName.find((a)=>a.name===s.name).type;
-        model[target]=parseFloat(s.value);
+        let target=AffixName.find((a)=>a.name===s.name) as AffixItem;
+        let targetType = target.type;
+        model[targetType]=s.value;
     });
 
     return model;

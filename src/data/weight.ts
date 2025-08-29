@@ -1,4 +1,38 @@
-let weight={
+// 允許的屬性名稱
+export type StatKey =
+  | "hp"
+  | "atk"
+  | "def"
+  | "spd"
+  | "crit_rate"
+  | "crit_dmg"
+  | "effect_res"
+  | "effect_hit"
+  | "break_dmg"
+  | "heal_rate"
+  | "physical_dmg"
+  | "fire_dmg"
+  | "ice_dmg"
+  | "lightning_dmg"
+  | "wind_dmg"
+  | "quantum_dmg"
+  | "imaginary_dmg"
+  | "sp_rate";
+
+// 單一欄位結構
+interface WeightSlot {
+    main: StatKey[];
+    sub: StatKey[];
+}
+
+// 總結構，key 為 1~6
+type Weight = {
+    [K in 1 | 2 | 3 | 4 | 5 | 6]: WeightSlot;
+};
+
+
+
+let weight:Weight={
 1: {
     main: ["hp"],
     sub: ["hp", "atk", "def", "spd", "crit_rate", "crit_dmg", "effect_res", "effect_hit", "break_dmg"]

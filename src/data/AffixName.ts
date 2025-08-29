@@ -1,4 +1,6 @@
-let AffixName=[{
+import { AffixItem } from "@/interface/global";
+
+let AffixName:AffixItem[]=[{
     fieldName:'HPDelta',
     icon:'IconMaxHP',
     type:'hp',

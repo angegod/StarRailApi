@@ -1,4 +1,6 @@
-const characters = [
+import { characterItem } from "@/interface/global";
+
+const characters:characterItem[] = [
     { charID: 1001, name: "三月七(存護)", eng_name: "March 7th" },
     { charID: 1002, name: "丹恆", eng_name: "Dan Heng" },
     { charID: 1003, name: "姬子", eng_name: "Himeko" },
