@@ -3,19 +3,14 @@ import React, { Component } from 'react';
 import "@/css/intro.css";
 //闡述為啥要使用這個工具 
 function Intro(){
+    
     //之後intro頁面可能會改成json控管
     return(
         <div className='w-4/5 mx-auto max-[800px]:!w-[90%]'>
             <div className='intro p-[1rem] mb-3 rounded-md w-fit flex flex-col flex-wrap h-[80vh] max-[800px]:!w-[95%] max-[800px]:h-fit'>
                 <div className='flex flex-col my-1'>
                     <span className='text-2xl text-red-500 font-bold'>常見Q&A</span>
-                    <span className='text-white'>這裡列出比較常見的幾個問題，如果有其他問題也歡迎進來群組討論</span>
-                    <div className='underline flex flex-row items-center'>
-                        <img src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/discord.png`}
-                            alt="icon"
-                            className="inline align-middle h-[25px] w-auto ml-1"/>
-                        <a href='https://discord.gg/R5f7Uz6wF3'target='_blank' className='text-indigo-500'>discord群組連結</a>     
-                    </div>
+                    <span className='text-white'>這裡列出比較常見的幾個問題，如果有其他問題也歡迎私訊本人</span>
                 </div>
                 <div className='introSub'>
                     <div className='flex flex-row items-center'>

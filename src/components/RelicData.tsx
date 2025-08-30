@@ -8,24 +8,37 @@ import RelicDataHint from './Hint/RelicDataHint';
 import { useSelector, useDispatch } from 'react-redux';
 import { setEnchantData } from '@/model/enchantDataSlice';
 import { AffixItem, relicRank, standDetails, standDetailsItem } from '@/interface/global';
-import { relicSubData } from '@/interface/simulator';
+import { relicSubData, simulatorRelic } from '@/interface/simulator';
+import { ImportRelic } from '@/interface/importer';
 
 
-interface RelicDataType{
-    relic:any,
+interface SimulatorRelicDataType{
+    relic:simulatorRelic,
     affixLock:boolean,
     Rrank:relicRank,
     Rscore:string,
     standDetails:standDetails,
     isChangeAble:boolean,
     partArr:string[],
-    mode:"Importer"|"Simulator",
+    mode:"Simulator",
+    relicDataButton:boolean
+}
+
+interface ImportRelicDataType{
+    relic:ImportRelic,
+    affixLock:boolean,
+    Rrank:relicRank,
+    Rscore:string,
+    standDetails:standDetails,
+    isChangeAble:boolean,
+    partArr:string[],
+    mode:"Importer",
     relicDataButton:boolean
 }
 
 //顯示儀器分數區間
 const RelicData=React.memo(()=>{
-    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr,mode,relicDataButton} = useContext<RelicDataType>(SiteContext);
+    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr,mode,relicDataButton} = useContext<ImportRelicDataType>(SiteContext);
     const router = useRouter();
     //儲存模擬數據
     const dispatch = useDispatch();
@@ -214,7 +227,7 @@ const RelicData=React.memo(()=>{
 });
 
 const RelicData_simulate=React.memo(()=>{
-    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr,mode,relicDataButton} = useContext<RelicDataType>(SiteContext);
+    const {relic,affixLock,Rrank,Rscore,standDetails,isChangeAble,partArr,mode,relicDataButton} = useContext<SimulatorRelicDataType>(SiteContext);
     
     const router = useRouter();
 
@@ -238,7 +251,7 @@ const RelicData_simulate=React.memo(()=>{
     }
 
     if(relic!==undefined){
-        const mainAffix = AffixName.find((a)=>a.name===relic.main_affix) as AffixItem
+        const mainAffix = AffixName.find((a)=>a.name===relic.main_affix) as AffixItem;
         const mainaffixImglink=mainAffix.icon;
         const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} width={24} height={24}/>
         const list:React.ReactElement[]=[];
