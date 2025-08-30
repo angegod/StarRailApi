@@ -24,7 +24,7 @@ import HintHistory from '@/components/Hint/HintHistory';
 import HintImporter from '@/components/Hint/HintImporter';
 import HintAffixLock from '@/components/Hint/HintAffixLock';
 import { dataArrItem, ImporterHistory, ImporterRelicSubDataType, ImportRelic, sendDataType } from '@/interface/importer';
-import { AffixItem, PieNumsItem, relicRank, selfStand, standDetails } from '@/interface/global';
+import { AffixItem, characterItem, PieNumsItem, relicRank, selfStand, standDetails } from '@/interface/global';
 import { RootState } from '@/model/reducer';
 
 
@@ -108,7 +108,6 @@ function Importer(){
             setRank(RelicDataArr[relicIndex].Rank);
 
             standDetails.current=RelicDataArr[relicIndex].standDetails;
-            isLock.current = RelicDataArr[relicIndex].affixLock;
             //還原至初始狀態
             setIsChangeAble(true);
         }
@@ -282,7 +281,8 @@ function Importer(){
         setRelicIndex(0);
         setRelicDataArr(temparr);
         setIsSaveAble(true);
-        RelicDataArrRef.current=temparr;
+        RelicDataArrRef.current = temparr;
+        isLock.current = Lock;
         //如果是剛查詢完的 則改成可以儲存
         updateStatus('資料顯示完畢',"success");
        
@@ -300,9 +300,11 @@ function Importer(){
     //檢視過往紀錄
     const checkDetails=useCallback((index:number)=>{
         let data=historyData[index] as ImporterHistory;
+        isLock.current = data.isLock;
         setRelicDataArr([...data.dataArr]);
         setRelicIndex(0);
         setIsSaveAble(false); 
+
         updateStatus("資料替換完畢!!",'success');
 
         //避免第一次顯示區塊 而導致滾動失常
@@ -329,7 +331,6 @@ function Importer(){
         let cloneDetails = data.dataArr[0].standDetails.map(item => ({ ...item }));
 
         await getRecord(sendData,cloneDetails).then(()=>{
-            console.log(RelicDataArrRef.current);
             //計算平均分數與平均機率
 
             if(RelicDataArrRef.current){
@@ -338,12 +339,12 @@ function Importer(){
 
                 RelicDataArrRef.current.forEach((r)=>{
                     sum +=Number(r.Rscore);
-                    sum2 += r.ExpRate;
+                    sum2 += Number(r.ExpRate);
                 });
                 let avgScore = parseFloat((sum / RelicDataArrRef.current.length).toFixed(1));
                 let calDate=new Date();
                 let avgRank:relicRank|undefined = undefined;
-                let avgRate = (sum2*100/RelicDataArrRef.current.length).toFixed(1);
+                let avgRate = Number((sum2*100/RelicDataArrRef.current.length).toFixed(1));
                 
                 scoreStand.forEach((stand)=>{
                     //接著去找尋這個分數所屬的區間
@@ -352,15 +353,16 @@ function Importer(){
                 });
 
                 //儲存紀錄
-                let newHistorydata={
+                let newHistorydata:ImporterHistory={
                     version:version,
                     calDate:calDate.toISOString().split('T')[0],
                     userID:data.userID,
                     char:data.char,
                     dataArr:RelicDataArrRef.current,
                     avgScore:avgScore,
-                    avgRank:avgRank,
-                    avgRate:avgRate
+                    avgRank:avgRank!,
+                    avgRate:avgRate,
+                    isLock:data.isLock
                 };
 
                 dispatch(updateHistory({ index: index, newData: newHistorydata }));
@@ -429,7 +431,7 @@ function Importer(){
                 // 設定該詞條lock為true
                 LockAffix.locked = true;
             }
-            
+
             
             //如果篩選有速度詞條 需給予0.5誤差計算 
             let deviation = SubData.some(s => s.subaffix === '速度')
@@ -476,7 +478,7 @@ function Importer(){
 
     //儲存紀錄
     function saveRecord(){
-        let selectChar=characters.find((c)=>c.charID===charID);
+        let selectChar=characters.find((c)=>c.charID===charID) as characterItem;
 
         //如果原本紀錄超過6個 要先刪除原有紀錄
         if(historyData.length>=maxHistoryLength)
@@ -503,7 +505,7 @@ function Importer(){
         let sum2 = 0;
         RelicDataArr.forEach((r)=>{
             sum +=Number(r.Rscore);
-            sum2 += r.ExpRate;
+            sum2 += Number(r.ExpRate);
         });
         let avgScore = parseFloat((sum / RelicDataArr.length).toFixed(1));
         let calDate=new Date();
@@ -518,14 +520,14 @@ function Importer(){
 
 
         //儲存紀錄
-        let data={
+        let data:ImporterHistory={
             version:version,
             calDate:calDate.toISOString().split('T')[0],
             userID:userID,
             char:selectChar,
             dataArr:RelicDataArr,
             avgScore:avgScore,
-            avgRank:avgRank,
+            avgRank:avgRank!,
             avgRate:avgRate,
             isLock:isLock.current
         };

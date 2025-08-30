@@ -40,11 +40,13 @@ onmessage = function (event) {
         });
     });
 
+
     //將沒有被鎖住不可計算的詞條倒裝
 
     let MainData=charStandard[MainAffix.type];
     let result =[] as number[];
     let origin=relicScore(partsIndex,charStandard,SubData,MainData);
+    let relicPartWeight =  calPartWeights(charStandard, partsIndex);
     //先算原本的遺器的分數
 
     let p1=new Promise(async (resolve,reject)=>{
@@ -97,7 +99,7 @@ onmessage = function (event) {
 
                 //理想分數
                 const IdealyScore: number = Number(
-                    ((res / calPartWeights(charStandard, partsIndex)) * 100).toFixed(2)
+                    ((res / relicPartWeight) * 100).toFixed(2)
                 );
 
                 result.push(IdealyScore);
@@ -225,19 +227,20 @@ function calPartWeights(charstandard:Record<StatKey,number>,partIndex: number){
                 break;
             }
         }
-    }
 
-    // 如果沒有找到符合的，就隨便抓一個 mainkey
-    if (!mainkey) {
-        for (const [key, value] of entries) {
-            const stat = key as StatKey; // 確保 key 是合法 StatKey
-            if (weight[partIndex as 1|2|3|4|5|6].main.includes(stat)) {
-                mainkey = key;
-                partWeight += value * 3;
-                break;
+        // 如果沒有找到符合的，就隨便抓一個 mainkey
+        if (!mainkey) {
+            for (const [key, value] of entries) {
+                const stat = key as StatKey; // 確保 key 是合法 StatKey
+                if (weight[partIndex as 1|2|3|4|5|6].main.includes(stat)) {
+                    mainkey = key;
+                    partWeight += value * 3;
+                    break;
+                }
             }
         }
     }
+    
     
 
     // 計算副詞條最大權重，最多計入四個
@@ -249,7 +252,6 @@ function calPartWeights(charstandard:Record<StatKey,number>,partIndex: number){
             calcount++;
         }
     }
-
     return partWeight;
 }
 
@@ -284,8 +286,6 @@ function calStand(stand:standDetails){
         let targetType = target.type;
         model[targetType]=s.value;
     });
-
-    console.log(stand);
 
     return model;
 }

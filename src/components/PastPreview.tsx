@@ -26,7 +26,6 @@ interface PastPreview_SimulatorProps{
 
 //簡易瀏覽
 const PastPreview=React.memo(({index,data}:PastPreviewProps)=>{
-    console.log(data);
     const {checkDetails,updateDetails,deleteHistoryData,isChangeAble} = useContext<PastPreviewType>(SiteContext);
     const BaseLink =  `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
     const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
@@ -45,7 +44,7 @@ const PastPreview=React.memo(({index,data}:PastPreviewProps)=>{
                     height={70}
                     style={`w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]`}/>
                 <div className='text-center'>
-                    <span style={{color:data.avgRank.color}} className='font-bold text-xl max-[400px]:text-lg'>{data.avgScore}</span>
+                    <span style={{color:data.avgRank.color}} className='font-bold text-xl max-[400px]:text-lg'>{data.avgScore.toFixed(1)}</span>
                 </div>
             </div>
             <div className={`flex flex-col mx-1 min-w-[200px] max-[900px]:min-w-[150px]`} >
@@ -103,7 +102,7 @@ const PastPreview_simulator=React.memo(({data,index}:PastPreview_SimulatorProps)
                         style={`w-[70px] rounded-[50px] max-[400px]:min-w-[50px] max-[400px]:w-[50px]`}/>
                 </div>
                 <div className='text-center'>
-                    <span style={{color:data.rank.color}} className='font-bold text-xl'>{data.score}</span>
+                    <span style={{color:data.rank.color}} className='font-bold text-xl'>{Number(data.score).toFixed(1)}</span>
                 </div>
             </div>
             <div className='flex flex-col min-w-[200px] max-[900px]:min-w-[150px]'>

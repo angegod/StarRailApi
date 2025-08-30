@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setEnchantData } from '@/model/enchantDataSlice';
 import { AffixItem, relicRank, standDetails, standDetailsItem } from '@/interface/global';
 import { relicSubData, simulatorRelic } from '@/interface/simulator';
-import { ImportRelic } from '@/interface/importer';
+import { ImportRelic, ImportRelicAffix } from '@/interface/importer';
 
 
 interface SimulatorRelicDataType{
@@ -59,7 +59,7 @@ const RelicData=React.memo(()=>{
     }
 
     if(relic!==undefined){
-        let getRelic = JSON.parse(JSON.stringify(relic));
+        let getRelic = JSON.parse(JSON.stringify(relic)) as ImportRelic;
 
         const mainAffix = AffixName.find((a)=>a.name===relic.main_affix.name) as AffixItem;
         const mainaffixImglink=mainAffix.icon;
@@ -77,7 +77,7 @@ const RelicData=React.memo(()=>{
         //如果有啟用鎖定功能在判定
         if(affixLock){
             //先找出哪個詞條需要加上刪除線
-            getRelic.sub_affix.forEach((s:any, i:number) => {
+            getRelic.sub_affix.forEach((s:ImportRelicAffix, i:number) => {
                 //先改名
                 let showAffix = '';
                 if(s.name === "攻擊力" && s.display.includes('%')){
@@ -90,7 +90,7 @@ const RelicData=React.memo(()=>{
                     showAffix = s.name ;
                 
                 //複寫回去
-                s.name = showAffix;
+                //s.name = showAffix;
 
                 const found = standDetails.find((st) => st.name === showAffix);
                 const value = found ? found.value : 0; // 沒找到當 0
@@ -105,7 +105,16 @@ const RelicData=React.memo(()=>{
         
         //遍歷所有副詞條渲染
         getRelic.sub_affix.forEach((s:any,i:number)=>{
-            let showAffix = s.name;
+            let showAffix = '';
+            if(s.name === "攻擊力" && s.display.includes('%')){
+                showAffix = "攻擊力%數";
+            } else if(s.name === "防禦力" && s.display.includes('%')){
+                showAffix = "防禦力%數";
+            } else if(s.name === "生命值" && s.display.includes('%')){
+                showAffix = "生命值%數";
+            }else
+                showAffix = s.name ;
+            
             
             let markcolor="";
             //判斷是否要標記為有效
