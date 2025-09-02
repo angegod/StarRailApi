@@ -76,8 +76,8 @@ function Importer(){
     const pathname = usePathname();
 
     //元件狀態
-    const [isChangeAble,setIsChangeAble]=useState(true);
-    const [isSaveAble,setIsSaveAble]=useState(false);
+    const [isChangeAble,setIsChangeAble]=useState<boolean>(true);
+    const [isSaveAble,setIsSaveAble]=useState<boolean>(false);
     
     const partArr=['Head 頭部','Hand 手部','Body 軀幹','Feet 腳部','Ball 位面球','Rope 連結繩'];
 

@@ -1,6 +1,6 @@
 import '@/css/globals.css';
 import Footer from '@/components/Footer';
-import { StatusToastProvider } from '@/context/StatusMsg.js';
+import { StatusToastProvider } from '@/context/StatusMsg';
 import LayoutClient from './LayoutClient'; // 👈 新增的 Client Component
 import { ReactNode } from 'react';
 

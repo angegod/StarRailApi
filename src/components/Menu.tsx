@@ -26,7 +26,7 @@ interface MenuProps {
 
 function Menu({children}:MenuProps) {
     return (
-        <div className='sticky top-0 w-full z-40 py-3 '>
+        <div className='top-0 w-full z-40 py-3 '>
             <div className='flex flex-row w-4/5 mx-auto max-[600px]:w-[95%]'>
                 {list.map((m, i) => (
                     <div

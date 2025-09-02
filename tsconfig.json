@@ -35,7 +35,7 @@
     "**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts"
-, "src/worker/worker.ts", "src/model/historyStore.ts", "src/context/SiteContext.js", "src/worker/worker2.ts", "src/components/UpdatedSection.tsx"  ],
+, "src/worker/worker.ts", "src/model/historyStore.ts", "src/context/SiteContext.js", "src/worker/worker2.ts", "src/components/UpdatedSection.tsx", "src/context/StatusMsg.tsx"  ],
   "exclude": [
     "node_modules"
   ]
