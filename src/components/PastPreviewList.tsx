@@ -5,10 +5,11 @@ import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { ImporterHistory } from '@/interface/importer';
 import { SimulatorHistory } from '@/interface/simulator';
+import { RootState } from '@/model/reducer';
 
 const PastPreviewList=React.memo(()=>{
     const {isLoad} = useContext<{isLoad:boolean}>(SiteContext);//是否處理完reset?
-    const historyData:ImporterHistory[]=useSelector((state:any) => state.history.historyData);
+    const historyData=useSelector((state:RootState) => state.history.historyData) as ImporterHistory[];
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}`:'../'
     introPath = introPath +'/intro';
     
@@ -41,7 +42,7 @@ const PastPreviewList=React.memo(()=>{
 //歷史紀錄清單
 const PastPreviewList_simulator=React.memo(()=>{
     const {isLoad} = useContext<{isLoad:boolean}>(SiteContext);//是否處理完reset?
-    const historyData:SimulatorHistory[] = useSelector((state:any) => state.history.historyData);
+    const historyData = useSelector((state:RootState) => state.history.historyData) as SimulatorHistory[];
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}`:'../'
     introPath = introPath +'/intro';
 
