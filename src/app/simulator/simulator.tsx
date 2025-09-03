@@ -430,7 +430,10 @@ function Simulator(){
                         <span className='text-white'>?</span>
                     </div>
                     <div className='relative ml-auto mr-3' onClick={()=>dispatch(openWindow())}>
-                        <span className='text-white underline cursor-pointer'>最新更新</span>
+                        <div className='text-white underline cursor-pointer flex flex-row'> 
+                            <img src={`${ process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/breakingNews.svg`} alt="icon"/>
+                            <span>最新更新</span>
+                        </div>
                     </div>
                 </div>
                 <div className='flex flex-row flex-wrap'>
@@ -438,7 +441,7 @@ function Simulator(){
                         <div className='flex flex-col mt-2'>
                             <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col max-[400px]:items-start'>
                                 <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
-                                    <span className='text-white'>Characters 腳色:</span>
+                                    <span className='text-stone-400'>Characters 腳色:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
                                     <CharSelect />
@@ -449,7 +452,7 @@ function Simulator(){
                             </div>
                             <div className={`my-1 mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col max-[400px]:items-start`}>
                                 <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
-                                    <span className='text-white'>Parts 部位:</span>
+                                    <span className='text-stone-400'>Parts 部位:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
                                     <PartSelect />
@@ -460,7 +463,7 @@ function Simulator(){
                             </div>
                             <div className={`my-1 ${(partsIndex)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[400px]:items-start max-[400px]:!flex-col`}>
                                 <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
-                                    <span className='text-white'>Main 主屬性:</span>
+                                    <span className='text-stone-400'>Main 主屬性:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
                                     <MainAffixSelect />
@@ -468,7 +471,7 @@ function Simulator(){
                             </div>
                             <div className={`my-1 ${(MainSelectOptions!==undefined&&MainSelectOptions!=='undefined'&&partsIndex!==undefined)?'':'hidden'} mt-2 [&>*]:mr-2 flex flex-row max-[600px]:!flex-col max-[600px]:text-center max-[400px]:text-left`}>
                                 <div className='text-right w-[200px] max-[600px]:w-full max-[600px]:text-center max-[400px]:text-left'>
-                                    <span className='text-white'>SubAffix 副屬性:</span>
+                                    <span className='text-stone-400'>SubAffix 副屬性:</span>
                                 </div>
                                 <div className='flex flex-row items-start justify-center'>
                                     <div className='flex flex-col'>
@@ -486,7 +489,7 @@ function Simulator(){
                                 (partsIndex)?
                                 <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col`}>
                                     <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
-                                        <span className='text-white'>Affix 有效詞條:</span>
+                                        <span className='text-stone-400'>Affix 有效詞條:</span>
                                     </div>
                                     <div className='flex flex-row items-center'>
                                         <StandardSelect />
@@ -497,14 +500,14 @@ function Simulator(){
                                 (selfStand.length!==0)?
                                 <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col`} >
                                     <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
-                                        <span className='text-white'>Params 參數:</span>
+                                        <span className='text-stone-400'>Params 參數:</span>
                                     </div>
                                     <ShowStand />
                                 </div>:null
                             }
                             <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
-                                    <span className='text-white whitespace-nowrap'>Lock 是否鎖定:</span>
+                                    <span className='text-stone-400 whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
                                     <button className='bg-gray-400 text-black rounded-sm px-2 font-bold' onClick={() => setLock(prev => !prev)}>

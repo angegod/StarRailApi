@@ -240,7 +240,7 @@ function Importer(){
                     setIsChangeAble(true);
                     break;
                 default:
-                    await process(response.data,standard);
+                    await CalProcess(response.data,standard);
                     break;
             }
 
@@ -262,7 +262,7 @@ function Importer(){
     }
 
     //流程
-    const process=useCallback(async(relicArr:ImportRelic[],standard:selfStand)=>{
+    const CalProcess=useCallback(async(relicArr:ImportRelic[],standard:selfStand)=>{
         let temparr:dataArrItem[] = [];
         //檢查加權標準
         /*standard.forEach((s)=>{
@@ -594,12 +594,17 @@ function Importer(){
                                 <span className='text-white'>?</span>
                             </div>
                             <div className='relative ml-auto mr-3' onClick={()=>dispatch(openWindow())}>
-                                <span className='text-white underline cursor-pointer'>最新更新</span>
+                                <div className='text-white underline cursor-pointer flex flex-row'> 
+                                    <img src={`${ process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/breakingNews.svg`} alt="icon"/>
+                                    <span>最新更新</span>
+                                </div>
                             </div>
                         </div>
                         <div className='flex flex-col px-2 rounded-md'>
                             <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col'>
-                                <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'><span className='text-white'>玩家UID :</span></div>
+                                <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
+                                    <span className='text-stone-400'>玩家UID :</span>
+                                </div>
                                 <input type='text' placeholder='HSR UID' 
                                         className='h-[40px] max-w-[170px] pl-2 
                                                 bg-inherit text-white outline-none border-b border-white' 
@@ -609,7 +614,7 @@ function Importer(){
                             </div>
                             <div className='flex flex-row items-center [&>*]:mr-2 my-3 max-[400px]:!flex-col '>
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
-                                    <span className='text-white whitespace-nowrap'>Characters 腳色:</span>
+                                    <span className='text-stone-400 whitespace-nowrap'>Characters 腳色:</span>
                                 </div>                       
                                 <div className='flex flex-row items-center'>
                                     <CharSelect  />
@@ -620,7 +625,7 @@ function Importer(){
                             </div>
                             <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
-                                    <span className='text-white whitespace-nowrap'>Affix 有效詞條:</span>
+                                    <span className='text-stone-400 whitespace-nowrap'>Affix 有效詞條:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
                                     <StandardSelect />
@@ -628,7 +633,7 @@ function Importer(){
                             </div>
                             <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
-                                    <span className='text-white whitespace-nowrap'>Lock 是否鎖定:</span>
+                                    <span className='text-stone-400 whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
                                     <button className='bg-gray-400 text-black rounded-sm px-2 font-bold' onClick={() => setLock(prev => !prev)}>
@@ -642,7 +647,7 @@ function Importer(){
                             </div>
                             <div className={`mt-2 [&>*]:mr-2 flex flex-row max-[400px]:!flex-col ${(selfStand.length===0)?'hidden':''}`}>
                                 <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
-                                    <span className='text-white'>Params 參數:</span>
+                                    <span className='text-stone-400'>Params 參數:</span>
                                 </div>
                                 <ShowStand />
                             </div>

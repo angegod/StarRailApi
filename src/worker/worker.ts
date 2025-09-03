@@ -199,7 +199,7 @@ function relicScore(partsIndex:number,charStandard:Record<string,number>,SubData
     //接下來根據部位調整分數
     //假設最大有效詞條數為10 實際只拿8個 代表你這件有80分以上的水準
     relicscore = Number(
-        (weight / calPartWeights(charStandard, partsIndex)).toFixed(2)
+        (weight / calPartWeights(charStandard, partsIndex)).toFixed(4)
     ) * 100;
 
     return Number(relicscore.toFixed(1));
