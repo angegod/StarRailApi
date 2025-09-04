@@ -27,6 +27,7 @@ import { openWindow } from '@/model/updateDetailsSlice';
 import { relicSubData, SimulatorHistory, simulatorRelic } from '@/interface/simulator';
 import { characterItem, PieNumsItem, relicRank, selfStand, standDetails } from '@/interface/global';
 import { RootState } from '@/model/reducer';
+import ProcessBtn from '@/components/ProcessBtn';
 
 
 
@@ -510,7 +511,8 @@ function Simulator(){
                                     <span className='text-stone-400 whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
-                                    <button className='bg-gray-400 text-black rounded-sm px-2 font-bold' onClick={() => setLock(prev => !prev)}>
+                                    <button className={`rounded-sm px-2 font-bold text-black ${(Lock)?'bg-amber-500':'bg-stone-400'}`} 
+                                        onClick={() => setLock(prev => !prev)}>
                                         {Lock ? "啟用" : "不啟用"}
                                     </button>
                                     <div className='hintIcon ml-2 overflow-visible'
@@ -521,12 +523,9 @@ function Simulator(){
                             </div>
                             <div className={`${(partsIndex)?'':'hidden'} mt-2 mb-2 max-w-[400px] flex flex-row [&>*]:mr-2 justify-end max-[400px]:justify-start`}>
                                 <div className='flex flex-row mt-1'>
-                                    <button className='processBtn mr-2 whitespace-nowrap' 
-                                        onClick={()=>calScore()} 
-                                        disabled={!processBtn}>計算分數</button>
-                                    <button className='processBtn mr-2 whitespace-nowrap' 
-                                    onClick={()=>saveRecord()} disabled={!isSaveAble}>儲存紀錄</button>
-                                </div>
+                                    <ProcessBtn text='計算分數' handler={()=>calScore()} disabled={!isChangeAble} />
+                                    <ProcessBtn text='儲存紀錄' handler={()=>saveRecord()} disabled={!isSaveAble} />
+                                 </div>
                             </div>
                         </div>
                     </div>

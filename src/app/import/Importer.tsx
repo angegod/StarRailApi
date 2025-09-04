@@ -26,6 +26,7 @@ import HintAffixLock from '@/components/Hint/HintAffixLock';
 import { dataArrItem, ImporterHistory, ImporterRelicSubDataType, ImportRelic, sendDataType } from '@/interface/importer';
 import { AffixItem, characterItem, PieNumsItem, relicRank, selfStand, standDetails } from '@/interface/global';
 import { RootState } from '@/model/reducer';
+import ProcessBtn from '@/components/ProcessBtn';
 
 
 function Importer(){
@@ -636,7 +637,8 @@ function Importer(){
                                     <span className='text-stone-400 whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
-                                    <button className='bg-gray-400 text-black rounded-sm px-2 font-bold' onClick={() => setLock(prev => !prev)}>
+                                    <button className={`rounded-sm px-2 font-bold text-black ${(Lock)?'bg-amber-500':'bg-stone-400'}`} 
+                                        onClick={() => setLock(prev => !prev)}>
                                         {Lock ? "啟用" : "不啟用"}
                                     </button>
                                     <div className='hintIcon ml-2 overflow-visible'
@@ -652,8 +654,8 @@ function Importer(){
                                 <ShowStand />
                             </div>
                             <div className='my-3 flex flex-row [&>*]:mr-2 justify-end max-w-[400px] max-[900px]:justify-center'>
-                                <button className='processBtn' onClick={()=>getRecord()}  disabled={!isChangeAble}>開始匹配</button>
-                                <button className='processBtn' onClick={()=>saveRecord()} disabled={!isSaveAble}>儲存紀錄</button>
+                                <ProcessBtn text={'開始匹配'} handler={()=>getRecord()} disabled={!isChangeAble}/>
+                                <ProcessBtn text={'儲存紀錄'} handler={()=>saveRecord()} disabled={!isSaveAble}/>
                             </div>
                             
                         </div>

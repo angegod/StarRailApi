@@ -6,6 +6,7 @@ import LazyImage from './LazyImage';
 import AffixName from '@/data/AffixName';
 import { ImporterHistory } from '@/interface/importer';
 import { SimulatorHistory } from '@/interface/simulator';
+import ProcessBtn from './ProcessBtn';
 
 interface PastPreviewType{
     checkDetails:(index:number)=>void,

@@ -301,7 +301,7 @@ const StandardSelect=React.memo(()=>{
                                 </div>
                             </div>
                             {(expand&&isChangeAble)&&(
-                                <div className="absolute overflow-y-scroll bg-stone-700 w-[inherit] h-[150px] border-[1px] hide-scrollbar border-stone-700 p-1">
+                                <div className="absolute z-10 overflow-y-scroll bg-stone-700 w-[inherit] h-[150px] border-[1px] hide-scrollbar border-stone-700 p-1">
                                     {optionsList}
                                 </div>
                             )}
