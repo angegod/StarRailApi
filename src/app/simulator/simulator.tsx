@@ -147,7 +147,6 @@ function Simulator(){
 
     //刪除過往紀錄
     function deleteHistoryData(index:number){
-        //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         dispatch(deleteHistory(index));
         showStatus('正在處理中......');
         //強制觸發刷新紀錄
@@ -422,15 +421,17 @@ function Simulator(){
     
     return(
     <SiteContext.Provider value={SimulatorStatus}>
-        <div className='w-4/5 mx-auto max-[600px]:w-[90%] flex flex-row flex-wrap'>
+        <div className='w-4/5 mx-auto max-[600px]:w-[95%] flex flex-row flex-wrap'>
             <div className='flex flex-col w-2/5 bg-black/50 p-2 rounded-md max-[1200px]:w-full'>
                 <div className='flex flex-row items-center'>
-                    <h1 className='text-red-600 font-bold text-2xl'>遺器重洗模擬器</h1>
-                    <div className='hintIcon ml-2 overflow-visible'
-                        data-tooltip-id="SimulatorHint">
-                        <span className='text-white'>?</span>
+                    <div className='flex flex-row items-center'>
+                        <h1 className='text-red-600 font-bold text-2xl'>手動輸入</h1>
+                        <div className='hintIcon ml-2 overflow-visible'
+                            data-tooltip-id="SimulatorHint">
+                            <span className='text-white'>?</span>
+                        </div>
                     </div>
-                    <div className='relative ml-auto mr-3' onClick={()=>dispatch(openWindow())}>
+                    <div className='relative ml-auto mr-1' onClick={()=>dispatch(openWindow())}>
                         <div className='text-white underline cursor-pointer flex flex-row'> 
                             <img src={`${ process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/breakingNews.svg`} alt="icon"/>
                             <span>最新更新</span>
@@ -440,7 +441,7 @@ function Simulator(){
                 <div className='flex flex-row flex-wrap'>
                     <div className='flex flex-row flex-wrap w-1/2 max-[1200px]:w-full'>
                         <div className='flex flex-col mt-2'>
-                            <div className='flex flex-row [&>*]:mr-2 my-3 items-center max-[400px]:!flex-col max-[400px]:items-start'>
+                            <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col max-[400px]:items-start'>
                                 <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
                                     <span className='text-stone-400'>Characters 腳色:</span>
                                 </div>
@@ -506,8 +507,8 @@ function Simulator(){
                                     <ShowStand />
                                 </div>:null
                             }
-                            <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
-                                <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
+                            <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline` } >
+                                <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-stone-400 whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>

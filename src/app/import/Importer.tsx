@@ -586,10 +586,10 @@ function Importer(){
     <SiteContext.Provider value={ImporterStatus}>
         <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[95%] rounded-md '>
             <div className='rounded-md'>
-                <div className='flex flex-row flex-wrap max-[600px]:w-[95%] '>
+                <div className='flex flex-row flex-wrap'>
                     <div className='flex flex-col w-2/5 bg-black/50 rounded-md max-[1250px]:w-full test'>
                         <div className='flex flex-row items-center ml-2 mt-2'>
-                            <h1 className='text-red-600 font-bold text-2xl'>遺器匯入</h1>
+                            <h1 className='text-red-600 font-bold text-2xl'>自動匯入</h1>
                             <div className='hintIcon ml-2 overflow-visible' 
                                 data-tooltip-id="ImporterHint">
                                 <span className='text-white'>?</span>
@@ -613,8 +613,8 @@ function Importer(){
                                         onChange={(e)=>setUserId(e.target.value)}
                                         disabled={!isChangeAble}/>
                             </div>
-                            <div className='flex flex-row items-center [&>*]:mr-2 my-3 max-[400px]:!flex-col '>
-                                <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
+                            <div className='flex flex-row items-baseline [&>*]:mr-2 my-3 max-[400px]:!flex-col '>
+                                <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-stone-400 whitespace-nowrap'>Characters 腳色:</span>
                                 </div>                       
                                 <div className='flex flex-row items-center'>
@@ -632,7 +632,7 @@ function Importer(){
                                     <StandardSelect />
                                 </div>
                             </div>
-                            <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline max-[400px]:!flex-col` } >
+                            <div className={`mt-4 [&>*]:mr-2 flex flex-row items-baseline` } >
                                 <div className='text-right w-[200px]  max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-stone-400 whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>

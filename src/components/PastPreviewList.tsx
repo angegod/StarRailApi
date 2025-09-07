@@ -13,7 +13,7 @@ const PastPreviewList=React.memo(()=>{
     let introPath = ( process.env.NODE_ENV ==='production')?`..${process.env.NEXT_PUBLIC_BASE_PATH}`:'../'
     introPath = introPath +'/intro';
     
-    if(historyData&&historyData.length>0&&isLoad){
+    if(historyData && historyData.length>0 && isLoad){
         const renderList=historyData.map((item,i)=>{
             return(
                 <PastPreview    index={i}
