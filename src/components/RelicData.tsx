@@ -10,6 +10,7 @@ import { setEnchantData } from '@/model/enchantDataSlice';
 import { AffixItem, relicRank, standDetails, standDetailsItem } from '@/interface/global';
 import { relicSubData, simulatorRelic } from '@/interface/simulator';
 import { ImportRelic, ImportRelicAffix } from '@/interface/importer';
+import ProcessBtn from './ProcessBtn';
 
 
 interface SimulatorRelicDataType{
@@ -221,7 +222,7 @@ const RelicData=React.memo(()=>{
                 </div>
                 {(relicDataButton)?
                     <div className='mt-3'>
-                        <button className='processBtn' onClick={()=>navEnchant()} disabled={!isChangeAble}>重洗模擬</button>
+                        <ProcessBtn text={'重洗模擬'} handler={()=>navEnchant()} disabled={!isChangeAble} />
                     </div>:null}
                 <Tooltip id="RelicDataHint"  
                         place="right-start"
@@ -373,7 +374,7 @@ const RelicData_simulate=React.memo(()=>{
                 {
                     (relicDataButton)?
                         <div className='mt-3'>
-                            <button className='processBtn' onClick={()=>navEnchant()}  disabled={!isChangeAble}>重洗模擬</button>
+                            <ProcessBtn text={'重洗模擬'} handler={()=>navEnchant()} disabled={!isChangeAble} />
                         </div>:null
                 }
                 <Tooltip id="RelicDataHint"  

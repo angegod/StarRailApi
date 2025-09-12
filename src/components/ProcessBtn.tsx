@@ -11,7 +11,7 @@ function ProcessBtn({ text, handler, disabled = false }: ProcessBtnProps) {
             relative overflow-hidden px-2 rounded-md font-semibold transition-colors duration-300 mx-1
             ${disabled 
             ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-            : "bg-stone-500 text-black group"}
+            : "bg-stone-400 text-black group"}
         `}>
         <span
             className={`relative z-2 transition-colors duration-300 ${disabled ? "" : "group-hover:text-white"}`}>

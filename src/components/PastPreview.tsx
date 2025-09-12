@@ -88,9 +88,10 @@ const PastPreview_simulator=React.memo(({data,index}:PastPreview_SimulatorProps)
     const MainAffix =AffixName.find((a)=>a.name === data.mainaffix)!.icon;
     const isLock =data.isLock;
 
-    let BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
-    let MainAffixLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${MainAffix}.png`;
+    const BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
+    const MainAffixLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${MainAffix}.png`;
     const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
+    
     return(
         <div className='PastPreview clip-both-corners'>
             <div className='flex flex-col mr-1'>
@@ -139,7 +140,6 @@ const PastPreview_simulator=React.memo(({data,index}:PastPreview_SimulatorProps)
                 </div>
             </div>
         </div>
-    
     )
 });
 

@@ -147,12 +147,18 @@ function Simulator(){
 
     //刪除過往紀錄
     function deleteHistoryData(index:number){
+        //防止誤觸
+        if(!confirm("確定要刪除資料嗎?"))
+            return;
+
         dispatch(deleteHistory(index));
-        showStatus('正在處理中......');
+
+        let oldHistory = historyData.filter((h,i)=>i!==index) as SimulatorHistory[];
+
         //強制觸發刷新紀錄
         setTimeout(() => {
             updateStatus('成功刪除該紀錄!!','success');
-            localStorage.setItem('HistoryData',JSON.stringify(historyData));
+            localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
         }, 0);
     }
     //清除相關資料
@@ -191,21 +197,24 @@ function Simulator(){
         savedRelic.type = partsIndex!;
 
         //儲存紀錄
-        let data={
+        let data:SimulatorHistory={
             version:version,
             char:selectChar,
             part:partName,
-            mainaffix:MainSelectOptions,
+            mainaffix:MainSelectOptions!,
             expRate:ExpRate,
             score:Rscore,
             rank:Rrank,
             pieData:PieNums,
             stand:standDetails.current,
-            relic:relic,
+            relic:relic!,
             isLock:isLock.current
         };
 
         //利用深拷貝區分原有資料
+        let oldHistory = JSON.parse(JSON.stringify(historyData)) as SimulatorHistory[];
+        oldHistory.push(data);
+
         dispatch(addHistory(data));
         updateStatus("已儲存",'success');
         const targetElement = document.getElementById('historyData');
@@ -214,7 +223,7 @@ function Simulator(){
         }
         
         //將歷史紀錄合併至緩存數據中
-        localStorage.setItem('HistoryData',JSON.stringify(historyData));
+        localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
         setIsSaveAble(false);
     }
 
@@ -441,7 +450,7 @@ function Simulator(){
                 <div className='flex flex-row flex-wrap'>
                     <div className='flex flex-row flex-wrap w-1/2 max-[1200px]:w-full'>
                         <div className='flex flex-col mt-2'>
-                            <div className='flex flex-row [&>*]:mr-2 my-3 items-baseline max-[400px]:!flex-col max-[400px]:items-start'>
+                            <div className='flex flex-row items-center [&>*]:mr-2 my-3 max-[400px]:!flex-col max-[400px]:items-start'>
                                 <div className='text-right w-[200px] max-[600px]:max-w-[120px] max-[400px]:text-left'>
                                     <span className='text-stone-400'>Characters 腳色:</span>
                                 </div>
@@ -512,7 +521,7 @@ function Simulator(){
                                     <span className='text-stone-400 whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
-                                    <button className={`rounded-sm px-2 font-bold text-black ${(Lock)?'bg-amber-500':'bg-stone-400'}`} 
+                                    <button className={`rounded-sm px-2 font-bold text-black ${(Lock)?'bg-amber-500':'bg-stone-500'}`} 
                                         onClick={() => setLock(prev => !prev)}>
                                         {Lock ? "啟用" : "不啟用"}
                                     </button>
@@ -597,6 +606,7 @@ function Simulator(){
                     clickable={true}/>
             <Tooltip id="AffixLockHint"
                     place='right-start'
+                    style={{zIndex:10}}
                     render={()=><HintAffixLock/>} />
             
         </div>

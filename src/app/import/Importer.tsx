@@ -384,6 +384,10 @@ function Importer(){
 
     //刪除過往紀錄 
     const deleteHistoryData=useCallback((index:number)=>{
+        //防止誤觸
+        if(!confirm("確定要刪除資料嗎?"))
+            return;
+
         //如果刪除紀錄是目前顯示的 則會清空目前畫面上的
         let oldHistory=historyData as ImporterHistory[];
         dispatch(deleteHistory(index));
@@ -613,7 +617,7 @@ function Importer(){
                                         onChange={(e)=>setUserId(e.target.value)}
                                         disabled={!isChangeAble}/>
                             </div>
-                            <div className='flex flex-row items-baseline [&>*]:mr-2 my-3 max-[400px]:!flex-col '>
+                            <div className='flex flex-row items-center [&>*]:mr-2 my-3 max-[400px]:!flex-col '>
                                 <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-stone-400 whitespace-nowrap'>Characters 腳色:</span>
                                 </div>                       
@@ -637,7 +641,7 @@ function Importer(){
                                     <span className='text-stone-400 whitespace-nowrap'>Lock 是否鎖定:</span>
                                 </div>
                                 <div className='flex flex-row items-center'>
-                                    <button className={`rounded-sm px-2 font-bold text-black ${(Lock)?'bg-amber-500':'bg-stone-400'}`} 
+                                    <button className={`rounded-sm px-2 font-bold text-black ${(Lock)?'bg-amber-500':'bg-stone-500'}`} 
                                         onClick={() => setLock(prev => !prev)}>
                                         {Lock ? "啟用" : "不啟用"}
                                     </button>
@@ -721,7 +725,8 @@ function Importer(){
                     clickable={true}/>
             <Tooltip id="AffixLockHint"
                     place='right-start'
-                    render={()=><HintAffixLock />} />
+                    render={()=><HintAffixLock />}
+                    style={{zIndex:10}} />
         </div>
             
     </SiteContext.Provider>)
