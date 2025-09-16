@@ -358,6 +358,7 @@ const CharSelect=React.memo(()=>{
         menu: (provided) => ({
             ...provided,
             backgroundColor: 'rgb(36, 36, 36)',
+            zIndex: 20,
         })
     }
     

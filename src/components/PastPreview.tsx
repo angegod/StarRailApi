@@ -85,8 +85,8 @@ const PastPreview_simulator=React.memo(({data,index}:PastPreview_SimulatorProps)
     const hue = data.expRate * 120;
     const textColor =`hsl(${hue}, 100%, 50%)`;
 
-    const MainAffix =AffixName.find((a)=>a.name === data.mainaffix)!.icon;
-    const isLock =data.isLock;
+    const MainAffix = AffixName.find((a)=>a.name === data.mainaffix)!.icon;
+    const isLock = data.isLock;
 
     const BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
     const MainAffixLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${MainAffix}.png`;
