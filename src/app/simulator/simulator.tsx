@@ -38,6 +38,9 @@ function Simulator(){
 
     const maxHistoryLength = 6;
 
+    //資料儲存本地位置
+    const LocalStorageLocation = "HistoryData";
+
     //部位選擇 跟主詞條選擇
     const [partsIndex,setPartsIndex]=useState<number|undefined>(undefined);
     const [MainSelectOptions,setMainSelectOptions]=useState<string>();
@@ -48,7 +51,6 @@ function Simulator(){
     const [processBtn,setProcessBtn]=useState<boolean>(true);
     const standDetails=useRef<standDetails>([]);
 
-    //const SubData=useRef([]);
     const [SubData,setSubData]=useState<relicSubData[]>([]);
     const [charID,setCharID]=useState<number|undefined>(undefined);
     const [PieNums,setPieNums]=useState<PieNumsItem[]|undefined>(undefined);  
@@ -119,10 +121,12 @@ function Simulator(){
         }
         setSubData(tempArr);
         
-        let localhistory=localStorage.getItem('HistoryData');
+        let localhistory=localStorage.getItem(LocalStorageLocation);
 
-        if(!localhistory) {
+        if(!localhistory || !Array.isArray(JSON.parse(localhistory))) {
             updateStatus('尚未有任何操作紀錄!!','default');
+            dispatch(createHistory([]));
+            setIsLoad(true);
             return;
         }
         showStatus('正在載入過往紀錄中......');
@@ -133,7 +137,7 @@ function Simulator(){
         let history:SimulatorHistory[] = JSON.parse(localhistory);
         if(history!=null&&history.length>0){
             history=history.filter((h)=>h.version===version);
-            localStorage.setItem('HistoryData',JSON.stringify(history));
+            localStorage.setItem(LocalStorageLocation,JSON.stringify(history));
             dispatch(createHistory(history));
 
             updateStatus('先前紀錄已匯入!!','success');
@@ -158,7 +162,7 @@ function Simulator(){
         //強制觸發刷新紀錄
         setTimeout(() => {
             updateStatus('成功刪除該紀錄!!','success');
-            localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
+            localStorage.setItem(LocalStorageLocation,JSON.stringify(oldHistory));
         }, 0);
     }
     //清除相關資料
@@ -223,7 +227,7 @@ function Simulator(){
         }
         
         //將歷史紀錄合併至緩存數據中
-        localStorage.setItem('HistoryData',JSON.stringify(oldHistory));
+        localStorage.setItem(LocalStorageLocation,JSON.stringify(oldHistory));
         setIsSaveAble(false);
     }
 

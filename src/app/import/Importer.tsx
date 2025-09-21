@@ -33,6 +33,8 @@ function Importer(){
     //版本序號
     const version="1.5";
     const maxHistoryLength = 6;
+    
+    //資料儲存本地位置
     const LocalStorageLocation = "importData";
 
     //玩家ID跟腳色ID
@@ -140,8 +142,9 @@ function Importer(){
         dispatch(resetHistory());
 
         let getHistory=localStorage.getItem(LocalStorageLocation);
-        if(getHistory===null){
+        if(getHistory===null || !Array.isArray(JSON.parse(getHistory))){
             updateStatus("尚未有任何操作紀錄!!","default");
+            dispatch(createHistory([]));
             setIsLoad(true);
             return;
         }
