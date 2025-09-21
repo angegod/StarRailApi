@@ -212,7 +212,7 @@ function Simulator(){
         };
 
         //利用深拷貝區分原有資料
-        let oldHistory = JSON.parse(JSON.stringify(historyData)) as SimulatorHistory[];
+        let oldHistory = JSON.parse(JSON.stringify(historyData ?? [])) as SimulatorHistory[];
         oldHistory.push(data);
 
         dispatch(addHistory(data));
