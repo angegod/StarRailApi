@@ -8,7 +8,7 @@ let updateDetails:updateDetailsItem = {
     updateDate: new Date('2025-10-01'),
     updateTitle:"遺器重洗模擬器 崩鐵3.6更新公告",
     updateContent:[
-        "新增3.6腳色優化",
+        "新增3.6腳色選項:長夜月、丹恆•騰荒",
         "部分排版優化"
     ]
 };
