@@ -47,6 +47,7 @@ onmessage = function (event) {
     let result =[] as number[];
     let origin=relicScore(partsIndex,charStandard,SubData,MainData);
     let relicPartWeight =  calPartWeights(charStandard, partsIndex);
+    console.log(relicPartWeight);
     //先算原本的遺器的分數
 
     let p1=new Promise(async (resolve,reject)=>{
@@ -162,7 +163,7 @@ onmessage = function (event) {
 
 function relicScore(partsIndex:number,charStandard:Record<string,number>,SubData:relicSubData[],MainData:number){
     let weight = 0
-    var mutl=3*MainData;//直接默認強化至滿等
+    var mutl = 3*MainData;//直接默認強化至滿等
     let caltype=[] as calTypeItem[];
 
     //如果是手跟頭則不套用主詞條加分

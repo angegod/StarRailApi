@@ -9,6 +9,7 @@ let updateDetails:updateDetailsItem = {
     updateTitle:"遺器重洗模擬器 崩鐵3.6更新公告",
     updateContent:[
         "新增3.6腳色選項:長夜月、丹恆•騰荒",
+        "修正強化模擬分數計算數值錯誤之問題",
         "部分排版優化"
     ]
 };

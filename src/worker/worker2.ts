@@ -191,21 +191,21 @@ function calPartWeights(charstandard:Record<StatKey,number>,partIndex: number){
                 break;
             }
         }
-    }
 
-    // 如果沒有找到符合的，就隨便抓一個 mainkey
-    if (!mainkey) {
-        for (const [key, value] of entries) {
-            const stat = key as StatKey; // 確保 key 是合法 StatKey
-            if (weight[partIndex as 1|2|3|4|5|6].main.includes(stat)) {
-                mainkey = key;
-                partWeight += value * 3;
-                break;
+        // 如果沒有找到符合的，就隨便抓一個 mainkey
+        if (!mainkey) {
+            for (const [key, value] of entries) {
+                const stat = key as StatKey; // 確保 key 是合法 StatKey
+                if (weight[partIndex as 1|2|3|4|5|6].main.includes(stat)) {
+                    mainkey = key;
+                    partWeight += value * 3;
+                    break;
+                }
             }
         }
     }
-    
 
+    
     // 計算副詞條最大權重，最多計入四個
     let calcount = 0;
     for (const [key, value] of entries) {
