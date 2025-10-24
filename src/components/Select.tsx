@@ -9,6 +9,7 @@ import { Tooltip } from 'react-tooltip';
 import LazyImage from './LazyImage';
 import { relicSubData } from '@/interface/simulator';
 import { AffixListItem, CharacterOption, selfStand, standDetailsItem } from '@/interface/global';
+import AffixName from '@/data/AffixName';
 
 const Select = dynamic(() => import("react-select"), { ssr: false }) as unknown as
     React.ComponentType<import("react-select").Props<CharacterOption, false>>;
@@ -267,6 +268,11 @@ const StandardSelect=React.memo(()=>{
         //模仿原生select標籤 渲染每個option之div
         let optionsList=mergedArray.map((m, i) => {
             const exists = selfStand.some((s:standDetailsItem) => s.name === m);
+            const IconName = AffixName.find((a)=>a.name === m)?.icon;
+            
+            //圖示網址模板
+            let imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
+            
             
             return(
                 <div className='my-0.5 mx-1 hover:bg-stone-500 hover:text-white cursor-pointer flex flex-row items-center'
@@ -277,6 +283,7 @@ const StandardSelect=React.memo(()=>{
                                 className='border-[0px] w-4 h-4 accent-[dimgrey]' 
                                 onChange={(event)=>console.log(event.target.value)}
                                 disabled={!exists&&selfStand.length===6}/>
+                        <img src={imglink} alt="icon" width={24} height={24}/>
                     </div>
                     <div>
                         <span className='text-white text-sm'>{m}</span>
@@ -288,7 +295,7 @@ const StandardSelect=React.memo(()=>{
         return(
                 <div className='flex flex-col' ref={selectContainer}>
                     <div className='flex flex-row flex-wrap items-baseline'>
-                        <div className='w-[150px] min-w-fit'>
+                        <div className='w-[180px] min-w-fit'>
                             <div className='relative border-b-2 border-white flex flex-row justify-between' onClick={()=>(isChangeAble)?setExpand(!expand):''}>
                                 <div>
                                     <span className='ml-1 text-white'>請選擇</span>
@@ -312,6 +319,7 @@ const StandardSelect=React.memo(()=>{
                     </div>
                     <Tooltip id="StandardHint" 
                         place="top-start"
+                        arrowColor='gray'
                         render={()=>
                             <div className='flex flex-col'>
                                 <span className='text-white'>根據個人需求</span>

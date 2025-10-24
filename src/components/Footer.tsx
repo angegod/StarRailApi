@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import '../css/footer.css';
+import updateDetails from '@/data/updateDetails';
 
 
 const Links=[{
@@ -22,6 +23,12 @@ const Links=[{
 }]
 
 function Footer(){
+
+    const lastUpdateDate = updateDetails.updateDate.toLocaleDateString('zh-TW', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    });
 
     const list =Links.map((l,i)=>{
         return(
@@ -47,7 +54,7 @@ function Footer(){
             <div className='w-2/5 mx-auto text-stone-500 flex flex-col [&>span]:text-left [&>span]:text-sm [&>span]:font-bold [&>span]:mt-1 py-2 max-[600px]:[&>span]:!text-sm'>
                 <span>&copy; 2025 <a href="https://home.gamer.com.tw/profile/index.php?&owner=ange0733" className="underline">Ange</a></span>
                 <span>Website created by Ange. All rights reserved.</span>
-                <span>Data latest Updated at 2025/08/18</span>
+                <span>Data latest Updated at {lastUpdateDate}</span>
             </div>
         </div>
     )

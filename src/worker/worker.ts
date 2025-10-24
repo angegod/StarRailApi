@@ -47,7 +47,6 @@ onmessage = function (event) {
     let result =[] as number[];
     let origin=relicScore(partsIndex,charStandard,SubData,MainData);
     let relicPartWeight =  calPartWeights(charStandard, partsIndex);
-    console.log(relicPartWeight);
     //先算原本的遺器的分數
 
     let p1=new Promise(async (resolve,reject)=>{

@@ -66,6 +66,7 @@ function Importer(){
     const dispatch = useDispatch();
     const historyData = useSelector((state:RootState) => state.history.historyData);
     const [isLoad,setIsLoad] = useState<boolean>(false);
+    const isUpdate = useRef<boolean>(false);
 
     //自訂義標準
     const [selfStand,setSelfStand]=useState<selfStand>([]);
@@ -276,6 +277,9 @@ function Importer(){
             }
         });*/
 
+        //如果非更新資料則直接抓取按鈕狀態
+        if(!isUpdate.current)
+            isLock.current = Lock;
         for (const r of relicArr) {
             const ExpData = await calscore(r,standard) as dataArrItem;  // 等這個做完
             
@@ -286,7 +290,7 @@ function Importer(){
         setRelicDataArr(temparr);
         setIsSaveAble(true);
         RelicDataArrRef.current = temparr;
-        isLock.current = Lock;
+        
         //如果是剛查詢完的 則改成可以儲存
         updateStatus('資料顯示完畢',"success");
        
@@ -325,15 +329,16 @@ function Importer(){
         showStatus('正在更新資料中......','process');
         let originData = JSON.parse(JSON.stringify(historyData));
         let data = originData[index] as ImporterHistory;
-
         let sendData:sendDataType={
             uid:data.userID,
             charID:data.char.charID,            
             partsIndex:7
         };
 
-        let cloneDetails = data.dataArr[0].standDetails.map(item => ({ ...item }));
 
+        let cloneDetails = data.dataArr[0].standDetails.map(item => ({ ...item }));
+        isLock.current = data.isLock;
+        isUpdate.current = true;
         await getRecord(sendData,cloneDetails).then(()=>{
             //計算平均分數與平均機率
 
@@ -380,9 +385,10 @@ function Importer(){
         }).catch((error)=>{
             console.error("錯誤發生：", error);             // 原始錯誤物件
             console.error("錯誤訊息：", error.message);     // 錯誤文字
-            console.error("堆疊追蹤：", error.stack);       // 🔥 鎖定發生行數
+            console.error("堆疊追蹤：", error.stack);       // 發生行數
         });
-            
+        //結束更新資料
+        isUpdate.current = false;
     },[historyData]);
 
     //刪除過往紀錄 
@@ -432,7 +438,7 @@ function Importer(){
 
                 SubData.push(data);
             });
-            if(Lock){
+            if(isLock.current){
                 // 找出stand最小的詞條
                 let LockAffix = SubData.reduce((min, curr) => curr.stand < min.stand ? curr : min);
 
@@ -701,7 +707,8 @@ function Importer(){
         </div>
         <div>
             <Tooltip id="CharHint"  
-                    place="right-start" 
+                    place="right-start"
+                    arrowColor='gray' 
                     render={()=>
                         <div className='flex flex-col'>
                             <span className='text-white'>選擇指定腳色，可以使用中文或英文關鍵字</span>
@@ -710,6 +717,7 @@ function Importer(){
                     }/>
             <Tooltip id="HistoryHint"  
                     place="top-start"
+                    arrowColor='gray'
                     render={()=>
                         <HintHistory />
                     }/>
@@ -721,14 +729,17 @@ function Importer(){
                             <span>點選遺器即可查看個別資訊</span>
                             <span className='!text-red-600 font-bold'>僅顯示符合條件的五星滿等遺器遺器</span>
                         </div>
-                    }/>
+                    }
+                    arrowColor='gray'/>
             <Tooltip id="ImporterHint" 
                     place='right-start'
                     render={()=><HintImporter/>}
+                    arrowColor='gray'
                     clickable={true}/>
             <Tooltip id="AffixLockHint"
                     place='right-start'
                     render={()=><HintAffixLock />}
+                    arrowColor='gray'
                     style={{zIndex:10}} />
         </div>
             

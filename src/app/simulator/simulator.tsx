@@ -579,6 +579,7 @@ function Simulator(){
         <div>
             <Tooltip id="CharHint"  
                     place="right-start" 
+                    arrowColor='gray'
                     render={()=>
                         <div className='flex flex-col'>
                             <span className='text-white'>選擇指定腳色，可以使用中文或英文關鍵字</span>
@@ -586,7 +587,8 @@ function Simulator(){
                         </div>
                     }/>
             <Tooltip id="PartSelectHint"  
-                    place="right-start" 
+                    place="right-start"
+                    arrowColor='gray' 
                     render={()=>
                         <div className='flex flex-col max-w-[230px]'>
                             <span className='text-white'>選擇遺器部位</span>
@@ -595,21 +597,25 @@ function Simulator(){
                     }/>
 
             <Tooltip id="SubAffixHint"  
-                    place="right-start" 
+                    place="right-start"
+                    arrowColor='gray' 
                     render={()=>
                         <SubAffixHint />
                     }/>
             <Tooltip id="HistoryHint"  
-                place="top-start"
-                render={()=>
-                    <HintHistory />
-                }/>
+                    place="top-start"
+                    arrowColor='gray'
+                    render={()=>
+                        <HintHistory />
+                    }/>
             <Tooltip id="SimulatorHint"
                     place='right-start'
+                    arrowColor='gray'
                     render={()=><HintSimulator/>}
                     clickable={true}/>
             <Tooltip id="AffixLockHint"
                     place='right-start'
+                    arrowColor='gray'
                     style={{zIndex:10}}
                     render={()=><HintAffixLock/>} />
             
