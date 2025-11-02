@@ -26,6 +26,43 @@
   scrollbar-width: none;
 }
 
+.grayScrollBar {
+    overflow: auto; /* 只在需要時顯示滾軸 */
+
+    /* IE、舊版 Edge */
+    -ms-overflow-style: auto;
+
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
+
+    /* Chrome、Safari、新版 Edge */
+}
+.grayScrollBar::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+}
+
+.grayScrollBar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.grayScrollBar::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 4px;
+}
+
+.grayScrollBar::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a0a0;
+}
+
+/* 🔹 隱藏滾軸箭頭（上下或左右） */
+.grayScrollBar::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
 button:disabled {
   opacity: 0.5;
 }

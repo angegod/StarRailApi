@@ -455,7 +455,7 @@ function Importer(){
 
             SubData.forEach(s=>{
                 if(s.subaffix!=='速度'&&s.count!==0)//如果有其他無法判斷初始詞條的 一律給0.2誤差
-                    deviation+=0.2;
+                    deviation+=0.1;
             });
 
             //制定送出資料格式
@@ -467,7 +467,7 @@ function Importer(){
                 standard:standard,
                 deviation:Number(deviation.toFixed(2))
             };
-
+            
             if(isCheck){
                 showStatus('數據計算處理中......','process');
                 worker.postMessage(postData);
@@ -681,7 +681,7 @@ function Importer(){
                                 <span className='text-white'>?</span>
                             </div>
                         </div>
-                        <div className='max-h-[300px] overflow-y-scroll p-2  hiddenScrollBar flex flex-row flex-wrap max-[600px]:!flex-col max-[600px]:!flex-nowrap max-[600px]:items-center'>
+                        <div className='max-h-[300px] overflow-x-scroll p-2 grayScrollBar flex flex-row max-[600px]:items-center'>
                             <PastPreviewList  />
                         </div> 
                     </div>

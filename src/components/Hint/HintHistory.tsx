@@ -8,11 +8,10 @@ function HintHistory(){
     return(
         <div className='flex flex-col max-w-[250px] p-1'>
             <div>
-                <span className='text-stone-400'>此區塊可以查看過往查詢紀錄，下面為個別功能相關簡述。</span>
+                <span className='text-stone-400'>此區塊可以查看過往查詢紀錄，滑鼠移動到個別紀錄上即可顯示詳細資訊，左鍵點擊則可以進一步展示。</span>
             </div>
             <div className='mt-2 flex flex-col'>
-                <span className='text-md font-bold text-white'>檢視</span>
-                <span className='text-stone-400'>可以查看曾經查詢出來的資訊、包括遺器、評分標準等</span>
+                <span className='text-stone-400'>此外每個資料有一些按鈕可以針對該資料做操作，下面做個簡單說明:</span>
             </div>
             {(mode === "Importer")?
                 <div className='mt-2 flex flex-col'>

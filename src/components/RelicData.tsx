@@ -225,6 +225,7 @@ const RelicData=React.memo(()=>{
                         <ProcessBtn text={'重洗模擬'} handler={()=>navEnchant()} disabled={!isChangeAble} />
                     </div>:null}
                 <Tooltip id="RelicDataHint"  
+                        arrowColor='gray'
                         place="right-start"
                         render={()=>
                             <RelicDataHint />
@@ -377,7 +378,8 @@ const RelicData_simulate=React.memo(()=>{
                             <ProcessBtn text={'重洗模擬'} handler={()=>navEnchant()} disabled={!isChangeAble} />
                         </div>:null
                 }
-                <Tooltip id="RelicDataHint"  
+                <Tooltip id="RelicDataHint"
+                        arrowColor='gray'  
                         place="right-start"
                         render={()=><RelicDataHint />}/>
             </div>

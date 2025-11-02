@@ -554,7 +554,7 @@ function Simulator(){
                         <span className='text-white'>?</span>
                     </div>
                 </div>
-                <div className='flex flex-row flex-wrap h-max max-h-[300px] overflow-y-scroll hiddenScrollBar max-[600px]:!flex-col max-[600px]:!flex-nowrap max-[600px]:items-center'>
+                <div className='flex flex-row h-max max-h-[300px] overflow-x-scroll grayScrollBar max-[600px]:items-center'>
                     <PastPreviewList_simulator />
                 </div>
             </div>

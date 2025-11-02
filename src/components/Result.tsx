@@ -45,6 +45,7 @@ const Result = React.memo(() => {
                     </div>
                     <Tooltip id="ExpRateHint"  
                         place="right-start"
+                        arrowColor='gray'
                         render={()=>
                             <div className='flex flex-col max-w-[250px] p-1'>
                                 <span className='text-white'>此機率代表的是在所有組合中評分超過目前組合的機率</span>
@@ -53,6 +54,7 @@ const Result = React.memo(() => {
                         }/>
                     <Tooltip id="ScoreHint"  
                         place="right-start"
+                        arrowColor='gray'
                         render={()=>
                             
                                 <div className='flex flex-col max-w-[250px] p-1'>

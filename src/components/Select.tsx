@@ -64,6 +64,7 @@ const MainAffixSelect = React.memo(() => {
                 </div>
                 <Tooltip id="MainAffixHint"  
                     place="right-start" 
+                    arrowColor='gray'
                     render={()=>
                         <div className='flex flex-col max-w-[230px] '>
                             <span className='text-white'>選擇遺器的主詞條</span>

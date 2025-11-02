@@ -5,6 +5,7 @@ import {findCombinations,EnchanceAllCombinations} from '../data/combination';
 import { relicSubData } from '@/interface/simulator';
 import { AffixItem, PieNumsItem, relicRank, standDetails } from '@/interface/global';
 import { calTypeItem, coeEfficentItem } from '@/interface/worker';
+import { ImporterRelicSubDataType } from '@/interface/importer';
 
 
 onmessage = function (event) {
@@ -68,10 +69,9 @@ onmessage = function (event) {
                     let targetRange=AffixName.find((st)=>st.fieldName===sub.fieldName)!.range!;
 
                     //如果該詞條所獲得的強化次數為0 可以推測該數值為初始詞條數值 則直接繼承使用
-                    if(SubData[i].count===0)
-                        total=SubData[i].data;
-                    else
-                        total=targetRange[1];//詞條模擬出來的總和，初始為最中間的值
+                    total = calAffixStartValue(targetRange,SubData[i]);
+
+                    //total=targetRange[1];//詞條模擬出來的總和，初始為最中間的值
                     
                     el.forEach((num)=>total+=targetRange[num]);
 
@@ -291,6 +291,73 @@ function calStand(stand:standDetails){
 }
 
 //計算將會移置後台worker運作
+
+// 計算詞條極端值（改良版）
+function calAffixStartValue(targetRange: number[], Affix: ImporterRelicSubDataType): number {
+    // 沒強化過 → 初始值就是本身
+    if (Affix.count === 0) return Affix.data;
+
+    const combinations: number[][] = [];
+    const bestCandidates: { start: number; diff: number; count: number }[] = [];
+
+    // 🧩 根據屬性自動設定誤差範圍
+    const tolerance =
+        Affix.subaffix === "速度"
+            ? 0.1 // 速度顯示為整數，內部浮點誤差較大
+            : 0.05; // 其他詞條保留小數，誤差較小
+
+    // 遞迴枚舉所有強化組合
+    function dfs(path: number[], depth: number) {
+        if (depth === Affix.count) {
+            combinations.push([...path]);
+            return;
+        }
+        for (const val of targetRange) {
+            path.push(val);
+            dfs(path, depth + 1);
+            path.pop();
+        }
+    }
+
+    dfs([], 0);
+
+    // 嘗試所有可能的初始值
+    for (const start of targetRange) {
+        let totalMatches = 0;
+        let totalDiff = 0;
+
+        // 檢查每一種強化組合的總和差距
+        for (const combo of combinations) {
+            const total = start + combo.reduce((a, b) => a + b, 0);
+            const diff = Math.abs(total - Affix.data);
+
+            // 若誤差在容忍範圍內，視為可能結果
+            if (diff <= tolerance) totalMatches++;
+
+            totalDiff += diff;
+        }
+
+        // 平均誤差越小、匹配次數越多代表越可能
+        bestCandidates.push({
+            start,
+            diff: totalDiff / combinations.length,
+            count: totalMatches,
+        });
+    }
+
+    // 排序規則：匹配數多 > 平均誤差小
+    bestCandidates.sort((a, b) => b.count - a.count || a.diff - b.diff);
+
+    /*console.log(
+        `${Affix.subaffix} 可能初始值：${bestCandidates[0].start}`,
+        bestCandidates
+    );*/
+
+    return bestCandidates[0].start;
+}
+
+
+
 
 //所需資料
 //2.遺器本身數據(SubData) 3.遺器部位
