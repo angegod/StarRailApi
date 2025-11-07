@@ -212,7 +212,6 @@ const RelicData=React.memo(()=>{
                         </div>
                         <span className='text-stone-400'>:{relic.main_affix.display}</span>
                     </div>
-                       
                 </div>
                 <div className='mt-2'>
                     <span className='text-stone-400'>副詞條</span>
