@@ -62,6 +62,7 @@ const characters:characterItem[] = [
     { charID: 1314, name: "翡翠", eng_name: "Jade" },
     { charID: 1315, name: "波提歐", eng_name: "Boothill" },
     { charID: 1317, name: "亂破", eng_name: "Rappa" },
+    { charID: 1321, name: "大理花" ,eng_name:"The Dahila"},
     { charID: 1401, name: "大黑塔", eng_name: "The Herta" },
     { charID: 1402, name: "阿格萊雅", eng_name: "Aglaea" },
     { charID: 1403, name: "緹寶", eng_name: "Tribbie" },

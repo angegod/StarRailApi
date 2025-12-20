@@ -35,3 +35,11 @@ export interface SimulatorHistory{
     isLock:boolean
 }
 
+export default interface SelfDefinedSelectProps{
+    selectName:string,
+    options:string[],
+    changeHandler: (...args: any[]) => void;
+    selectedValue:string,
+    selectWidth?:number
+}
+

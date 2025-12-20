@@ -85,7 +85,7 @@ select.graySelect {
   color: white;
 }
 
-select.graySelect option {
+select.graySelect option,div.graySelect {
   background-color: rgb(36, 36, 36);
   color: white;
 }
