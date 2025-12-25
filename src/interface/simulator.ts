@@ -40,6 +40,7 @@ export default interface SelfDefinedSelectProps{
     options:string[],
     changeHandler: (...args: any[]) => void;
     selectedValue:string,
-    selectWidth?:number
+    selectWidth?:number,
+    AffixIcon?:boolean
 }
 

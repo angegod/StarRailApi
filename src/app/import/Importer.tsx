@@ -600,7 +600,7 @@ function Importer(){
         <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[95%] rounded-md '>
             <div className='rounded-md'>
                 <div className='flex flex-row flex-wrap'>
-                    <div className='flex flex-col w-2/5 bg-black/50 rounded-md max-[1250px]:w-full test'>
+                    <div className='flex flex-col w-1/2 bg-black/50 rounded-md max-[1250px]:w-full test'>
                         <div className='flex flex-row items-center ml-2 mt-2'>
                             <h1 className='text-red-600 font-bold text-2xl'>自動匯入</h1>
                             <div className='hintIcon ml-2 overflow-visible' 
@@ -673,7 +673,7 @@ function Importer(){
                             
                         </div>
                     </div>
-                    <div className={`w-[55%] pb-3 pt-1 h-fit flex-wrap max-[1250px]:w-full max-[1250px]:mb-5 ml-2 bg-black/50 rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
+                    <div className={`w-[45%] pb-3 pt-1 h-fit flex-wrap max-[1250px]:w-full max-[1250px]:mb-5 ml-2 bg-black/50 rounded-md max-[1250px]:ml-0 max-[1250px]:mt-2`}>
                         <div className='flex flex-row items-center px-2 max-[600px]:justify-center'>
                             <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                             <div className='hintIcon ml-2 overflow-visible'

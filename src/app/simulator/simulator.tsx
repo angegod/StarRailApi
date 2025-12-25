@@ -435,7 +435,7 @@ function Simulator(){
     return(
     <SiteContext.Provider value={SimulatorStatus}>
         <div className='w-4/5 mx-auto max-[600px]:w-[95%] flex flex-row flex-wrap'>
-            <div className='flex flex-col w-2/5 bg-black/50 p-2 rounded-md max-[1200px]:w-full'>
+            <div className='flex flex-col w-1/2 bg-black/50 p-2 rounded-md max-[1200px]:w-full'>
                 <div className='flex flex-row items-center'>
                     <div className='flex flex-row items-center'>
                         <h1 className='text-red-600 font-bold text-2xl'>手動輸入</h1>
@@ -546,7 +546,7 @@ function Simulator(){
                     
                 </div>
             </div>
-            <div className={`w-[55%] ml-2 bg-black/50 rounded-md p-2 h-fit max-[1200px]:w-full max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
+            <div className={`w-[45%] ml-2 bg-black/50 rounded-md p-2 h-fit max-[1200px]:w-full max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
                 <div className='flex flex-row items-baseline px-2 max-[600px]:justify-center'>
                     <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                     <div className='hintIcon ml-2 overflow-visible'
