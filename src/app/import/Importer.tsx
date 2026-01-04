@@ -326,6 +326,9 @@ function Importer(){
 
     //更新紀錄
     const updateDetails=useCallback(async (index:number)=>{
+        //清空舊有紀錄避免被誤判
+        RelicDataArrRef.current = null;
+
         showStatus('正在更新資料中......','process');
         let originData = JSON.parse(JSON.stringify(historyData));
         let data = originData[index] as ImporterHistory;
@@ -380,6 +383,8 @@ function Importer(){
                 let oldHistory=JSON.parse(JSON.stringify(historyData));
                 oldHistory[index]=newHistorydata;
                 localStorage.setItem(LocalStorageLocation,JSON.stringify(oldHistory));
+            }else{
+                updateStatus('該腳色似乎已經不存在於展示櫃上，請稍後再試一次!');
             }
       
         }).catch((error)=>{

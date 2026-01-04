@@ -547,7 +547,7 @@ function Simulator(){
                 </div>
             </div>
             <div className={`w-[45%] ml-2 bg-black/50 rounded-md p-2 h-fit max-[1200px]:w-full max-[1200px]:ml-0 max-[1200px]:mt-2`} id="historyData" >
-                <div className='flex flex-row items-baseline px-2 max-[600px]:justify-center'>
+                <div className='flex flex-row items-center px-2 max-[600px]:justify-center'>
                     <span className='text-red-600 text-lg font-bold'>過往紀錄</span>
                     <div className='hintIcon ml-2 overflow-visible'
                         data-tooltip-id="HistoryHint"> 
@@ -562,7 +562,7 @@ function Simulator(){
                 (PieNums)?
                 <div className={`flex flex-row my-3 flex-wrap shadowBox bg-black/50 w-full p-2 rounded-md`}>
                     <div className={`w-full flex flex-row flex-wrap`}>
-                        <div className={`flex flex-row flex-wrap w-[18vw]  max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
+                        <div className={`flex flex-row flex-wrap w-[18vw]  max-[700px]:w-1/2 max-[500px]:w-4/5 max-[500px]:mx-auto`} >
                             <RelicData />
                         </div>
                         <div className={`w-1/4 max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
