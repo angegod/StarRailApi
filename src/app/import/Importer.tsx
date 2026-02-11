@@ -695,16 +695,13 @@ function Importer(){
             {
                 (PieNums)?
                 <div className={`flex flex-row flex-wrap mt-2 w-full bg-black/50 shadowBox px-2 mb-5 rounded-md`} >
-                    <div className={`w-full max-[500px]:justify-center`}>
+                    <div className={`w-full max-[700px]:w-[90%] max-[500px]:justify-center`}>
                         <RelicSelect />
                     </div>
-                    <div className={`mt-3 flex flex-row flex-wrap w-1/4  max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`}>
+                    <div className={`mt-3 flex flex-row flex-wrap w-1/2  max-[700px]:w-[90%] max-[500px]:mx-auto`}>
                         <RelicData />
                     </div>
-                    <div className={`mt-3 w-1/4 max-[700px]:w-[50%] max-[500px]:w-4/5 max-[500px]:mx-auto`} >
-                        <StandDetails />
-                    </div>
-                    <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-full max-[500px]:w-4/5 max-[500px]:mx-auto`} id="resultDetails">
+                    <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[90%] max-[500px]:w-4/5 max-[500px]:mx-auto`} id="resultDetails">
                         <Result />
                     </div>
                 </div>:null

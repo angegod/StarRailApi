@@ -11,6 +11,7 @@ import { AffixItem, relicRank, standDetails, standDetailsItem } from '@/interfac
 import { relicSubData, simulatorRelic } from '@/interface/simulator';
 import { ImportRelic, ImportRelicAffix } from '@/interface/importer';
 import ProcessBtn from './ProcessBtn';
+import { StandDetails } from './StandDetails';
 
 
 interface SimulatorRelicDataType{
@@ -183,34 +184,41 @@ const RelicData=React.memo(()=>{
 
         
         return(
-            <div className={`w-full my-1 ${(relic!==undefined)?'':'hidden'} max-[500px]:w-[330px] max-[400px]:w-full`}>
-                <div className='flex flex-row items-center'>
-                    <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
-                    <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="RelicDataHint">
-                        <span className='text-white'>?</span>
-                    </div>
-                </div>
-                <div>
-                    <span className='text-stone-400'>套裝</span><br/>
-                    <div className='flex flex-row'>
-                        <img src={reliclink} width={24} height={24} alt={relic.set_id}/>
-                        <span className='text-white'>{relic.set_name}</span>
-                    </div>
-                </div>
-                <div className='mt-1 flex flex-col'>
-                    <span className='text-stone-400'>部位</span>
-                    <div className='flex flex-row'>
-                        <span className='text-white'>{partArr[relic.type-1]}</span>   
-                    </div>
-                </div>
-                <div className='mt-1'>
-                    <span className='text-stone-400'>主詞條</span><br/>
-                    <div className='flex flex-row'>
-                        <div className='flex flex-row max-w-[140px]'>
-                            {mainaffixImg}
-                            <span className='text-white whitespace-nowrap overflow-hidden text-ellipsis'>{relic.main_affix.name}</span>
+            <div className={`w-full my-1 ${(relic!==undefined)?'':'hidden'} max-[400px]:w-full`}>
+                <div className='flex flex-row flex-wrap'>
+                    <div className='flex flex-col w-1/2'>
+                        <div className='flex flex-row items-center'>
+                            <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
+                            <div className='hintIcon ml-2 overflow-visible' data-tooltip-id="RelicDataHint">
+                                <span className='text-white'>?</span>
+                            </div>
                         </div>
-                        <span className='text-stone-400'>:{relic.main_affix.display}</span>
+                        <div>
+                            <span className='text-stone-400'>套裝</span><br/>
+                            <div className='flex flex-row'>
+                                <img src={reliclink} width={24} height={24} alt={relic.set_id}/>
+                                <span className='text-white'>{relic.set_name}</span>
+                            </div>
+                        </div>
+                        <div className='mt-1 flex flex-col'>
+                            <span className='text-stone-400'>部位</span>
+                            <div className='flex flex-row'>
+                                <span className='text-white'>{partArr[relic.type-1]}</span>   
+                            </div>
+                        </div>
+                        <div className='mt-1'>
+                            <span className='text-stone-400'>主詞條</span><br/>
+                            <div className='flex flex-row'>
+                                <div className='flex flex-row max-w-[140px]'>
+                                    {mainaffixImg}
+                                    <span className='text-white whitespace-nowrap overflow-hidden text-ellipsis'>{relic.main_affix.name}</span>
+                                </div>
+                                <span className='text-stone-400'>:{relic.main_affix.display}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='w-1/2'>
+                        <StandDetails />
                     </div>
                 </div>
                 <div className='mt-2'>
@@ -345,24 +353,31 @@ const RelicData_simulate=React.memo(()=>{
         
         return(
             <div className={`w-full my-1 max-[500px]:min-w-[250px]`}>
-                <div className='flex flex-row items-center'>
-                    <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
-                    <div className='hintIcon ml-2 overflow-visible'
-                        data-tooltip-id="RelicDataHint">
-                        <span className='text-white'>?</span>
+                <div className='flex flex-row flex-wrap '>
+                    <div className='flex flex-col w-1/2'>
+                        <div className='flex flex-row items-center'>
+                            <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
+                            <div className='hintIcon ml-2 overflow-visible'
+                                data-tooltip-id="RelicDataHint">
+                                <span className='text-white'>?</span>
+                            </div>
+                        </div>
+                        <div className='mt-1 flex flex-col'>
+                            <span>部位</span>
+                            <div className='flex flex-row'>
+                                <span className='text-white'>{partArr[relic.type-1]}</span>   
+                            </div>
+                        </div>
+                        <div className='mt-1 flex flex-col'>
+                            <span>主詞條</span>
+                            <div className='flex flex-row'>
+                                {mainaffixImg}
+                                <span className='text-white'>{relic.main_affix}</span>   
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className='mt-1 flex flex-col'>
-                    <span>部位</span>
-                    <div className='flex flex-row'>
-                        <span className='text-white'>{partArr[relic.type-1]}</span>   
-                    </div>
-                </div>
-                <div className='mt-1 flex flex-col'>
-                    <span>主詞條</span>
-                    <div className='flex flex-row'>
-                        {mainaffixImg}
-                        <span className='text-white'>{relic.main_affix}</span>   
+                    <div className='w-1/2'>
+                        <StandDetails />
                     </div>
                 </div>
                 <div className='mt-2'>

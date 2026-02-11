@@ -375,7 +375,7 @@ const Enchant=React.memo(()=>{
     }
 
     const ResultSection=(simulatorData.newData!==undefined&&simulatorData.oldData!==undefined)?(
-        <div className='flex flex-row flex-wrap  max-[600px]:!flex-col'>
+        <div className='flex flex-row flex-wrap  max-[600px]:!flex-col max-[600px]:items-center'>
             <DataList standDetails={standDetails!} data={simulatorData.oldData!} title={'重洗前'} affixLock={affixLock}/>
             <div className={`flex my-auto w-[30px] moveAnimate moveAnimate2 max-[600px]:w-full h-[30px] ${(simulatorData.newData===null)?'hidden':''}`} >
                 <svg xmlns="http://www.w3.org/2000/svg" className='max-[600px]:hidden mx-auto'
@@ -403,18 +403,15 @@ const Enchant=React.memo(()=>{
     return(
         <SiteContext.Provider value={EnchantStatus}>
             <div className='flex flex-col w-4/5 mx-auto max-[600px]:w-[90%]'>
-                <div className="w-full border-gray-600 my-4 justify-center flex flex-row flex-wrap max-[900px]:flex-col">
-                    <div className='flex flex-row flex-wrap w-1/2 max-[900px]:w-full justify-evenly max-[900px]:mb-2'>
-                        <div className='w-[45%] h-fit flex flex-row max-[900px]:w-fit bg-black/50 p-2 rounded-md'>
+                <div className="w-full border-gray-600 my-4 flex flex-row flex-wrap max-[900px]:flex-col">
+                    <div className='flex flex-row flex-wrap w-1/2 max-[900px]:w-full max-[900px]:mb-2'>
+                        <div className='w-[90%] h-fit flex flex-row max-[900px]:w-full bg-black/50 p-2 rounded-md'>
                             {(mode==="Importer")?
                                 <RelicData  />:
                                 <RelicData_simulate />}
                         </div>
-                        <div className='w-[45%] h-fit max-[900px]:w-fit bg-black/50 p-2 rounded-md ml-1 max-[900px]:ml-0 max-[900px]:my-2'>
-                            <StandDetails />
-                        </div>
                     </div>
-                    <div className='w-1/2 bg-black/50 h-fit p-2 rounded-md max-[900px]:w-full flex flex-col max-[900px]:items-center'>
+                    <div className='w-1/2 bg-black/50 h-fit p-2 rounded-md max-[900px]:w-full flex flex-col'>
                         <div className='flex flex-row'>
                             <div className='items-center flex flex-row'>
                                 <span className='text-red-600 text-lg font-bold'>模擬強化</span>
@@ -428,22 +425,21 @@ const Enchant=React.memo(()=>{
                                 <button className='processBtn ml-2' onClick={()=>reInit()}>還原</button>
                             </div>
                         </div>
-                        <div className='my-2'>
-                            <span>目前重洗次數:<span className='text-white ml-1'>{count}</span></span>
-                        </div>
-                        {
-                            (MinMaxScore!==undefined)?
+                        <div className='max-[600px]:items-center'>
+                            <div className='my-2'>
+                                <span>目前重洗次數:<span className='text-white ml-1'>{count}</span></span>
+                            </div>
+                            {
+                                (MinMaxScore!==undefined)?
+                                <div>
+                                    {ResultSection}
+                                </div>:null
+                            }
                             <div>
-                                {ResultSection}
-                            </div>:null
-                        }
-                        <div>
-                            <Pie /> 
+                                <Pie /> 
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className='bg-black/50 h-fit p-2 rounded-md w-fit'>
-                    
                 </div>
             </div>
             <Tooltip id="EnchantHint"  
@@ -590,14 +586,15 @@ const Pie=React.memo(()=>{
 
     if(PieNums!==undefined){
         const pieParams = {
+            width:200,
             height: (count === 0)?0:200,
             margin:{ top: 10, right: 0, bottom: 0, left: 0 },
             hideLegend: true,
         };
 
         return(
-           <div className='w-full flex flex-row flex-wrap'>
-                <div className='min-w-[300px]'>
+           <div className='w-full flex flex-row flex-wrap max-[600px]:items-center max-[600px]:flex-col'>
+                <div className='min-w-[250px]'>
                     <PieChart  
                         series={[
                             {
@@ -608,9 +605,9 @@ const Pie=React.memo(()=>{
                             }
                         ]}  {...pieParams} />
                 </div>
-                <div className={`flex-col w-2/5 max-[500px]:w-full mt-2 ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
-                    <div className='flex-col justify-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
-                        <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                <div className={`flex-col w-fit min-w-[150px] max-[500px]:w-full mt-2 ${(PieNums.find((p)=>p.value!==0)===undefined)?'hidden':''}`}>
+                    <div className='flex flex-col justify-center items-center max-[600px]:mx-auto'>
+                        <div className='flex flex-row items-center max-[600px]:mx-auto'>
                             <div className='flex justify-start'>
                                 <span className='text-stone-400'>翻盤次數</span>
                             </div>
@@ -621,7 +618,7 @@ const Pie=React.memo(()=>{
                         {
                             (MinMaxScore)?
                             <>
-                                <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                                <div className='flex flex-row items-center max-[600px]:mx-auto'>
                                     <div className='flex justify-start'>
                                         <span className='text-stone-400'>最高分數</span>
                                     </div>
@@ -629,7 +626,7 @@ const Pie=React.memo(()=>{
                                         <span className='text-white'>{MinMaxScore.max}</span>
                                     </div>
                                 </div>
-                                <div className='flex flex-row items-center max-[600px]:w-3/5 max-[600px]:mx-auto'>
+                                <div className='flex flex-row items-center max-[600px]:mx-auto'>
                                     <div className='flex justify-start'>
                                         <span className='text-stone-400'>最低分數</span>
                                     </div>
