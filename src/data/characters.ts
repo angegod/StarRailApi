@@ -77,6 +77,8 @@ const characters:characterItem[] = [
     { charID: 1413, name: "長夜月", eng_name: "Evernight"},
     { charID: 1414, name: "丹恆•騰荒", eng_name: "Dan Heng • Permansor Terrae"},
     { charID: 1415, name: "昔漣", eng_name: "Cyrene"},
+    { charID: 1501, name: "火花", eng_name: "Sparxie"},
+    { charID: 1502, name: "爻光", eng_name: "Yaoguang"},
     { charID: 8001, name: "開拓者(男)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8002, name: "開拓者(女)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8003, name: "開拓者(男)(存護)", eng_name: "Trailblazer (Preservation)" },

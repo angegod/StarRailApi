@@ -554,7 +554,7 @@ function Simulator(){
                         <span className='text-white'>?</span>
                     </div>
                 </div>
-                <div className='flex flex-row h-max max-h-[300px] overflow-x-scroll grayScrollBar max-[600px]:items-center'>
+                <div className='flex flex-row gap-4 h-max max-h-[300px] overflow-x-scroll grayScrollBar max-[600px]:items-center'>
                     <PastPreviewList_simulator />
                 </div>
             </div>
@@ -592,7 +592,6 @@ function Simulator(){
                             <span className='text-white'>"主詞條"跟"副詞條"區塊中會自動帶入該部位詞條種類</span>
                         </div>
                     }/>
-
             <Tooltip id="SubAffixHint"  
                     place="right-start"
                     arrowColor='gray' 

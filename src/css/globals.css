@@ -116,7 +116,7 @@ body{
 
     @apply min-w-[100px] max-w-[300px] max-[800px]:max-w-[300px];
 
-    @apply max-h-[120px] bg-slate-700 rounded-md p-2 m-2;
+    @apply max-h-[120px] bg-slate-700 rounded-md p-2;
 }
 
 .Result{
