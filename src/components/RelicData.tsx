@@ -352,7 +352,7 @@ const RelicData_simulate=React.memo(()=>{
         })
         
         return(
-            <div className={`w-full my-1 max-[500px]:min-w-[250px]`}>
+            <div className={`w-full my-1`}>
                 <div className='flex flex-row flex-wrap '>
                     <div className='flex flex-col w-1/2'>
                         <div className='flex flex-row items-center'>

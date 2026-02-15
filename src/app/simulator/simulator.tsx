@@ -562,7 +562,7 @@ function Simulator(){
                 (PieNums)?
                 <div className={`flex flex-row my-3 flex-wrap shadowBox bg-black/50 w-full p-2 rounded-md`}>
                     <div className={`w-full flex flex-row flex-wrap`}>
-                        <div className={`flex flex-row flex-wrap w-1/2 max-[500px]:w-4/5 max-[500px]:mx-auto`} >
+                        <div className={`flex flex-row flex-wrap w-1/2 max-[700px]:w-4/5 max-[500px]:mx-auto`} >
                             <RelicData />
                         </div>
                         <div className='flex flex-row flex-wrap w-1/2 max-[700px]:w-full max-[500px]:w-4/5 max-[500px]:mx-auto ' id="resultDetails">

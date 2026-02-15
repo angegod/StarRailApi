@@ -375,14 +375,8 @@ const Enchant=React.memo(()=>{
     }
 
     const ResultSection=(simulatorData.newData!==undefined&&simulatorData.oldData!==undefined)?(
-        <div className='flex flex-row flex-wrap  max-[600px]:!flex-col max-[600px]:items-center'>
+        <div className='flex flex-row flex-wrap gap-2  max-[600px]:!flex-col max-[600px]:items-center'>
             <DataList standDetails={standDetails!} data={simulatorData.oldData!} title={'重洗前'} affixLock={affixLock}/>
-            <div className={`flex my-auto w-[30px] moveAnimate moveAnimate2 max-[600px]:w-full h-[30px] ${(simulatorData.newData===null)?'hidden':''}`} >
-                <svg xmlns="http://www.w3.org/2000/svg" className='max-[600px]:hidden mx-auto'
-                    height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" className='min-[600px]:hidden mx-auto'
-                    height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-800v487L216-537l-56 57 320 320 320-320-56-57-224 224v-487h-80Z"/></svg>
-            </div>
             <DataList standDetails={standDetails!} data={simulatorData.newData!} title={'重洗後'} affixLock={affixLock}/>          
         </div>
     ):null;
