@@ -3,7 +3,7 @@ import { updateDetailsItem } from "@/interface/global";
 //最新公告訊息
 let updateDetails:updateDetailsItem = {
     type:"Importer",
-    updateKey:'StarRailApi_20251220',
+    updateKey:'StarRailApi_20260215',
     updateType:'StarRailApiUpdateDetails',
     updateDate: new Date('2025-02-15'),
     updateTitle:"遺器重洗模擬器 崩鐵4.0更新公告",
