@@ -120,13 +120,15 @@ onmessage = function (event) {
             {rank:'C',stand:15,color:'rgb(163, 230, 53)',tag:'C'},
             {rank:'D',stand:0 ,color:'rgb(22,163,74)',tag:'D'}
         ];
-        let overScoreList=(JSON.parse(JSON.stringify(result)) as number[]).filter((num)=>num-deviation>Number(origin));
+        let overScoreList=
+            (JSON.parse(JSON.stringify(result)) as number[])
+                .map(num => Math.floor(num * 10) / 10)
+                .filter((num)=>num-deviation>Number(origin));
         let expRate=((overScoreList.length)/(result.length)).toFixed(4);
         let copy=JSON.parse(JSON.stringify(result)) as number[];
         let relicrank:relicRank|undefined=undefined;
         let returnData=[] as PieNumsItem[];
         
-        //console.log(result);
         //根據標準去分類
         scoreStand.forEach((stand,i)=>{
             //區分符合區間跟不符合的 並一步步拿掉前面篩選過的區間
