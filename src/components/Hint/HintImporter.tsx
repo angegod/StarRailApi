@@ -2,7 +2,7 @@ function HintImporter(){
     return(
         <div className='w-[300px] flex flex-col max-[600px]:my-3'>
             <h2 className='text-red-600 font-bold text-lg'>使用說明</h2>
-            <ul className='[&>li]:text-stone-400 list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
+            <ul className='[&>li]:text-white list-decimal [&>li]:ml-2 max-[400px]:[&>li]:text-sm'>
                 <li>此工具會根據玩家放在展示框的8個腳色身上的遺器做數據分析</li>
                 <li>翻盤機率是指說該遺器透過變量骰子後遺器分數變高的機率為何</li>
                 <li>目前該工具只支援計算五星強化至滿等遺器</li>

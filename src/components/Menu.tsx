@@ -27,17 +27,17 @@ interface MenuProps {
 function Menu({children}:MenuProps) {
     return (
         <div className='top-0 w-full z-40 py-3 '>
-            <div className='flex flex-row w-4/5 mx-auto max-[600px]:w-[95%]'>
+            <div className='flex flex-row w-4/5 gap-3 mx-auto max-[600px]:w-[95%]'>
                 {list.map((m, i) => (
                     <div
-                        className='mr-3 flex flex-col bg-gray-700 min-w-[100px] rounded-md justify-center px-2'
+                        className='flex flex-col bg-gray-700 min-w-[100px] rounded-md justify-center px-2'
                         key={'menu' + i}>
                         <Link href={m.link} className='text-center'>
-                            <span className='text-gray-500 font-bold text-lg max-[500px]:text-sm'>
+                            <span className='text-gray-500 font-bold text-lg max-[500px]:text-md'>
                             {m.name}
                             </span>
                         </Link>
-                        <span className='text-lg text-gray-400 text-center max-[500px]:text-sm'>
+                        <span className='text-lg text-gray-400 text-center max-[500px]:text-md'>
                             {m.engname}
                         </span>
                     </div>

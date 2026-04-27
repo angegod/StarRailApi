@@ -80,6 +80,8 @@ const characters:characterItem[] = [
     { charID: 1501, name: "火花", eng_name: "Sparxie"},
     { charID: 1502, name: "爻光", eng_name: "Yaoguang"},
     { charID: 1504, name: "不死途", eng_name: "Ashveil"},
+    { charID: 1505, name: "緋英", eng_name: "Evanescia"},
+    { charID: 1506, name: "銀狼 LV.999", eng_name: "Silver Wolf LV.999"},
     { charID: 8001, name: "開拓者(男)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8002, name: "開拓者(女)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8003, name: "開拓者(男)(存護)", eng_name: "Trailblazer (Preservation)" },
@@ -87,7 +89,9 @@ const characters:characterItem[] = [
     { charID: 8005, name: "開拓者(男)(同諧)", eng_name: "Trailblazer (Harmony)" },
     { charID: 8006, name: "開拓者(女)(同諧)", eng_name: "Trailblazer (Harmony)" },
     { charID: 8007, name: "開拓者(男)(記憶)", eng_name: "Trailblazer (Memory)" },
-    { charID: 8008, name: "開拓者(女)(記憶)", eng_name: "Trailblazer (memory)" }
+    { charID: 8008, name: "開拓者(女)(記憶)", eng_name: "Trailblazer (memory)" },
+    { charID: 8009, name: "開拓者(男)(歡愉)", eng_name: "Trailblazer (Elation)" },
+    { charID: 8010, name: "開拓者(女)(歡愉)", eng_name: "Trailblazer (Elation)" }
 ];  
 
 

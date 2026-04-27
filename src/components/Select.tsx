@@ -393,7 +393,7 @@ const CharSelect=React.memo(()=>{
             ...provided,
             backgroundColor: 'rgb(36, 36, 36)',
             zIndex: 20,
-        })
+        }),
     }
     
     characters.forEach((c)=>{
@@ -414,8 +414,9 @@ const CharSelect=React.memo(()=>{
     const selectedOption = options.find((option) => option.value === charID);
     const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
 
-    return(<Select options={options} 
-                className='w-[200px]' 
+    return(<Select 
+                options={options} 
+                className='w-[200px]'
                 onChange={(option: SingleValue<CharacterOption>) => {
                         if (option) {
                             setCharID(option.value);

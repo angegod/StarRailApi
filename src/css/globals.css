@@ -128,3 +128,8 @@ body{
 .react-tooltip {
   border: 2px solid gray;
 }
+
+/* 拿掉滾軸軌道背景（你要的） */
+&::-webkit-scrollbar-track {
+  background: transparent !important;
+}
