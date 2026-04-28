@@ -193,11 +193,13 @@ const RelicData=React.memo(()=>{
                                 <span className='text-white'>?</span>
                             </div>
                         </div>
-                        <div>
-                            <span className='text-stone-400'>套裝</span><br/>
+                        <div className='mt-1 flex flex-col'>
+                            <span className='text-stone-400'>套裝</span>
                             <div className='flex flex-row'>
                                 <img src={reliclink} width={24} height={24} alt={relic.set_id}/>
-                                <span className='text-white'>{relic.set_name}</span>
+                                <span className='text-white max-w-[130px] text-nowrap overflow-hidden text-ellipsis'>
+                                    {relic.set_name}
+                                </span>
                             </div>
                         </div>
                         <div className='mt-1 flex flex-col'>
@@ -206,19 +208,19 @@ const RelicData=React.memo(()=>{
                                 <span className='text-white'>{partArr[relic.type-1]}</span>   
                             </div>
                         </div>
-                        <div className='mt-1'>
-                            <span className='text-stone-400'>主詞條</span><br/>
-                            <div className='flex flex-row'>
-                                <div className='flex flex-row max-w-[140px]'>
-                                    {mainaffixImg}
-                                    <span className='text-white whitespace-nowrap overflow-hidden text-ellipsis'>{relic.main_affix.name}</span>
-                                </div>
-                                <span className='text-stone-400'>:{relic.main_affix.display}</span>
-                            </div>
-                        </div>
                     </div>
                     <div className='w-1/2'>
                         <StandDetails />
+                    </div>
+                </div>
+                <div className='mt-1'>
+                    <span className='text-stone-400'>主詞條</span><br/>
+                    <div className='flex flex-row'>
+                        <div className='flex flex-row'>
+                            {mainaffixImg}
+                            <span className='text-white whitespace-nowrap overflow-hidden text-ellipsis'>{relic.main_affix.name}</span>
+                        </div>
+                        <span className='text-stone-400'>:{relic.main_affix.display}</span>
                     </div>
                 </div>
                 <div className='mt-2'>
