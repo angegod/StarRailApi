@@ -631,11 +631,11 @@ function Importer(){
                                         onChange={(e)=>setUserId(e.target.value)}
                                         disabled={!isChangeAble}/>
                             </div>
-                            <div className='flex flex-row items-center [&>*]:mr-2 my-3 max-[400px]:!flex-col '>
+                            <div className='flex flex-row [&>*]:mr-2 my-3 max-[400px]:!flex-col '>
                                 <div className='text-right w-[200px] max-[400px]:text-left max-[600px]:w-[120px]'>
                                     <span className='text-stone-400 whitespace-nowrap'>Characters 腳色:</span>
                                 </div>                       
-                                <div className='flex flex-row items-center'>
+                                <div className='flex flex-row'>
                                     <CharSelect  />
                                     <div className='hintIcon ml-1 overflow-visible' data-tooltip-id="CharHint">
                                         <span className='text-white'>?</span>
