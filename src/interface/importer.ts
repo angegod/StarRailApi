@@ -26,7 +26,7 @@ export interface ImporterHistory{
 
 export interface sendDataType{
     uid:string,
-    charID:number,            
+    charId:number,            
     partsIndex:0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
 }
 

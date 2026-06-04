@@ -43,7 +43,8 @@ let AffixName:AffixItem[]=[{
     percent:true,
     range:[4.32,4.86,5.4]
 },{
-    fieldName:'CriticalChanceBase',
+    fieldName:'CriticalChance',
+    mainfieldName:'CriticalChanceBase',
     icon:'IconCriticalChance',
     type:'crit_rate',
     name:'暴擊率',
@@ -51,7 +52,8 @@ let AffixName:AffixItem[]=[{
     range:[2.6,2.9,3.2]
 
 },{
-    fieldName:'CriticalDamageBase',
+    fieldName:'CriticalDamage',
+    mainfieldName:'CriticalDamageBase',
     icon:'IconCriticalDamage',
     type:'crit_dmg',
     name:'暴擊傷害',
@@ -65,33 +67,37 @@ let AffixName:AffixItem[]=[{
     percent:false,
     range:[2.0,2.3,2.6]
 },{
-    fieldName:'BreakDamageAddedRatioBase',
+    mainfieldName:'BreakDamageAddedRatioBase',
+    fieldName:'BreakDamageAddedRatio',
     icon:'IconBreakUp',
     type:'break_dmg',
     name:'擊破特攻',
     percent:true,
     range:[5.2,5.8,6.5]
 },{
-    fieldName:'SPRatioBase',
+    mainfieldName:'SPRatioBase',
+    fieldName:'SPRatio',
     icon:'IconEnergyRecovery',
     type:'sp_rate',
     name:'能量恢復效率',
     percent:true
 },{
-    fieldName:'HealRatioBase',
+    mainfieldName:'HealRatioBase',
+    fieldName:'HealRatio',
     icon:'IconHealRatio',
     type:'heal_rate',
     name:'治療量加成',
     percent:true
 },{
-    fieldName:'StatusProbabilityBase',
+    mainfieldName:'StatusProbabilityBase',
+    fieldName:'StatusProbability',
     icon:'IconStatusProbability',
     type:'effect_hit',
     name:'效果命中',
     percent:true,
     range:[3.45,3.89,4.32]
 },{
-    fieldName:'StatusResistanceBase',
+    fieldName:'StatusResistance',
     icon:'IconStatusResistance',
     type:'effect_res',
     name:'效果抗性',

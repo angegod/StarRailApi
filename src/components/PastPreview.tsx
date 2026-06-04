@@ -30,7 +30,7 @@ interface PastPreview_SimulatorProps{
 //簡易瀏覽
 const PastPreview=React.memo(({index,data}:PastPreviewProps)=>{
     const {checkDetails,isChangeAble} = useContext(SiteContext);
-    const BaseLink =  `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
+    const BaseLink =  `https://enka.network/ui/hsr/SpriteOutput/AvatarRoundIcon/${data.char.charID}.png`;
     const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
     const toolTipId = 'ImporterHistoryDetails'+index;
     
@@ -67,7 +67,7 @@ const PastPreview_simulator=React.memo(({data,index}:PastPreview_SimulatorProps)
 
     const MainAffix = AffixName.find((a)=>a.name === data.mainaffix)!.icon;
 
-    const BaseLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${data.char.charID}.png`;
+    const BaseLink=`https://enka.network/ui/hsr/SpriteOutput/AvatarRoundIcon/${data.char.charID}.png`;
     //const MainAffixLink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${MainAffix}.png`;
     const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
     

@@ -75,7 +75,11 @@ const ShowStand=React.memo(()=>{
             return(
             <div className='flex flex-row' key={'StandDetails'+i}>
                 <div className='flex justify-between w-[170px] max-w-[300px] mt-0.5 mr-2 max-[400px]:w-[70%]'>
-                    <img src={imglink} alt="icon" width={24} height={24}/>
+                    <Image 
+                        src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/attr/${IconName}.png`}
+                        alt="Logo"
+                        width={24}
+                        height={24}/>
                     <span className='whitespace-nowrap overflow-hidden text-white  text-ellipsis text-left w-[100px]' title={s.name}>{s.name}</span>
                     <input type='number' min={0} max={1} 
                         className='ml-2 text-center max-h-[30px] 

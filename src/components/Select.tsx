@@ -3,6 +3,7 @@ import React,{useContext, useState,useEffect, useRef} from 'react';
 import AffixList from '../data/AffixList';
 import characters from '../data/characters';
 import dynamic from "next/dynamic";
+import Image from 'next/image';
 import { StylesConfig,SingleValue } from 'react-select';
 import SiteContext from '../context/SiteContext';
 import { Tooltip } from 'react-tooltip';
@@ -251,7 +252,6 @@ const StandardSelect=React.memo(()=>{
                     setExpand(false);
                 }
             }
-            
         }
 
         if (expand&&isChangeAble) {
@@ -296,9 +296,6 @@ const StandardSelect=React.memo(()=>{
             const exists = selfStand.some((s:standDetailsItem) => s.name === m);
             const IconName = AffixName.find((a)=>a.name === m)?.icon;
             
-            //圖示網址模板
-            let imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
-            
             
             return(
                 <div className='my-0.5 mx-1 hover:bg-stone-500 hover:text-white cursor-pointer flex flex-row items-center'
@@ -309,7 +306,11 @@ const StandardSelect=React.memo(()=>{
                                 className='border-[0px] w-4 h-4 accent-[dimgrey]' 
                                 onChange={(event)=>console.log(event.target.value)}
                                 disabled={!exists&&selfStand.length===6}/>
-                        <img src={imglink} alt="icon" width={24} height={24}/>
+                        <Image 
+                            src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/attr/${IconName}.png`}
+                            alt="Logo"
+                            width={24}
+                            height={24}/>
                     </div>
                     <div>
                         <span className='text-white text-sm'>{m}</span>
@@ -401,7 +402,7 @@ const CharSelect=React.memo(()=>{
             value: c.charID, 
             label: c.name,
             engLabel:c.eng_name,
-            icon: `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/character/${c.charID}.png`
+            icon: `https://enka.network/ui/hsr/SpriteOutput/AvatarRoundIcon/${c.charID}.png`
         })
     })
 
@@ -444,10 +445,11 @@ const CharSelect=React.memo(()=>{
 const RelicSelect=React.memo(()=>{
     const {RelicDataArr,relicIndex,setRelicIndex}=useContext(SiteContext);
     const unknowRelicImg = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknownRelic.png`;
+
     if(RelicDataArr.length !==0){
-        let list = RelicDataArr.map((r:any,i:number)=>{  
-            const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/${r.relic.icon}`;
-    
+        let list = RelicDataArr.map((r:any,i:number)=>{
+        
+            const reliclink = `https://sr.yatta.moe/hsr/assets/UI/relic/IconRelic_${r.relic._flat.setID}_${r.relic.type}.png`;
             return(
                 <div className={`rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] max-[500px]:mx-1 max-[500px]:p-1 max-[500px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
                     key={'RelicSelect'+r.relic.type}

@@ -31,7 +31,7 @@ let standard:standardItem[]=[{
         data:64.8,
         percent:true
     },{
-        name:'BreakDamageAddedRatioBase',
+        name:'BreakDamageAddedRatio',
         data:64.8,
         percent:true
     },{
@@ -39,7 +39,7 @@ let standard:standardItem[]=[{
         data:25,
         percent:false
     },{
-        name:'StatusProbabilityBase',
+        name:'StatusProbabilitBase',
         data:43.2,
         percent:true
     },{
@@ -71,11 +71,11 @@ let standard:standardItem[]=[{
         data:38.8,
         percent:true
     },{
-        name:'SPRatioBase',
+        name:'SPRatio',
         data:19.4,
         percent:true
     },{
-        name:'HealRatioBase',
+        name:'HealRatio',
         data:34.5,
         percent:true
     }]
@@ -106,15 +106,15 @@ let standard:standardItem[]=[{
         data:5.4,
         percent:true
     },{
-        name:'CriticalChanceBase',
+        name:'CriticalChance',
         data:3.24,
         percent:true
     },{
-        name:'CriticalDamageBase',
+        name:'CriticalDamage',
         data:6.48,
         percent:true
     },{
-        name:'BreakDamageAddedRatioBase',
+        name:'BreakDamageAddedRatio',
         data:6.48,
         percent:true
     },{
@@ -122,11 +122,11 @@ let standard:standardItem[]=[{
         data:2.6,
         percent:false
     },{
-        name:'StatusProbabilityBase',
+        name:'StatusProbability',
         data:4.32,
         percent:true
     },{
-        name:'StatusResistanceBase',
+        name:'StatusResistance',
         data:4.32,
         percent:true
     }]

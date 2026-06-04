@@ -160,23 +160,29 @@ const Enchant=React.memo(()=>{
     //模擬強化--Importer
     function simulate(){
         let isCheck=true;
-        let ImporterRelic = relic as ImportRelic;
+        let ImporterRelic = relic as any;
         //將運行結果丟到背景執行 跟模擬所有組合的worker分開
         let worker=new Worker(new URL('../../worker/worker2.ts', import.meta.url));
-        let MainAffix=AffixName.find((a)=>a.fieldName===ImporterRelic.main_affix.type) as AffixItem;
+        let MainAffix
+            = AffixName.find((a)=>(a.fieldName===ImporterRelic._flat.props[0].type)||(a.mainfieldName===ImporterRelic._flat.props[0].type)) as AffixItem;
         let SubData=[] as relicSubData[];
           
         if(simulatorData.oldData===null){
-            ImporterRelic.sub_affix.forEach((sb,i)=>{
+            console.log(ImporterRelic);
+            ImporterRelic._flat.props.forEach((sb:any,i:number)=>{
+                if(i === 0) return;//跳過主詞條 
+
                 let typeName=AffixName.find((a)=>a.fieldName===sb.type) as AffixItem;
                 let val=(!typeName.percent)?Number(sb.value.toFixed(0)):Number((sb.value*100).toFixed(1));
                 let stand = standDetails!.find((s)=>s.name===typeName.name);
+
+                let subAffixCount = ImporterRelic.subAffixList[i-1].cnt - 1;
 
                 let data={
                     index:i, 
                     subaffix:typeName.name,
                     data:val, //詞條數值    
-                    count:sb.count-1,//強化次數
+                    count:subAffixCount,//強化次數
                     stand:(!stand)?0:stand.value,
                     locked:false
                 }
@@ -239,10 +245,10 @@ const Enchant=React.memo(()=>{
 
                 //如果該次強化超過原有分數 則成功次數+1
                 if(simulatorData.oldData!==null){ //第二次強化以後
-                    if(parseInt(event.data.relicscore) > parseInt(simulatorData.oldData.relicscore))
+                    if(Number(event.data.relicscore) > Number(simulatorData.oldData.relicscore))
                         setSuccessCount((c)=>c+=1);
                 }else{ //第一次模擬
-                    if(parseInt(event.data.relicscore) > parseInt(Rscore!))
+                    if(Number(event.data.relicscore) > Number(Rscore!))
                         setSuccessCount((c)=>c+=1);
                 }
             };
@@ -302,10 +308,10 @@ const Enchant=React.memo(()=>{
 
                 //如果該次強化超過原有分數 則成功次數+1
                 if(simulatorData.oldData!==null){ //第二次強化以後
-                    if(parseInt(event.data.relicscore) > parseInt(simulatorData.oldData.relicscore))
+                    if(Number(event.data.relicscore) > Number(simulatorData.oldData.relicscore))
                         setSuccessCount((c)=>c+=1);
                 }else{ //第一次模擬
-                    if(parseInt(event.data.relicscore) > parseInt(Rscore!))
+                    if(Number(event.data.relicscore) > Number(Rscore!))
                         setSuccessCount((c)=>c+=1);
                 }
             };

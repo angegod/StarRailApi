@@ -111,7 +111,7 @@ const Pie = React.memo(({ PieNums }: { PieNums: PieNumsItem[] }) => {
     };
 
     return (
-        <div className="w-fit flex flex-row mx-auto max-[500px]:flex-col-reverse">
+        <div className="w-full flex flex-row mx-auto max-[500px]:flex-row-reverse">
             <div className="w-[200px]">
                 <PieChart
                     series={[

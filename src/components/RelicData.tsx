@@ -27,7 +27,7 @@ interface SimulatorRelicDataType{
 }
 
 interface ImportRelicDataType{
-    relic:ImportRelic,
+    relic:any,
     affixLock:boolean,
     Rrank:relicRank,
     Rscore:string,
@@ -56,21 +56,25 @@ const RelicData=React.memo(()=>{
             mode:mode
         }
 
+        console.log(sendData);
         dispatch(setEnchantData(sendData));
         router.push('./enchant');
     }
 
     if(relic!==undefined){
-        let getRelic = JSON.parse(JSON.stringify(relic)) as ImportRelic;
+        let getRelic = JSON.parse(JSON.stringify(relic)) as any;
 
-        const mainAffix = AffixName.find((a)=>a.name===relic.main_affix.name) as AffixItem;
+        const mainAffixName = getRelic._flat.props[0].type;
+
+        const mainAffix = AffixName.find((a)=>a.fieldName===mainAffixName || a.mainfieldName===mainAffixName ) as AffixItem;
         const mainaffixImglink=mainAffix.icon;
 
-        const mainaffixImg=<img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} 
-            width={24} height={24} />
+        const mainaffixImg=
+            <img src={`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${mainaffixImglink}.png`} 
+                width={24} height={24} />
 
         const list:React.ReactElement[]=[];
-        const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic.set_id)}.png`;
+        const reliclink = `https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/relic/${parseInt(relic._flat.setID)}.png`;
         
         let strikeThroughName = "";
         let minIndex = 0;
@@ -79,21 +83,19 @@ const RelicData=React.memo(()=>{
         //如果有啟用鎖定功能在判定
         if(affixLock){
             //先找出哪個詞條需要加上刪除線
-            getRelic.sub_affix.forEach((s:ImportRelicAffix, i:number) => {
-                //先改名
-                let showAffix = '';
-                if(s.name === "攻擊力" && s.display.includes('%')){
-                    showAffix = "攻擊力%數";
-                } else if(s.name === "防禦力" && s.display.includes('%')){
-                    showAffix = "防禦力%數";
-                } else if(s.name === "生命值" && s.display.includes('%')){
-                    showAffix = "生命值%數";
-                }else
-                    showAffix = s.name ;
+            getRelic._flat.props.forEach((s:any, i:number) => {
+                //跳過主詞條
+                if(i === 0) return;
                 
-                //複寫回去
-                //s.name = showAffix;
+                //找到副詞條種類
+                let targetSubAffix = AffixName.find((a)=>a.fieldName === s.type);
+                if(!targetSubAffix) return;//如果找不到對應詞條就跳過
 
+                //先改名 直接根據fieldName來決定名稱
+                let showAffix = targetSubAffix.name;
+
+                s.name = showAffix;
+                
                 const found = standDetails.find((st) => st.name === showAffix);
                 const value = found ? found.value : 0; // 沒找到當 0
 
@@ -104,30 +106,36 @@ const RelicData=React.memo(()=>{
                 }
             });
         }
-        
         //遍歷所有副詞條渲染
-        getRelic.sub_affix.forEach((s:any,i:number)=>{
-            let showAffix = '';
-            if(s.name === "攻擊力" && s.display.includes('%')){
-                showAffix = "攻擊力%數";
-            } else if(s.name === "防禦力" && s.display.includes('%')){
-                showAffix = "防禦力%數";
-            } else if(s.name === "生命值" && s.display.includes('%')){
-                showAffix = "生命值%數";
-            }else
-                showAffix = s.name ;
-            
+        getRelic._flat.props.forEach((s:any,i:number)=>{
+            //跳過主詞條
+            if(i === 0) return;
+
+            //找到副詞條種類
+            let targetSubAffix = AffixName.find((a)=>a.fieldName === s.type);
+            if(!targetSubAffix) return;//如果找不到對應詞條就跳過
+
+            //先改名 直接根據fieldName來決定名稱
+            let showAffix = targetSubAffix.name;
+
             
             let markcolor="";
             //判斷是否要標記為有效
             let isBold=(standDetails.find((st)=>st.name===showAffix)!==undefined)?true:false;
 
-            let subAffix = AffixName.find((a)=>a.name===s.name) as AffixItem
+            let subAffix = AffixName.find((a)=>a.name===showAffix) as AffixItem;
+            
+            //顯示數值 以及是否顯示%
+            let displayValue= (!subAffix.percent)? `${Number(s.value.toFixed(1))}`: `${Number((s.value*100).toFixed(1))}%`;
+            
+            //強化次數
+            let enchantCount = getRelic.subAffixList[i-1].cnt - 1;
+            
             let IconName = subAffix.icon;
             
             let imglink=`https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/property/${IconName}.png`;
             
-            switch(s.count-1){
+            switch(enchantCount){
                 case 0:
                     markcolor='rgb(122, 122, 122)';
                     break;
@@ -151,11 +159,11 @@ const RelicData=React.memo(()=>{
             }
 
             list.push(
-                <div className={`flex flex-row ${(strikeThroughName===showAffix)?'strikeLine':''}`} key={`Subaffix_${s.name}_${i}`}>
+                <div className={`flex flex-row ${(strikeThroughName===showAffix)?'strikeLine':''}`} key={`Subaffix_${showAffix}_${i}`}>
                     <div className='flex justify-center items-center'>
                         <span className='mr-0.5 text-white w-[20px] h-[20px] rounded-[20px]
                             flex justify-center items-center' style={{backgroundColor:markcolor}}>
-                            {s.count-1}
+                            {enchantCount}
                         </span>
                     </div>
                     <div className='w-[150px] flex flex-row'>
@@ -175,7 +183,7 @@ const RelicData=React.memo(()=>{
                     </div>
                     <div className='flex w-[70px]'>
                         <span className='mr-1'>:</span>
-                        <span className={`text-right ${(showAffix === strikeThroughName)?' text-stone-400':'text-white'} `}>{s.display}</span>
+                        <span className={`text-right ${(showAffix === strikeThroughName)?' text-stone-400':'text-white'} `}>{displayValue}</span>
                     </div>
                 </div>
                 
@@ -194,18 +202,24 @@ const RelicData=React.memo(()=>{
                             </div>
                         </div>
                         <div className='mt-1 flex flex-col'>
-                            <span className='text-stone-400'>套裝</span>
-                            <div className='flex flex-row'>
-                                <img src={reliclink} width={24} height={24} alt={relic.set_id}/>
-                                <span className='text-white max-w-[130px] text-nowrap overflow-hidden text-ellipsis'>
-                                    {relic.set_name}
-                                </span>
-                            </div>
-                        </div>
-                        <div className='mt-1 flex flex-col'>
                             <span className='text-stone-400'>部位</span>
                             <div className='flex flex-row'>
                                 <span className='text-white'>{partArr[relic.type-1]}</span>   
+                            </div>
+                        </div>
+                        <div className='mt-1'>
+                            <span className='text-stone-400'>主詞條</span><br/>
+                            <div className='flex flex-row'>
+                                <div className='flex flex-row'>
+                                    {mainaffixImg}
+                                    <span className='text-white whitespace-nowrap overflow-hidden text-ellipsis'>{mainAffix.name}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='mt-2'>
+                            <span className='text-stone-400'>副詞條</span>
+                            <div className='flex flex-col w-[190px]'>
+                                {list}
                             </div>
                         </div>
                     </div>
@@ -213,22 +227,8 @@ const RelicData=React.memo(()=>{
                         <StandDetails />
                     </div>
                 </div>
-                <div className='mt-1'>
-                    <span className='text-stone-400'>主詞條</span><br/>
-                    <div className='flex flex-row'>
-                        <div className='flex flex-row'>
-                            {mainaffixImg}
-                            <span className='text-white whitespace-nowrap overflow-hidden text-ellipsis'>{relic.main_affix.name}</span>
-                        </div>
-                        <span className='text-stone-400'>:{relic.main_affix.display}</span>
-                    </div>
-                </div>
-                <div className='mt-2'>
-                    <span className='text-stone-400'>副詞條</span>
-                    <div className='flex flex-col w-[190px]'>
-                        {list}
-                    </div>
-                </div>
+                
+                
                 {(relicDataButton)?
                     <div className='mt-3'>
                         <ProcessBtn text={'重洗模擬'} handler={()=>navEnchant()} disabled={!isChangeAble} />

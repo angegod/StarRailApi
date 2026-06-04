@@ -43,6 +43,7 @@ export interface AffixListItem {
 
 //Affix 詞條種類物件
 export interface AffixItem {
+    mainfieldName?: string;
     fieldName: string;
     icon: string;
     type: string;

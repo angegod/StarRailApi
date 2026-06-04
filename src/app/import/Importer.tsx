@@ -31,7 +31,7 @@ import ProcessBtn from '@/components/ProcessBtn';
 
 function Importer(){
     //版本序號
-    const version="1.5";
+    const version="1.6";
     const maxHistoryLength = 6;
     
     //資料儲存本地位置
@@ -196,7 +196,7 @@ function Importer(){
 
             sendData={
                 uid:userID,
-                charID:charID,            
+                charId:charID,            
                 partsIndex:7
             }
         }
@@ -334,7 +334,7 @@ function Importer(){
         let data = originData[index] as ImporterHistory;
         let sendData:sendDataType={
             uid:data.userID,
-            charID:data.char.charID,            
+            charId:data.char.charID,            
             partsIndex:7
         };
 
@@ -416,28 +416,32 @@ function Importer(){
     },[historyData]);
 
     //計算遺器分數
-    function calscore(relic:ImportRelic,standard:selfStand){
+    function calscore(relic:any,standard:selfStand){
         return new Promise((resolve)=>{
             let isCheck=true;
 
             //將運行結果丟到背景執行
             let worker=new Worker(new URL('../../worker/worker.ts', import.meta.url));
-            let MainAffix=AffixName.find((a)=>a.fieldName===relic.main_affix.type) as AffixItem;
+            let MainAffix=
+                AffixName.find((a)=>(a.fieldName===relic._flat.props[0].type)||(a.mainfieldName===relic._flat.props[0].type)) as AffixItem;
 
             //從遺器資料提取副詞條並根據是否鎖定標註鎖定詞條
             let SubData=[] as ImporterRelicSubDataType[];
-            relic.sub_affix.forEach((s,i:number)=>{
+            relic._flat.props.forEach((s:any,i:number)=>{
+                if(i === 0) return;//跳過主詞條 
+
                 let typeName=AffixName.find((a)=>a.fieldName===s.type)!;
                 let val=(!typeName.percent)?Number(s.value.toFixed(1)):Number((s.value*100).toFixed(1));
                 //每個詞條的加權 如果找不到則為0
                 let stand = standard.find((st)=>st.name===typeName.name);
-                
+                let subAffixCount = relic.subAffixList[i-1].cnt - 1;
+
                 let data={
                     index:i, 
                     subaffix:typeName.name,
                     data:val, //詞條數值    
-                    count:s.count-1,//強化次數
-                    stand:(!stand)?0:stand.value,
+                    count:subAffixCount,//強化次數
+                    stand:(!stand)? 0 : stand.value,
                     locked:false
                 }
 
@@ -701,7 +705,7 @@ function Importer(){
                     <div className={`mt-3 flex flex-row flex-wrap w-1/2  max-[700px]:w-[90%] max-[500px]:mx-auto`}>
                         <RelicData />
                     </div>
-                    <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[90%] max-[500px]:w-4/5 max-[500px]:mx-auto`} id="resultDetails">
+                    <div className={`mt-3 flex flex-row flex-wrap w-1/2 max-[700px]:w-[90%] max-[500px]:mx-auto`} id="resultDetails">
                         <Result />
                     </div>
                 </div>:null
