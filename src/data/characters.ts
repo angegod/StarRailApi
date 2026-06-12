@@ -82,6 +82,7 @@ const characters:characterItem[] = [
     { charID: 1504, name: "不死途", eng_name: "Ashveil"},
     { charID: 1505, name: "緋英", eng_name: "Evanescia"},
     { charID: 1506, name: "銀狼 LV.999", eng_name: "Silver Wolf LV.999"},
+    { charID: 1507, name: "千冶・刃", eng_name: "Mortenax Blade"},
     { charID: 8001, name: "開拓者(男)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8002, name: "開拓者(女)(毀滅)", eng_name: "Trailblazer (Destruction)" },
     { charID: 8003, name: "開拓者(男)(存護)", eng_name: "Trailblazer (Preservation)" },
