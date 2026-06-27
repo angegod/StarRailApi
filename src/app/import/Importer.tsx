@@ -437,7 +437,7 @@ function Importer(){
                 let subAffixCount = relic.subAffixList[i-1].cnt - 1;
 
                 let data={
-                    index:i, 
+                    index:i-1, 
                     subaffix:typeName.name,
                     data:val, //詞條數值    
                     count:subAffixCount,//強化次數
