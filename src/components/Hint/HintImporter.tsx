@@ -6,7 +6,8 @@ function HintImporter(){
                 <li>此工具會根據玩家放在展示框的8個腳色身上的遺器做數據分析</li>
                 <li>翻盤機率是指說該遺器透過變量骰子後遺器分數變高的機率為何</li>
                 <li>目前該工具只支援計算五星強化至滿等遺器</li>
-                <li>此工具相關數據仍有更改的可能，敬請見諒!</li>
+                <li>此工具相關數據與算法仍有更改的可能，敬請見諒!</li>
+                <li>目前API來源:Enka.network</li>
                 <li>如果發現服務頻繁發生錯誤，暫時先使用simulator。</li>
                 <li>詳細的操作說明可以參考
                 <a href='https://home.gamer.com.tw/artwork.php?sn=6065608' className='!underline'>這篇</a></li>

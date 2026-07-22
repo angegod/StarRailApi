@@ -451,7 +451,7 @@ const RelicSelect=React.memo(()=>{
         
             const reliclink = `https://sr.yatta.moe/hsr/assets/UI/relic/IconRelic_${r.relic._flat.setID}_${r.relic.type}.png`;
             return(
-                <div className={`rounded-[50px] mx-2 mb-2 cursor-pointer p-2 border-[3px] max-[500px]:mx-1 max-[500px]:p-1 max-[500px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
+                <div className={`rounded-[50px] cursor-pointer p-2 border-[3px] max-[500px]:p-1 max-[500px]:border-[2px] ${(relicIndex === i)?"border-yellow-600":"border-gray-300"}`} 
                     key={'RelicSelect'+r.relic.type}
                     onClick={()=>setRelicIndex(i)}>
                     <LazyImage 
@@ -473,7 +473,7 @@ const RelicSelect=React.memo(()=>{
                         <span className='text-white'>?</span>
                     </div>
                 </div>
-                <div className='flex flex-row flex-wrap max-[500px]:justify-center my-2 max-[900px]:w-full'>
+                <div className='flex flex-row gap-x-2 gap-y-1 flex-wrap max-[500px]:gap-x-1 my-2 max-[900px]:w-[90%] max-[900px]:mx-auto'>
                     {list}
                 </div>
             </div>

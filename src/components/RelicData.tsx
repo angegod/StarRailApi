@@ -356,7 +356,7 @@ const RelicData_simulate=React.memo(()=>{
         return(
             <div className={`w-full my-1`}>
                 <div className='flex flex-row flex-wrap '>
-                    <div className='flex flex-col w-1/2'>
+                    <div className='flex flex-col w-1/2 gap-1'>
                         <div className='flex flex-row items-center'>
                             <span className='text-red-600 text-lg font-bold'>遺器資訊</span>
                             <div className='hintIcon ml-2 overflow-visible'
@@ -364,17 +364,23 @@ const RelicData_simulate=React.memo(()=>{
                                 <span className='text-white'>?</span>
                             </div>
                         </div>
-                        <div className='mt-1 flex flex-col'>
+                        <div className='flex flex-col'>
                             <span>部位</span>
                             <div className='flex flex-row'>
                                 <span className='text-white'>{partArr[relic.type-1]}</span>   
                             </div>
                         </div>
-                        <div className='mt-1 flex flex-col'>
+                        <div className='flex flex-col'>
                             <span>主詞條</span>
                             <div className='flex flex-row'>
                                 {mainaffixImg}
                                 <span className='text-white'>{relic.main_affix}</span>   
+                            </div>
+                        </div>
+                        <div className='flex flex-col'>
+                            <span>副詞條</span>
+                            <div className='flex flex-col w-[200px]'>
+                                {list}
                             </div>
                         </div>
                     </div>
@@ -382,12 +388,7 @@ const RelicData_simulate=React.memo(()=>{
                         <StandDetails />
                     </div>
                 </div>
-                <div className='mt-2'>
-                    <span>副詞條</span>
-                    <div className='flex flex-col w-[200px]'>
-                        {list}
-                    </div>
-                </div>
+                
                 {
                     (relicDataButton)?
                         <div className='mt-3'>

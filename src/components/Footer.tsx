@@ -47,14 +47,16 @@ function Footer(){
 
 
     return(
-        <div className='flex flex-row justify-center bg-[rgb(40,40,40)] min-h-[20vh] text-left max-[600px]:min-h-[30vh] max-[600px]:!flex-col max-[600px]:[&>div]:w-4/5'>  
-            <div className='w-2/5 mx-auto flex flex-row flex-wrap h-fit justify-start [&>div]:mx-3 mt-3 [&>div]:first:mr-0 max-[800px]:flex-col max-[800px]:items-center max-[600px]:!items-start max-[600px]:[&>div]:mb-1'>
-                {list}
-            </div>
-            <div className='w-2/5 mx-auto text-stone-500 flex flex-col [&>span]:text-left [&>span]:text-sm [&>span]:font-bold [&>span]:mt-1 py-2 max-[600px]:[&>span]:!text-sm'>
-                <span>&copy; 2026 <a href="https://home.gamer.com.tw/profile/index.php?&owner=ange0733" className="underline">Ange</a></span>
-                <span>Website created by Ange. All rights reserved.</span>
-                <span>Data latest Updated at {lastUpdateDate}</span>
+        <div className='flex flex-row justify-center bg-[rgb(40,40,40)] min-h-[20vh] text-left'>  
+            <div className='w-4/5 max-[700px]:w-[90%] flex flex-row flex-wrap mx-auto max-[700px]:min-h-[30vh] max-[700px]:[&>div]:w-[90%]'>
+                <div className='w-1/2 flex flex-row gap-x-3 gap-y-0.5 flex-wrap h-fit justify-start mt-3 max-[800px]:flex-col max-[600px]:!items-start max-[600px]:[&>div]:mb-1'>
+                    {list}
+                </div>
+                <div className='w-1/2 text-stone-500 flex flex-col [&>span]:text-left [&>span]:text-sm [&>span]:font-bold [&>span]:mt-1 py-2 max-[600px]:[&>span]:!text-sm'>
+                    <span>&copy; 2026 <a href="https://home.gamer.com.tw/profile/index.php?&owner=ange0733" className="underline">Ange</a></span>
+                    <span>Website created by Ange. All rights reserved.</span>
+                    <span>Data latest Updated at {lastUpdateDate}</span>
+                </div>
             </div>
         </div>
     )
