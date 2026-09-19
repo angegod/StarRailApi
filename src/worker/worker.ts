@@ -18,10 +18,10 @@ onmessage = function (event) {
     //計算可用強化次數
     let enchanceCount=0;
     let lockArr:number[] = [];
-    SubData.forEach(sb=>{    
+    SubData.forEach((sb, index)=>{    
         enchanceCount=enchanceCount+Number(sb.count);
         if(sb.locked)
-            lockArr.push(sb.index);
+            lockArr.push(index);
     });
 
 

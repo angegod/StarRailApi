@@ -26,5 +26,6 @@ export interface enchantNewSubAffixItem{
     index:number,
     subaffix:string,
     data:number,
-    count:number
+    count:number,
+    locked:boolean
 }

@@ -19,10 +19,10 @@ onmessage = function (event) {
     //計算可用強化次數
     let enchanceCount=0;
     let lockArr = [] as number[];//被排除的詞條
-    SubData.forEach(sb=>{    
+    SubData.forEach((sb, index)=>{    
         enchanceCount=enchanceCount+Number(sb.count);
         if(sb.locked)
-            lockArr.push(sb.index);
+            lockArr.push(index);
     });
 
     //計算可能的強化組合
@@ -77,8 +77,8 @@ onmessage = function (event) {
             let targetAffix = AffixName.find((st)=>st.fieldName===sub.fieldName) as AffixItem;
             let targetRange=targetAffix.range!;
 
-            //如果該詞條所獲得的強化次數為0 可以推測該數值為初始詞條數值 則直接繼承使用
-            if(SubData[i].count===0)
+            //本次重洗沒有分配強化次數時，保留原本的詞條數值
+            if(randomCombination[i]===0)
                 total=SubData[i].data;
             else
                 total=targetRange[1];//詞條模擬出來的總和，初始為最中間的值
@@ -103,7 +103,8 @@ onmessage = function (event) {
                 index:newSubaffix.length,
                 subaffix:SubData[i].subaffix,
                 data:parseFloat(total.toFixed(1)),
-                count:randomCombination[i]
+                count:randomCombination[i],
+                locked:SubData[i].locked
             });
             
         });
