@@ -30,7 +30,7 @@ interface PastPreview_SimulatorProps{
 //簡易瀏覽
 const PastPreview=React.memo(({index,data}:PastPreviewProps)=>{
     const {checkDetails,isChangeAble} = useContext(SiteContext);
-    const BaseLink =  `https://enka.network/ui/hsr/SpriteOutput/AvatarRoundIcon/${data.char.charID}.png`;
+    const BaseLink =  `https://enka.network/ui/hsr/SpriteOutput/AvatarRoundIcon/Avatar/${data.char.charID}.png`;
     const LoadImgLink = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/image/unknown.png`;
     const toolTipId = 'ImporterHistoryDetails'+index;
     

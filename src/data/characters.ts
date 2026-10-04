@@ -79,6 +79,7 @@ const characters:characterItem[] = [
     { charID: 1415, name: "昔漣", eng_name: "Cyrene"},
     { charID: 1501, name: "火花", eng_name: "Sparxie"},
     { charID: 1502, name: "爻光", eng_name: "Yaoguang"},
+    { charID: 1503, name: "真珠", eng_name: "Pearl"},
     { charID: 1504, name: "不死途", eng_name: "Ashveil"},
     { charID: 1505, name: "緋英", eng_name: "Evanescia"},
     { charID: 1506, name: "銀狼 LV.999", eng_name: "Silver Wolf LV.999"},

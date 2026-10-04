@@ -402,7 +402,7 @@ const CharSelect=React.memo(()=>{
             value: c.charID, 
             label: c.name,
             engLabel:c.eng_name,
-            icon: `https://enka.network/ui/hsr/SpriteOutput/AvatarRoundIcon/${c.charID}.png`
+            icon: `https://enka.network/ui/hsr/SpriteOutput/AvatarRoundIcon/Avatar/${c.charID}.png`
         })
     })
 
