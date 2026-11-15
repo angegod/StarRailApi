@@ -87,6 +87,7 @@ const characters:characterItem[] = [
     { charID: 1508, name: "遠坂凜", eng_name: "Rin Tohsaka"},
     { charID: 1509, name: "吉爾伽美什", eng_name: "Gilgamesh"},
     { charID: 1510, name: "姬子・啟行", eng_name: "Himeko • Nova"},
+    { charID: 1511, name: "星神★阿哈", eng_name: "Aeon ★ Aha" },
     { charID: 1512, name: "知更鳥・晴歌", eng_name: "Robin • Summeretto"},
     { charID: 1513, name: "砂金・戲浪", eng_name: "Aventurine • Waveflair"},
     { charID: 8001, name: "開拓者(男)(毀滅)", eng_name: "Trailblazer (Destruction)" },
